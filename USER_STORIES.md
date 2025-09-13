@@ -3,8 +3,8 @@
 ## Story 1 
 
 ***As a*** homeowner
-***I want*** an automation rule that, after 11pm, turns on hallway lights when motion is detected and sends me an alert
-***so that*** I can safely move at night.
+***I want*** to link a smart device and toggle it on/off
+***so that*** I can control it from one place.
 
 ### Acceptance Criteria
 
