@@ -1,56 +1,48 @@
 package com.smarthome.app;
 
 public abstract class Device {
-    // This is the blueprint for all smart home devices.
-}
-package com.smarthome.app;
+    private String deviceId;
+    private String deviceName;
+    private String room;
+    private boolean isLinked;
 
-public class Light extends Device {
-    private boolean isOn;
-    private int brightness; // Brightness level from 0 to 100
-
-    public Light(String deviceId, String room) {
-        super(deviceId, room);
-        this.isOn = false;
-        this.brightness = 0;
+    public Device(String deviceId, String deviceName, String room) {
+        this.deviceId = deviceId;
+        this.deviceName = deviceName;
+        this.room = room;
+        this.isLinked = false;
     }
 
-    @Override
-    public String getStatus() {
-        String status = "OFF";
-        if (isOn) {
-            status = "ON";
-        }
-        return "Light ID: " + getDeviceId() + ", Room: " + getRoom() + ", Status: " + status;
+    public String getDeviceName() {
+        return deviceName;
     }
 
-    @Override
-    public void turnOn() {
-        this.isOn = true;
-        this.setLinked(true); 
-        this.brightness = 50;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
-    @Override
-    public void turnOff() {
-        this.isOn = false;
-        this.brightness = 0;
+    // Getters
+    public String getDeviceId() {
+        return deviceId;
     }
 
-    // This is a unique method for a Light, not required by the parent class
-    public void setBrightness(int brightness) {
-        this.brightness = brightness;
+    public String getRoom() {
+        return room;
     }
 
-    public abstract class Device {
-    // ... (properties and constructor)
+    public boolean isLinked() {
+        return isLinked;
+    }
 
-    // All devices must be able to report their status
+    public void setLinked(boolean linked) {
+        isLinked = linked;
+    }
+
     public abstract String getStatus();
 
     // All devices must be able to be turned on or off
     // Even if a thermostat doesn't technically "turn on," its power state can be controlled
     public abstract void turnOn();
     public abstract void turnOff();
-}
+
 }
