@@ -1,7 +1,6 @@
-package com.smarthome.app;
+package com.codedifferently;
 
 public interface SwitchableDevice {
     void turnOn();
     void turnOff();
-    boolean isOn();
 }
