@@ -1,6 +1,6 @@
 package com.smarthome.app;
 
-import com.codedifferently.Device;
+import com.smarthome.app.Device;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -25,14 +25,16 @@ public class HomeManager {
         for (Room room : rooms) room.removeDevice(device);
     }
 
+    // Required: search Set<Room> by name
     public Room getRoomByName(String name) {
         if (name == null) return null;
         Optional<Room> match = rooms.stream()
-            .filter(r -> r.getRoomName().equalsIgnoreCase(name))
-            .findFirst();
+                .filter(r -> r.getRoomName().equalsIgnoreCase(name))
+                .findFirst();
         return match.orElse(null);
     }
 
+    // Required: search across all devices by deviceName
     public Device getDeviceByName(String name) {
         if (name == null) return null;
         for (Room room : rooms) {

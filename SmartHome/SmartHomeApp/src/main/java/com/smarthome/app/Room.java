@@ -1,6 +1,6 @@
 package com.smarthome.app;
 
-import com.codedifferently.Device;
+import com.smarthome.app.Device;
 import java.util.HashSet;
 import java.util.Set;
 
