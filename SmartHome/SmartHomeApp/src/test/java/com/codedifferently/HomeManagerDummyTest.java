@@ -1,3 +1,1 @@
-class HomeManagerDummyTest {
-
-}
+class HomeManagerDummyTest {}

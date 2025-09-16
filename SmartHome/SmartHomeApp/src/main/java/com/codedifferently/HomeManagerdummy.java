@@ -1,2 +1,1 @@
-public class HomeManagerdummy {
-}
+public class HomeManagerdummy {}
