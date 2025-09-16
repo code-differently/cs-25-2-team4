@@ -28,7 +28,7 @@ public class HomeManager {
         return rooms.remove(room);
     }
 
-    public Set<Device> getDevices() {
+    public Set<Device> getAllDevices() {
         Set<Device> all = new HashSet<>();
         for (Room r : rooms) {
             all.addAll(r.getDevices());
@@ -63,11 +63,15 @@ public class HomeManager {
     }
 
     public Device getDevicebyName(String name) {
-        for (Device d : getDevices()) {
+        for (Device d : getAllDevices()) {
             if (d.getDeviceName().equalsIgnoreCase(name)) {
                 return d;
             }
         }
         return null;
+    }
+
+    public Set<Device> getDevices() {
+        return getAllDevices();
     }
 }
