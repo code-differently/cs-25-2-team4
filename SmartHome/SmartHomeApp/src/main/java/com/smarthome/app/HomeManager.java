@@ -1,72 +1,63 @@
 package com.smarthome.app;
 
-import java.util.*;
+import com.codedifferently.Device;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 public class HomeManager {
-    private final String accountId;
-    private final DeviceRegistry registry;
-    private final Set<String> rooms;
+    private final Set<Room> rooms = new HashSet<>();
 
-    public HomeManager(String accountId) {
-        this.accountId = accountId;
-        this.registry = new DeviceRegistry();
-        this.rooms = new HashSet<>();
+    public boolean addRoom(Room room) {
+        return room != null && rooms.add(room);
     }
 
-    public String getAccountId() { return accountId; }
+    public boolean deleteRoom(Room room) {
+        return room != null && rooms.remove(room);
+    }
 
-    public boolean addRoom(String room) { return rooms.add(room); }
+    public Set<Room> getRooms() {
+        return rooms;
+    }
 
-    public boolean deleteRoom(String room) {
-        if (!rooms.contains(room)) return false;
-        for (Device d : new ArrayList<>(registry.getDevicesInRoom(room))) {
-            registry.remove(d.getDeviceId());
+    public boolean addDevice(Device device, String roomName) {
+        if (device == null || roomName == null) return false;
+        Room room = getRoomByName(roomName);
+        if (room == null) {
+            room = new Room(roomName);
+            rooms.add(room);
         }
-        rooms.remove(room);
+        room.addDevice(device);
         return true;
     }
 
-    public boolean addDevice(Device device, String room) {
-        if (device == null || room == null) return false;
-        addRoom(room);
-        return registry.add(device, room);
+    public void removeDevice(Device device) {
+        if (device == null) return;
+        for (Room room : rooms) {
+            room.removeDevice(device);
+        }
     }
 
-    public boolean removeDevice(String deviceId) { return registry.remove(deviceId); }
+    // Required: search the Set of Rooms by name
+    public Room getRoomByName(String name) {
+        if (name == null) return null;
+        Optional<Room> match = rooms.stream()
+                .filter(r -> r.getRoomName().equalsIgnoreCase(name))
+                .findFirst();
+        return match.orElse(null);
+    }
 
-    public Optional<Device> getDevice(String deviceId) { return Optional.ofNullable(registry.get(deviceId)); }
-
-    public Collection<Device> getDevices() { return registry.getAll(); }
-
-    public Collection<Device> getDevicesInRoom(String room) { return registry.getDevicesInRoom(room); }
-
-    static class DeviceRegistry {
-        private final Map<String, Device> byId = new HashMap<>();
-        private final Map<String, Set<Device>> byRoom = new HashMap<>();
-
-        boolean add(Device device, String room) {
-            String id = device.getDeviceId();
-            if (byId.containsKey(id)) return false;
-            byId.put(id, device);
-            byRoom.computeIfAbsent(room, r -> new HashSet<>()).add(device);
-            device.setLinked(true);
-            return true;
+    // Required: search across all devices by deviceName
+    public Device getDeviceByName(String name) {
+        if (name == null) return null;
+        for (Room room : rooms) {
+            for (Device device : room.getDevices()) {
+                String deviceName = device.getDeviceName();
+                if (deviceName != null && deviceName.equalsIgnoreCase(name)) {
+                    return device;
+                }
+            }
         }
-
-        boolean remove(String deviceId) {
-            Device d = byId.remove(deviceId);
-            if (d == null) return false;
-            byRoom.values().forEach(set -> set.remove(d));
-            d.setLinked(false);
-            return true;
-        }
-
-        Device get(String deviceId) { return byId.get(deviceId); }
-
-        Collection<Device> getAll() { return Collections.unmodifiableCollection(byId.values()); }
-
-        Collection<Device> getDevicesInRoom(String room) {
-            return Collections.unmodifiableCollection(byRoom.getOrDefault(room, Collections.emptySet()));
-        }
+        return null;
     }
 }
