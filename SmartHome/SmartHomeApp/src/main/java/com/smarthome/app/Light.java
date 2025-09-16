@@ -19,6 +19,12 @@ public class Light implements SwitchableDevice {
     }
 
     @Override
+    public String getDeviceName() {
+        // Use deviceId as the display/name for now.
+        return deviceId;
+    }
+
+    @Override
     public String getRoom() {
         return room;
     }
