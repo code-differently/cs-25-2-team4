@@ -5,11 +5,16 @@ plugins {
     jacoco
     id("io.freefair.lombok") version "8.10.2"
     id("com.diffplug.spotless") version "6.25.0"
-	  id("org.springframework.boot") version "3.4.0"
     id("com.adarshr.test-logger") version "4.0.0"
 }
 
-apply(plugin = "io.spring.dependency-management")
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -19,19 +24,17 @@ repositories {
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.assertj:assertj-core:3.26.3")
-    testImplementation("at.favre.lib:bcrypt:0.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
     implementation("com.google.guava:guava:33.3.1-jre")
     implementation("com.google.code.gson:gson:2.11.0")
-    implementation("org.springframework.boot:spring-boot-starter")
 }
 
 application {
     // Define the main class for the application.
-    mainClass.set("com.codedifferently.lesson16.Lesson16")
+    mainClass.set("com.smarthome.app.SmartHomeApplication")
 }
 
 tasks.named<Test>("test") {

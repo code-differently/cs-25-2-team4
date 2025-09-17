@@ -1,3 +1,0 @@
-./module-info.java
-./com/smarthome/app/HomeManager.java
-./com/smarthome/app/Room.java
