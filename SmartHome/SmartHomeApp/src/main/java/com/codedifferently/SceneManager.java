@@ -27,13 +27,17 @@ public class SceneManager {
 
     public void run(String sceneName) {
         Scene s = scenes.get(sceneName);
-        if (s == null) return;
-        for (Action a : s.getActions()) {
-            System.out.println("Execute: device=" + a.getDeviceId()
+        run(s);
+    }
+
+    public void run(Scene scene) {
+        if (scene == null) return;
+        for (Action a : scene.getActions()) {
+            System.out.println(
+                "Execute: device=" + a.getDeviceId()
                 + ", command=" + a.getCommand()
-                + (a.getValue() != null ? ", value=" + a.getValue() : ""));
+                + (a.getValue() != null ? ", value=" + a.getValue() : "")
+            );
         }
     }
 }
-
-// PR marker: SceneManager — Toby Evans
