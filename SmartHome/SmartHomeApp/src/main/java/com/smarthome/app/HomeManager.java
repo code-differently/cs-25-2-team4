@@ -72,7 +72,30 @@ public class HomeManager {
     return null;
   }
 
-  public Set<Device> getDevices() {
-    return getAllDevices();
-  }
+    public Set<Device> getDevices() {
+        return getAllDevices();
+    }
+
+      public void sendCommand(Device device, String command, Object value) throws InvalidCommandException {
+    if (device == null || !getAllDevices().contains(device)) {
+        throw new DeviceNotFoundException("Device not found: " + (device != null ? device.getDeviceId() : "null"));
+    }
+
+    try {
+        Method method;
+
+        if (value == null) {
+            method = device.getClass().getMethod(command);
+            method.invoke(device);
+        } else {
+            method = device.getClass().getMethod(command, value.getClass());
+            method.invoke(device, value);
+        }
+
+    } catch (NoSuchMethodException e) {
+        throw new InvalidCommandException(device.getClass().getSimpleName(), command);
+    } catch (Exception e) {
+        throw new RuntimeException("Error invoking method", e);
+    }
+}
 }
