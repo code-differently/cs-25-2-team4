@@ -7,6 +7,11 @@ import java.util.Map;
 
 public class SceneManager {
     private final Map<String, Scene> scenes = new LinkedHashMap<>();
+    private final ActionExecutor executor;
+
+    public SceneManager(ActionExecutor executor) {
+        this.executor = executor;
+    }
 
     public boolean addScene(Scene scene) {
         if (scene == null || scene.getName() == null) return false;
@@ -26,18 +31,19 @@ public class SceneManager {
     }
 
     public void run(String sceneName) {
-        Scene s = scenes.get(sceneName);
-        run(s);
+        run(scenes.get(sceneName));
     }
 
     public void run(Scene scene) {
         if (scene == null) return;
         for (Action a : scene.getActions()) {
-            System.out.println(
-                "Execute: device=" + a.getDeviceId()
-                + ", command=" + a.getCommand()
-                + (a.getValue() != null ? ", value=" + a.getValue() : "")
-            );
+            executor.execute(a);
+        }
+    }
+
+    public void run() {
+        for (Scene s : getScenes()) {
+            run(s);
         }
     }
 }
