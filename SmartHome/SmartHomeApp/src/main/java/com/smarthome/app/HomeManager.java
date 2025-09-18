@@ -92,14 +92,28 @@ public class HomeManager {
     }
 
     try {
-        Method method;
+        Method method = null;
 
         if (value == null) {
             method = device.getClass().getMethod(command);
             method.invoke(device);
         } else {
-            method = device.getClass().getMethod(command, value.getClass());
-            method.invoke(device, value);
+            // First try with the exact type
+            try {
+                method = device.getClass().getMethod(command, value.getClass());
+            } catch (NoSuchMethodException e) {
+                // If that fails, try with primitive type conversion
+                Class<?> primitiveType = getPrimitiveType(value.getClass());
+                if (primitiveType != null) {
+                    method = device.getClass().getMethod(command, primitiveType);
+                }
+            }
+            
+            if (method != null) {
+                method.invoke(device, value);
+            } else {
+                throw new NoSuchMethodException("No suitable method found for: " + command);
+            }
         }
 
     } catch (NoSuchMethodException e) {
@@ -108,5 +122,17 @@ public class HomeManager {
     } catch (Exception e) {
         throw new RuntimeException("Error invoking method", e);
     }
+}
+
+/**
+ * Helper method to convert wrapper classes to their primitive equivalents
+ */
+private Class<?> getPrimitiveType(Class<?> wrapperType) {
+    if (wrapperType == Integer.class) return int.class;
+    if (wrapperType == Double.class) return double.class;
+    if (wrapperType == Float.class) return float.class;
+    if (wrapperType == Boolean.class) return boolean.class;
+    if (wrapperType == Character.class) return char.class;
+    return null;
 }
 }
