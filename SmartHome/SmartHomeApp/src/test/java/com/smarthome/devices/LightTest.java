@@ -10,7 +10,7 @@ public class LightTest {
 
   @BeforeEach
   void setUp() {
-    light = new Light("L1", "Living Room Light", "Living Room");
+    light = new Light("L1", "Living Room Light");
   }
 
   @Test
@@ -42,7 +42,6 @@ public class LightTest {
   void testDeviceProperties() {
     assertEquals("L1", light.getDeviceId(), "Device ID should match");
     assertEquals("Living Room Light", light.getDeviceName(), "Device name should match");
-    assertEquals("Living Room", light.getRoom(), "Room should match");
     assertFalse(light.isLinked(), "Device should not be linked initially");
   }
 }
