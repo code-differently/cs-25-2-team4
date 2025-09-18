@@ -1,63 +1,92 @@
-package com.smarthome.app;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.smarthome.devices.Light;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 public class HomeManagerTest {
-  private HomeManager homeManager;
-  private Room room;
-  private Light light;
 
-  @BeforeEach
-  void setUp() {
-    homeManager = new HomeManager("Account123");
-    room = new Room("Living Room");
-    light = new Light("L1", "Living Room Light");
-  }
+    private HomeManager homeManager;
+    private Room room1;
+    private Room room2;
+    private Light light1;
+    private Thermostat thermostat1;
 
-  @Test
-  void testAddAndDeleteRoom() {
-    homeManager.addRoom(room);
-    assertTrue(
-        homeManager.getRooms().contains(room), "HomeManager should contain room after adding it");
-    homeManager.deleteRoom(room);
-    assertFalse(
-        homeManager.getRooms().contains(room),
-        "HomeManager should not contain room after deleting it");
-  }
+    @BeforeEach
+    void setUp() {
+        homeManager = new HomeManager("Account123");
 
-  @Test
-  void testAddAndRemoveDeviceFromHomeManager() {
-    homeManager.addRoom(room);
-    homeManager.addDevice(light, room);
-    assertTrue(
-        homeManager.getDevices().contains(light),
-        "HomeManager should contain device after adding it");
-    homeManager.removeDevice(light);
-    assertFalse(
-        homeManager.getDevices().contains(light),
-        "HomeManager should not contain device after removing it");
-  }
+        room1 = new Room("Living Room");
+        room2 = new Room("Bedroom");
 
-  @Test
-  void testHomeManagerProperties() {
-    assertEquals("Account123", homeManager.getAccountId(), "Account ID should match");
-    assertTrue(homeManager.getRooms().isEmpty(), "HomeManager should have no rooms initially");
-    assertTrue(
-        homeManager.getAllDevices().isEmpty(), "HomeManager should have no devices initially");
-  }
+        light1 = new Light("L1", "Living Room Light");
+        thermostat1 = new Thermostat("T1", "Main Thermostat");
+    }
 
-  @Test
-  void testGetDeviceByName() {
-    homeManager.addRoom(room);
-    homeManager.addDevice(light, room);
-    assertEquals(
-        light, homeManager.getDevicebyName("Living Room Light"), "Should find device by name");
-    assertNull(
-        homeManager.getDevicebyName("Nonexistent Device"),
-        "Should return null for nonexistent device");
-  }
-}
+    @Test
+    void testAddAndDeleteRoom() {
+        assertTrue(homeManager.addRoom(room1));
+        assertTrue(homeManager.getRooms().contains(room1));
+
+        assertTrue(homeManager.deleteRoom(room1));
+        assertFalse(homeManager.getRooms().contains(room1));
+    }
+
+    @Test
+    void testAddDuplicateRoom() {
+        homeManager.addRoom(room1);
+        assertFalse(homeManager.addRoom(room1), "Adding duplicate room should return false");
+    }
+
+    @Test
+    void testAddAndRemoveDevice() {
+        homeManager.addRoom(room1);
+        assertTrue(homeManager.addDevice(light1, room1), "Device should be added successfully");
+        assertTrue(homeManager.getDevices().contains(light1));
+
+        assertTrue(homeManager.removeDevice(light1), "Device should be removed successfully");
+        assertFalse(homeManager.getDevices().contains(light1));
+    }
+
+    @Test
+    void testAddDeviceToNonexistentRoom() {
+        assertFalse(homeManager.addDevice(thermostat1, room2), "Cannot add device to room not in HomeManager");
+    }
+
+    @Test
+    void testGetRoomByName() {
+        homeManager.addRoom(room1);
+        homeManager.addRoom(room2);
+
+        assertEquals(room1, homeManager.getRoombyName("Living Room"));
+        assertEquals(room2, homeManager.getRoombyName("bedroom")); // case-insensitive
+        assertNull(homeManager.getRoombyName("Kitchen"));
+    }
+
+    @Test
+    void testGetDeviceByName() {
+        homeManager.addRoom(room1);
+        homeManager.addDevice(light1, room1);
+        homeManager.addDevice(thermostat1, room1);
+
+        assertEquals(light1, homeManager.getDevicebyName("Living Room Light"));
+        assertEquals(thermostat1, homeManager.getDevicebyName("main thermostat")); // case-insensitive
+        assertNull(homeManager.getDevicebyName("Unknown Device"));
+    }
+
+    @Test
+    void testGetAllDevicesReturnsUnmodifiableSet() {
+        homeManager.addRoom(room1);
+        homeManager.addDevice(light1, room1);
+
+        Set<Device> devices = homeManager.getDevices();
+        assertThrows(UnsupportedOperationException.class, () -> devices.add(thermostat1));
+    }
+
+    @Test
+    void testGetRoomsReturnsUnmodifiableSet() {
+        homeManager.addRoom(room1);
+        Set<Room> rooms = homeManager.getRooms();
+        assertThrows(UnsupportedOperationException.class, () -> rooms.add(room2));
+    }

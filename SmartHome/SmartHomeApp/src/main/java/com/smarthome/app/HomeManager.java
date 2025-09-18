@@ -1,9 +1,14 @@
 package com.smarthome.app;
 
+import com.smarthome.exceptions.DeviceNotFoundException;
+import com.smarthome.exceptions.InvalidCommandException;
+
 import com.smarthome.devices.Device;
+
 import com.smarthome.exceptions.DeviceNotFoundException;
 import com.smarthome.exceptions.InvalidCommandException;
 import com.smarthome.exceptions.RoomNotFoundException;
+
 
 import java.lang.reflect.Method;
 import java.util.Collections;
