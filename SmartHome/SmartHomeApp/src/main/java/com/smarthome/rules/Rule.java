@@ -48,18 +48,26 @@ public class Rule {
         if (this == o) return true;
         if (!(o instanceof Rule)) return false;
         Rule rule = (Rule) o;
-        return triggerEvent.equals(rule.triggerE
-
-mkdir -p SmartHome/SmartHomeApp/src/main/java/com/smarthome/devices
-cat > SmartHome/SmartHomeApp/src/main/java/com/smarthome/devices/Rule.java <<'EOF'
-package com.smarthome.devices;
-
-public class Rule extends com.smarthome.rules.Rule {
-    public Rule(String triggerEvent, String triggerDeviceId, String targetSceneName,
-                java.time.LocalTime startAfter, java.time.LocalTime endBefore) {
-        super(triggerEvent, triggerDeviceId, targetSceneName, startAfter, endBefore);
+        return triggerEvent.equals(rule.triggerEvent) &&
+               triggerDeviceId.equals(rule.triggerDeviceId) &&
+               targetSceneName.equals(rule.targetSceneName) &&
+               java.util.Objects.equals(startAfter, rule.startAfter) &&
+               java.util.Objects.equals(endBefore, rule.endBefore);
     }
-    public Rule(String triggerEvent, String triggerDeviceId, String targetSceneName) {
-        super(triggerEvent, triggerDeviceId, targetSceneName);
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(triggerEvent, triggerDeviceId, targetSceneName, startAfter, endBefore);
+    }
+
+    @Override
+    public String toString() {
+        return "Rule{" +
+               "triggerEvent='" + triggerEvent + '\'' +
+               ", triggerDeviceId='" + triggerDeviceId + '\'' +
+               ", targetSceneName='" + targetSceneName + '\'' +
+               ", startAfter=" + startAfter +
+               ", endBefore=" + endBefore +
+               '}';
     }
 }
