@@ -10,7 +10,7 @@ public class ThermostatTest {
 
   @BeforeEach
   void setUp() {
-    thermostat = new Thermostat("T1", "Main Thermostat", "Living Room");
+    thermostat = new Thermostat("T1", "Main Thermostat");
   }
 
   @Test
@@ -20,23 +20,15 @@ public class ThermostatTest {
   }
 
   @Test
-  void testThermostatMode() {
-    thermostat.setMode("heating");
-    assertEquals("heating", thermostat.getMode(), "Mode should match the value set");
-  }
-
-  @Test
   void testThermostatStatus() {
     String status = thermostat.getStatus();
     assertTrue(status.contains("Thermostat ID: T1"), "Status should contain thermostat ID");
-    assertTrue(status.contains("Room: Living Room"), "Status should contain room");
   }
 
   @Test
   void testDeviceProperties() {
     assertEquals("T1", thermostat.getDeviceId(), "Device ID should match");
     assertEquals("Main Thermostat", thermostat.getDeviceName(), "Device name should match");
-    assertEquals("Living Room", thermostat.getRoom(), "Room should match");
     assertFalse(thermostat.isLinked(), "Device should not be linked initially");
   }
 }

@@ -90,4 +90,3 @@ public class HomeManagerTest {
         Set<Room> rooms = homeManager.getRooms();
         assertThrows(UnsupportedOperationException.class, () -> rooms.add(room2));
     }
-}

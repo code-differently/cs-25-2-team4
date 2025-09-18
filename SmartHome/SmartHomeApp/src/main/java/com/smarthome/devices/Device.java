@@ -3,13 +3,11 @@ package com.smarthome.devices;
 public abstract class Device {
   private String deviceId;
   private String deviceName;
-  private String room;
   private boolean isLinked;
 
-  public Device(String deviceId, String deviceName, String room) {
+  public Device(String deviceId, String deviceName) {
     this.deviceId = deviceId;
     this.deviceName = deviceName;
-    this.room = room;
     this.isLinked = false;
   }
 
@@ -26,10 +24,6 @@ public abstract class Device {
     return deviceId;
   }
 
-  public String getRoom() {
-    return room;
-  }
-
   public boolean isLinked() {
     return isLinked;
   }
@@ -39,10 +33,4 @@ public abstract class Device {
   }
 
   public abstract String getStatus();
-
-  // All devices must be able to be turned on or off
-  // Even if a thermostat doesn't technically "turn on," its power state can be controlled
-  public abstract void turnOn();
-
-  public abstract void turnOff();
 }

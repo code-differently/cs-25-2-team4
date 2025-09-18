@@ -10,7 +10,7 @@ public class SecurityCameraTest {
 
   @BeforeEach
   void setUp() {
-    camera = new SecurityCamera("C1", "Front Door Camera", "Entrance");
+    camera = new SecurityCamera("C1", "Front Door Camera");
   }
 
   @Test
@@ -25,14 +25,13 @@ public class SecurityCameraTest {
   void testCameraStatus() {
     String status = camera.getStatus();
     assertTrue(status.contains("Camera ID: C1"), "Status should contain camera ID");
-    assertTrue(status.contains("Room: Entrance"), "Status should contain room");
-  }
+    assertTrue(status.contains("Name: Front Door Camera"), "Status should contain camera name");
+    assertTrue(status.contains("Recording: No"), "Status should show not recording initially");}
 
   @Test
   void testDeviceProperties() {
     assertEquals("C1", camera.getDeviceId(), "Device ID should match");
     assertEquals("Front Door Camera", camera.getDeviceName(), "Device name should match");
-    assertEquals("Entrance", camera.getRoom(), "Room should match");
     assertFalse(camera.isLinked(), "Device should not be linked initially");
   }
 }
