@@ -15,7 +15,7 @@ public class HomeManagerTest {
   void setUp() {
     homeManager = new HomeManager("Account123");
     room = new Room("Living Room");
-    light = new Light("L1", "Living Room Light", "Living Room");
+    light = new Light("L1", "Living Room Light");
   }
 
   @Test

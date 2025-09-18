@@ -13,7 +13,7 @@ public class RoomTest {
   @BeforeEach
   void setUp() {
     room = new Room("Living Room");
-    light = new Light("L1", "Living Room Light", "Living Room");
+    light = new Light("L1", "Living Room Light");
   }
 
   @Test

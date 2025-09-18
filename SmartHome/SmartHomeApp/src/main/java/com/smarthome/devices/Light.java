@@ -4,8 +4,8 @@ public class Light extends Device implements SwitchableDevice {
   private boolean isOn;
   private int brightness;
 
-  public Light(String deviceId, String deviceName, String room) {
-    super(deviceId, deviceName, room);
+  public Light(String deviceId, String deviceName) {
+    super(deviceId, deviceName);
     this.isOn = false;
     this.brightness = 0;
   }
@@ -33,8 +33,6 @@ public class Light extends Device implements SwitchableDevice {
   public String getStatus() {
     return "Light ID: "
         + getDeviceId()
-        + ", Room: "
-        + getRoom()
         + ", Status: "
         + (isOn ? "ON" : "OFF")
         + ", Brightness: "

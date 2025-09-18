@@ -1,6 +1,8 @@
 package com.smarthome.app;
 
 import com.smarthome.devices.Device;
+import com.smarthome.exceptions.RoomNotFoundException;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,8 +27,11 @@ public class HomeManager {
     return rooms.add(room);
   }
 
-  public boolean deleteRoom(Room room) {
-    return rooms.remove(room);
+  public boolean deleteRoom(Room room) throws RoomNotFoundException {
+    if (!rooms.remove(room)) {
+      throw new RoomNotFoundException("Room not found: " + room.getRoomName());
+    }
+    return true;
   }
 
   public Set<Device> getAllDevices() {
@@ -60,7 +65,7 @@ public class HomeManager {
         return r;
       }
     }
-    return null;
+    throw new RoomNotFoundException("Room not found: " + name);
   }
 
   public Device getDevicebyName(String name) {

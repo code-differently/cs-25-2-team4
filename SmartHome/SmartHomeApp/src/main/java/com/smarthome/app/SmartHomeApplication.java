@@ -11,7 +11,7 @@ public class SmartHomeApplication {
     Room livingRoom = new Room("Living Room");
     homeManager.addRoom(livingRoom);
 
-    Light light1 = new Light("light001", "Main Light", "Living Room");
+    Light light1 = new Light("light001", "Main Light");
     homeManager.addDevice(light1, livingRoom);
 
     light1.turnOn();
