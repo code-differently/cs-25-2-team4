@@ -35,4 +35,8 @@ public class Room {
   public boolean removeDevice(Device device) {
     return devices.remove(device);
   }
+
+  public void clearDevices() {
+    devices.clear();
+  }
 }

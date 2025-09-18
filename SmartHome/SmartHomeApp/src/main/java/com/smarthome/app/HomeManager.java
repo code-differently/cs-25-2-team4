@@ -1,8 +1,11 @@
 package com.smarthome.app;
 
 import com.smarthome.devices.Device;
+import com.smarthome.exceptions.DeviceNotFoundException;
+import com.smarthome.exceptions.InvalidCommandException;
 import com.smarthome.exceptions.RoomNotFoundException;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,9 +31,11 @@ public class HomeManager {
   }
 
   public boolean deleteRoom(Room room) throws RoomNotFoundException {
-    if (!rooms.remove(room)) {
-      throw new RoomNotFoundException("Room not found: " + room.getRoomName());
+    if (room == null || !rooms.contains(room)) {
+      throw new RoomNotFoundException("Room not found: " + (room != null ? room.getRoomName() : "null"));
     }
+    room.clearDevices();
+    rooms.remove(room);
     return true;
   }
 
@@ -98,7 +103,8 @@ public class HomeManager {
         }
 
     } catch (NoSuchMethodException e) {
-        throw new InvalidCommandException(device.getClass().getSimpleName(), command);
+      
+        throw new InvalidCommandException(device.getClass().getSimpleName(), new Throwable(command));
     } catch (Exception e) {
         throw new RuntimeException("Error invoking method", e);
     }
