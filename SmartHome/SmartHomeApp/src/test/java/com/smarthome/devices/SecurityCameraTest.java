@@ -26,7 +26,8 @@ public class SecurityCameraTest {
     String status = camera.getStatus();
     assertTrue(status.contains("Camera ID: C1"), "Status should contain camera ID");
     assertTrue(status.contains("Name: Front Door Camera"), "Status should contain camera name");
-    assertTrue(status.contains("Recording: No"), "Status should show not recording initially");}
+    assertTrue(status.contains("Recording: No"), "Status should show not recording initially");
+  }
 
   @Test
   void testDeviceProperties() {

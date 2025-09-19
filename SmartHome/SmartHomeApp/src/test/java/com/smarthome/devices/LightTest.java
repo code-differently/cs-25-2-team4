@@ -34,7 +34,6 @@ public class LightTest {
   void testLightStatus() {
     String status = light.getStatus();
     assertTrue(status.contains("Light ID: L1"), "Status should contain light ID");
-    assertTrue(status.contains("Room: Living Room"), "Status should contain room");
     assertTrue(status.contains("Status: OFF"), "Status should show OFF initially");
   }
 

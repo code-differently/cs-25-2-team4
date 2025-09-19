@@ -1,12 +1,23 @@
 package com.smarthome.scene;
 
+import com.smarthome.app.CommandExecutor;
+import com.smarthome.app.HomeManager;
+import com.smarthome.devices.Device;
+import com.smarthome.exceptions.DeviceNotFoundException;
+import com.smarthome.exceptions.SceneExecutionException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SceneManager {
-  private final Map<String, Scene> scenes = new LinkedHashMap<>();
+  private final Map<String, Scene> scenes;
+  private final HomeManager homeManager; // Add dependency
+
+  public SceneManager(HomeManager homeManager) {
+    scenes = new LinkedHashMap<>();
+    this.homeManager = homeManager;
+  }
 
   public boolean addScene(Scene scene) {
     if (scene == null || scene.getName() == null) return false;
@@ -35,6 +46,30 @@ public class SceneManager {
               + ", command="
               + a.getCommand()
               + (a.getValue() != null ? ", value=" + a.getValue() : ""));
+    }
+  }
+
+  public void executeScene(String sceneName) throws SceneExecutionException {
+    Scene scene = scenes.get(sceneName);
+    if (scene == null) {
+      throw new SceneExecutionException("Scene not found: " + sceneName);
+    }
+
+    CommandExecutor commandExecutor = new CommandExecutor();
+
+    for (Action action : scene.getActions()) {
+      try {
+        Device device = homeManager.getDevicebyName(action.getDeviceId());
+        if (device == null) {
+          throw new DeviceNotFoundException("Device not found: " + action.getDeviceId());
+        }
+
+        // Use proper command execution
+        commandExecutor.execute(device, action.getCommand(), action.getValue());
+      } catch (Exception e) {
+        // Print error but continue with other actions
+        System.err.println("Failed to execute action: " + action + ", Error: " + e.getMessage());
+      }
     }
   }
 }

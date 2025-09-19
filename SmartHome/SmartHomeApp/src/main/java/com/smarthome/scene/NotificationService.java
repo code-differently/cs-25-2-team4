@@ -1,8 +1,6 @@
-package com.smarthome.devices;
+package com.smarthome.scene;
 
-/**
- * Abstraction for sending notifications (console, email, etc.)
- */
+/** Abstraction for sending notifications (console, email, etc.) */
 public interface NotificationService {
-    void sendAlert(String message);
+  void sendAlert(String message);
 }
