@@ -1,7 +1,7 @@
 package com.smarthome.exceptions;
 
 public class RoomNotFoundException extends RuntimeException {
-    public RoomNotFoundException(String message) {
-        super(message);
-    }
+  public RoomNotFoundException(String message) {
+    super(message);
+  }
 }
