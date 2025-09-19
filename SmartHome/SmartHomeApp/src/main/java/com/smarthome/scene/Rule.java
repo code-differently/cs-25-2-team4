@@ -23,9 +23,6 @@ public class Rule {
         Objects.requireNonNull(targetSceneName, "targetSceneName cannot be null");
     this.startAfter = startAfter;
     this.endBefore = endBefore;
-    if (startAfter != null && endBefore != null && endBefore.isBefore(startAfter)) {
-      throw new IllegalArgumentException("endBefore must be after startAfter");
-    }
   }
 
   public Rule(String triggerEvent, String triggerDeviceName, String targetSceneName) {
@@ -53,9 +50,19 @@ public class Rule {
   }
 
   public boolean isActiveNow(LocalTime now) {
-    if (startAfter != null && now.isBefore(startAfter)) return false;
-    if (endBefore != null && now.isAfter(endBefore)) return false;
-    return true;
+    // Handle case where no time constraints are set
+    if (startAfter == null && endBefore == null) return true;
+    if (startAfter == null) return !now.isAfter(endBefore);
+    if (endBefore == null) return !now.isBefore(startAfter);
+    
+    // Check if time window crosses midnight (e.g., 23:00 to 02:00)
+    if (endBefore.isBefore(startAfter)) {
+      // Overnight window: active if after startAfter OR before endBefore
+      return !now.isBefore(startAfter) || !now.isAfter(endBefore);
+    } else {
+      // Same-day window: active if between startAfter and endBefore
+      return !now.isBefore(startAfter) && !now.isAfter(endBefore);
+    }
   }
 
   @Override

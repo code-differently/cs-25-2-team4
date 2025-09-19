@@ -1,6 +1,8 @@
 package com.smarthome.app;
 
 import com.smarthome.devices.Device;
+import com.smarthome.exceptions.DeviceNotFoundException;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,14 +31,20 @@ public class Room {
   }
 
   public boolean addDevice(Device device) {
+    device.setLinked(true);
     return devices.add(device);
   }
 
   public boolean removeDevice(Device device) {
+    if (device == null || !devices.contains(device)) {
+      throw new DeviceNotFoundException("Device not found in: " + roomName);
+    }
+    device.setLinked(false);
     return devices.remove(device);
   }
 
   public void clearDevices() {
+    devices.forEach(device -> device.setLinked(false));
     devices.clear();
   }
 }

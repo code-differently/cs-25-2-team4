@@ -43,9 +43,6 @@ public class Light extends Device implements SwitchableDevice {
   public void setBrightness(int brightness) {
     if (this.isOn) {
       this.brightness = brightness;
-      System.out.println("Light " + getDeviceId() + " brightness set to " + brightness + ".");
-    } else {
-      System.out.println("Cannot set brightness. Light is off.");
-    }
+    } 
   }
 }
