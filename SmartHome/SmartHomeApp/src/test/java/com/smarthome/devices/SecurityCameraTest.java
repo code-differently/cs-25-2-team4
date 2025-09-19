@@ -29,6 +29,7 @@ public class SecurityCameraTest {
     assertTrue(status.contains("Recording: No"), "Status should show not recording initially");
   }
 
+
   @Test
   void testDeviceProperties() {
     assertEquals("C1", camera.getDeviceId(), "Device ID should match");

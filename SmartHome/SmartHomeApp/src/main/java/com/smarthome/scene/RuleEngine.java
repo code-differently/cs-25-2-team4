@@ -102,4 +102,5 @@ public class RuleEngine {
     String roomName = room != null ? room.getRoomName() : "Unknown";
     notificationService.sendAlert("ALERT: Motion detected after 11 PM in " + roomName);
   }
+
 }

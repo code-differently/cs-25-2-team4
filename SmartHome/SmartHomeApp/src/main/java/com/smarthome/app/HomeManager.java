@@ -4,6 +4,7 @@ import com.smarthome.devices.Device;
 import com.smarthome.exceptions.DeviceNotFoundException;
 import com.smarthome.exceptions.InvalidCommandException;
 import com.smarthome.exceptions.RoomNotFoundException;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -100,4 +101,5 @@ public class HomeManager {
       commandExecutor.execute(device, command, value);
     }
   }
+
 }
