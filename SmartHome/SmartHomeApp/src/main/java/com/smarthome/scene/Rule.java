@@ -19,8 +19,7 @@ public class Rule {
       LocalTime endBefore) {
     this.triggerEvent = Objects.requireNonNull(triggerEvent, "triggerEvent cannot be null");
     this.triggerDeviceName = triggerDeviceName;
-    this.targetScene =
-        Objects.requireNonNull(targetScene, "targetScene cannot be null");
+    this.targetScene = Objects.requireNonNull(targetScene, "targetScene cannot be null");
     this.startAfter = startAfter;
     this.endBefore = endBefore;
   }
@@ -37,7 +36,6 @@ public class Rule {
   // Convenience constructor for global events with time constraints
   public Rule(String triggerEvent, Scene targetScene, LocalTime startAfter, LocalTime endBefore) {
     this(triggerEvent, null, targetScene, startAfter, endBefore);
-
   }
 
   public String getTriggerEvent() {
@@ -50,7 +48,6 @@ public class Rule {
 
   public Scene getTargetScene() {
     return targetScene;
-
   }
 
   public LocalTime getStartAfter() {
@@ -70,7 +67,7 @@ public class Rule {
     if (startAfter == null && endBefore == null) return true;
     if (startAfter == null) return !now.isAfter(endBefore);
     if (endBefore == null) return !now.isBefore(startAfter);
-    
+
     // Check if time window crosses midnight (e.g., 23:00 to 02:00)
     if (endBefore.isBefore(startAfter)) {
       // Overnight window: active if after startAfter OR before endBefore
@@ -89,7 +86,6 @@ public class Rule {
     return triggerEvent.equals(rule.triggerEvent)
         && java.util.Objects.equals(triggerDeviceName, rule.triggerDeviceName)
         && targetScene.equals(rule.targetScene)
-
         && java.util.Objects.equals(startAfter, rule.startAfter)
         && java.util.Objects.equals(endBefore, rule.endBefore);
   }
@@ -98,7 +94,6 @@ public class Rule {
   public int hashCode() {
     return java.util.Objects.hash(
         triggerEvent, triggerDeviceName, targetScene, startAfter, endBefore);
-
   }
 
   @Override
@@ -114,7 +109,6 @@ public class Rule {
         + '\''
         + ", targetScene='"
         + targetScene.getName()
-
         + '\''
         + ", startAfter="
         + startAfter

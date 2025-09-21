@@ -40,4 +40,3 @@ public class Thermostat extends Device implements SwitchableDevice {
         getDeviceId(), getDeviceName(), temperature);
   }
 }
-

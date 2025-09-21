@@ -71,7 +71,6 @@ public class HomeManagerTest {
         RoomNotFoundException.class,
         () -> homeManager.getRoombyName("Kitchen"),
         "Room not found: Kitchen");
-
   }
 
   @Test
@@ -101,4 +100,3 @@ public class HomeManagerTest {
     assertThrows(UnsupportedOperationException.class, () -> rooms.add(room2));
   }
 }
-

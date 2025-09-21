@@ -29,28 +29,33 @@ public class RuleEngine {
             .filter(
                 r -> {
                   // Check if both rules have the same trigger event
-                  boolean eventMatches = r.getTriggerEvent().equalsIgnoreCase(rule.getTriggerEvent());
-                  
+                  boolean eventMatches =
+                      r.getTriggerEvent().equalsIgnoreCase(rule.getTriggerEvent());
+
                   // Check if device names match (handling null for global events)
                   boolean deviceMatches;
                   if (r.getTriggerDeviceName() == null && rule.getTriggerDeviceName() == null) {
                     deviceMatches = true; // Both are global events
-                  } else if (r.getTriggerDeviceName() == null || rule.getTriggerDeviceName() == null) {
+                  } else if (r.getTriggerDeviceName() == null
+                      || rule.getTriggerDeviceName() == null) {
                     deviceMatches = false; // One is global, one is device-specific
                   } else {
-                    deviceMatches = r.getTriggerDeviceName().equalsIgnoreCase(rule.getTriggerDeviceName());
+                    deviceMatches =
+                        r.getTriggerDeviceName().equalsIgnoreCase(rule.getTriggerDeviceName());
                   }
-                  
+
                   return eventMatches && deviceMatches;
                 })
             .findFirst();
 
     if (conflict.isPresent()) {
-      String deviceDescription = rule.getTriggerDeviceName() != null 
-          ? "Device " + rule.getTriggerDeviceName()
-          : "Global event";
+      String deviceDescription =
+          rule.getTriggerDeviceName() != null
+              ? "Device " + rule.getTriggerDeviceName()
+              : "Global event";
       throw new RuleConflictException(
-          "Conflict detected: " + deviceDescription
+          "Conflict detected: "
+              + deviceDescription
               + " already has a rule for event "
               + rule.getTriggerEvent());
     }
@@ -84,7 +89,7 @@ public class RuleEngine {
   private boolean evaluateRule(Rule rule, String eventType, String deviceName) {
     // Check if event type matches
     boolean eventMatches = rule.getTriggerEvent().equalsIgnoreCase(eventType);
-    
+
     // Check if device matches (handle global events with null device names)
     boolean deviceMatches;
     if (rule.getTriggerDeviceName() == null) {
@@ -94,7 +99,7 @@ public class RuleEngine {
       // Device-specific event
       deviceMatches = rule.getTriggerDeviceName().equalsIgnoreCase(deviceName);
     }
-    
+
     // Check time constraints using Rule's actual time window
     boolean timeMatches = rule.isActiveNow(LocalTime.now());
 
@@ -109,7 +114,8 @@ public class RuleEngine {
     try {
       sceneManager.executeScene(targetScene);
     } catch (SceneExecutionException e) {
-      System.err.println("Failed to execute scene " + targetScene.getName() + ": " + e.getMessage());
+      System.err.println(
+          "Failed to execute scene " + targetScene.getName() + ": " + e.getMessage());
       return; // Don't send notification if scene execution failed
     }
 
@@ -117,24 +123,30 @@ public class RuleEngine {
     String notificationMessage;
     if (rule.isDeviceSpecific()) {
       // Device-specific rule
-      Device triggeredDevice = sceneManager.getHomeManager().getDevicebyName(rule.getTriggerDeviceName());
+      Device triggeredDevice =
+          sceneManager.getHomeManager().getDevicebyName(rule.getTriggerDeviceName());
       Room room = null;
       if (triggeredDevice != null) {
-        room = sceneManager.getHomeManager().getRooms().stream()
-            .filter(r -> r.getDevices().contains(triggeredDevice))
-            .findFirst()
-            .orElse(null);
+        room =
+            sceneManager.getHomeManager().getRooms().stream()
+                .filter(r -> r.getDevices().contains(triggeredDevice))
+                .findFirst()
+                .orElse(null);
       }
-      
+
       String roomName = room != null ? room.getRoomName() : "Unknown";
-      notificationMessage = String.format("ALERT: %s triggered by %s in %s", 
-          rule.getTriggerEvent(), rule.getTriggerDeviceName(), roomName);
+      notificationMessage =
+          String.format(
+              "ALERT: %s triggered by %s in %s",
+              rule.getTriggerEvent(), rule.getTriggerDeviceName(), roomName);
     } else {
       // Global event rule
-      notificationMessage = String.format("ALERT: Global event %s triggered scene %s", 
-          rule.getTriggerEvent(), targetScene.getName());
+      notificationMessage =
+          String.format(
+              "ALERT: Global event %s triggered scene %s",
+              rule.getTriggerEvent(), targetScene.getName());
     }
-    
+
     notificationService.sendAlert(notificationMessage);
   }
 }

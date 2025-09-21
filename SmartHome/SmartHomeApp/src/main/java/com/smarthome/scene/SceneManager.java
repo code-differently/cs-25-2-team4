@@ -5,7 +5,6 @@ import com.smarthome.app.HomeManager;
 import com.smarthome.devices.Device;
 import com.smarthome.exceptions.DeviceNotFoundException;
 import com.smarthome.exceptions.SceneExecutionException;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -23,7 +22,6 @@ public class SceneManager {
   public HomeManager getHomeManager() {
     return homeManager;
   }
-
 
   public boolean addScene(Scene scene) {
     if (scene == null || scene.getName() == null) return false;
@@ -85,5 +83,4 @@ public class SceneManager {
       }
     }
   }
-
 }
