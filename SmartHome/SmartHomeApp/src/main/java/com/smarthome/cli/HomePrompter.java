@@ -258,7 +258,7 @@ public class HomePrompter {
       Rule rule;
       if (device != null) {
         // Device-specific rule
-        rule = new Rule(event, device.getDeviceId(), scene);
+        rule = new Rule(event, device.getDeviceName(), scene);
       } else {
         // Global event rule
         rule = new Rule(event, scene);
