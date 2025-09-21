@@ -6,27 +6,36 @@ import java.util.Objects;
 public class Rule {
   private final String triggerEvent;
   private final String triggerDeviceName;
-  private final String targetSceneName;
+  private final Scene targetScene;
   private final LocalTime startAfter;
   private final LocalTime endBefore;
 
   public Rule(
       String triggerEvent,
       String triggerDeviceName,
-      String targetSceneName,
+      Scene targetScene,
       LocalTime startAfter,
       LocalTime endBefore) {
     this.triggerEvent = Objects.requireNonNull(triggerEvent, "triggerEvent cannot be null");
-    this.triggerDeviceName =
-        Objects.requireNonNull(triggerDeviceName, "triggerDeviceName cannot be null");
-    this.targetSceneName =
-        Objects.requireNonNull(targetSceneName, "targetSceneName cannot be null");
+    this.triggerDeviceName = triggerDeviceName;
+    this.targetScene =
+        Objects.requireNonNull(targetScene, "targetScene cannot be null");
     this.startAfter = startAfter;
     this.endBefore = endBefore;
   }
 
-  public Rule(String triggerEvent, String triggerDeviceName, String targetSceneName) {
-    this(triggerEvent, triggerDeviceName, targetSceneName, null, null);
+  public Rule(String triggerEvent, String triggerDeviceName, Scene targetScene) {
+    this(triggerEvent, triggerDeviceName, targetScene, null, null);
+  }
+
+  // Convenience constructor for global events without specific device
+  public Rule(String triggerEvent, Scene targetScene) {
+    this(triggerEvent, null, targetScene, null, null);
+  }
+
+  // Convenience constructor for global events with time constraints
+  public Rule(String triggerEvent, Scene targetScene, LocalTime startAfter, LocalTime endBefore) {
+    this(triggerEvent, null, targetScene, startAfter, endBefore);
   }
 
   public String getTriggerEvent() {
@@ -37,8 +46,8 @@ public class Rule {
     return triggerDeviceName;
   }
 
-  public String getTargetSceneName() {
-    return targetSceneName;
+  public Scene getTargetScene() {
+    return targetScene;
   }
 
   public LocalTime getStartAfter() {
@@ -47,6 +56,10 @@ public class Rule {
 
   public LocalTime getEndBefore() {
     return endBefore;
+  }
+
+  public boolean isDeviceSpecific() {
+    return triggerDeviceName != null;
   }
 
   public boolean isActiveNow(LocalTime now) {
@@ -71,8 +84,8 @@ public class Rule {
     if (!(o instanceof Rule)) return false;
     Rule rule = (Rule) o;
     return triggerEvent.equals(rule.triggerEvent)
-        && triggerDeviceName.equals(rule.triggerDeviceName)
-        && targetSceneName.equals(rule.targetSceneName)
+        && java.util.Objects.equals(triggerDeviceName, rule.triggerDeviceName)
+        && targetScene.equals(rule.targetScene)
         && java.util.Objects.equals(startAfter, rule.startAfter)
         && java.util.Objects.equals(endBefore, rule.endBefore);
   }
@@ -80,20 +93,21 @@ public class Rule {
   @Override
   public int hashCode() {
     return java.util.Objects.hash(
-        triggerEvent, triggerDeviceName, targetSceneName, startAfter, endBefore);
+        triggerEvent, triggerDeviceName, targetScene, startAfter, endBefore);
   }
 
   @Override
   public String toString() {
+
+    String deviceName = (triggerDeviceName != null ? triggerDeviceName : "");
     return "Rule{"
         + "triggerEvent='"
         + triggerEvent
         + '\''
-        + ", triggerDeviceName='"
-        + triggerDeviceName
+        + deviceName
         + '\''
-        + ", targetSceneName='"
-        + targetSceneName
+        + ", targetScene='"
+        + targetScene.getName()
         + '\''
         + ", startAfter="
         + startAfter
