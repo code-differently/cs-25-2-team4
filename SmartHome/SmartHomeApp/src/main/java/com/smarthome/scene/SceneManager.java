@@ -20,6 +20,10 @@ public class SceneManager {
     this.homeManager = homeManager;
   }
 
+  public HomeManager getHomeManager() {
+    return homeManager;
+  }
+
 
   public boolean addScene(Scene scene) {
     if (scene == null || scene.getName() == null) return false;
@@ -55,6 +59,13 @@ public class SceneManager {
     Scene scene = scenes.get(sceneName);
     if (scene == null) {
       throw new SceneExecutionException("Scene not found: " + sceneName);
+    }
+    executeScene(scene);
+  }
+
+  public void executeScene(Scene scene) throws SceneExecutionException {
+    if (scene == null) {
+      throw new SceneExecutionException("Scene cannot be null");
     }
 
     CommandExecutor commandExecutor = new CommandExecutor();

@@ -4,6 +4,13 @@ import com.smarthome.app.HomeManager;
 import com.smarthome.app.Room;
 import com.smarthome.devices.Device;
 import com.smarthome.exceptions.RuleConflictException;
+import com.smarthome.rules.Rule;
+import com.smarthome.scene.Action;
+import com.smarthome.scene.NotificationService;
+import com.smarthome.scene.RuleEngine;
+import com.smarthome.scene.Scene;
+import com.smarthome.scene.SceneManager;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,13 +58,13 @@ class RuleEngineTest {
 
     @BeforeEach
     void setUp() {
-        ruleEngine = new RuleEngine(homeManager, sceneManager, notificationService);
+        ruleEngine = new RuleEngine(sceneManager, notificationService);
     }
 
     @Test
     void testConstructor() {
         // Test that constructor initializes properly
-        RuleEngine engine = new RuleEngine(homeManager, sceneManager, notificationService);
+        RuleEngine engine = new RuleEngine(sceneManager, notificationService);
         assertNotNull(engine);
     }
 
