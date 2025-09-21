@@ -82,8 +82,13 @@ public class HomeManager {
     return null;
   }
 
-  public Set<Device> getDevices() {
-    return getAllDevices();
+  public Device getDeviceById(String id) {
+    for (Device d : getAllDevices()) {
+      if (d.getDeviceId().equalsIgnoreCase(id)) {
+        return d;
+      }
+    }
+    return null;
   }
 
   public void sendCommand(Device device, String command, Object value)
