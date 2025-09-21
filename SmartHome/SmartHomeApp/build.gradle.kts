@@ -37,6 +37,11 @@ application {
     mainClass.set("com.smarthome.cli.SmartHomeCLI")
 }
 
+// Configure run task for interactive CLI applications
+tasks.named<JavaExec>("run") {
+    standardInput = System.`in`
+}
+
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
