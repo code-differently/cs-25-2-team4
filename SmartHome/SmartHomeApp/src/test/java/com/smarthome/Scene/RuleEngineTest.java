@@ -54,10 +54,11 @@ class RuleEngineTest {
     Rule rule1 = new Rule("motion_detected", "MotionSensor1", mockScene);
     Rule rule2 = new Rule("motion_detected", "MotionSensor2", mockScene);
 
-    assertDoesNotThrow(() -> {
-      ruleEngine.addRule(rule1);
-      ruleEngine.addRule(rule2);
-    });
+    assertDoesNotThrow(
+        () -> {
+          ruleEngine.addRule(rule1);
+          ruleEngine.addRule(rule2);
+        });
   }
 
   @Test
@@ -65,10 +66,11 @@ class RuleEngineTest {
     Rule rule1 = new Rule("motion_detected", "MotionSensor1", mockScene);
     Rule rule2 = new Rule("motion_stopped", "MotionSensor1", mockScene);
 
-    assertDoesNotThrow(() -> {
-      ruleEngine.addRule(rule1);
-      ruleEngine.addRule(rule2);
-    });
+    assertDoesNotThrow(
+        () -> {
+          ruleEngine.addRule(rule1);
+          ruleEngine.addRule(rule2);
+        });
   }
 
   @Test
@@ -76,10 +78,11 @@ class RuleEngineTest {
     Rule globalRule1 = new Rule("sunset", mockScene);
     Rule globalRule2 = new Rule("sunrise", mockScene);
 
-    assertDoesNotThrow(() -> {
-      ruleEngine.addRule(globalRule1);
-      ruleEngine.addRule(globalRule2);
-    });
+    assertDoesNotThrow(
+        () -> {
+          ruleEngine.addRule(globalRule1);
+          ruleEngine.addRule(globalRule2);
+        });
   }
 
   @Test
@@ -127,23 +130,23 @@ class RuleEngineTest {
 
   @Test
   void testRuleIsActiveNow_SameDayWindow() {
-    LocalTime startTime = LocalTime.of(9, 0);  // 9 AM
-    LocalTime endTime = LocalTime.of(17, 0);   // 5 PM
+    LocalTime startTime = LocalTime.of(9, 0); // 9 AM
+    LocalTime endTime = LocalTime.of(17, 0); // 5 PM
     Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene, startTime, endTime);
 
-    assertTrue(rule.isActiveNow(LocalTime.of(12, 0)));  // Noon - active
-    assertFalse(rule.isActiveNow(LocalTime.of(8, 0)));  // 8 AM - inactive
+    assertTrue(rule.isActiveNow(LocalTime.of(12, 0))); // Noon - active
+    assertFalse(rule.isActiveNow(LocalTime.of(8, 0))); // 8 AM - inactive
     assertFalse(rule.isActiveNow(LocalTime.of(18, 0))); // 6 PM - inactive
   }
 
   @Test
   void testRuleIsActiveNow_OvernightWindow() {
     LocalTime startTime = LocalTime.of(22, 0); // 10 PM
-    LocalTime endTime = LocalTime.of(6, 0);    // 6 AM (next day)
+    LocalTime endTime = LocalTime.of(6, 0); // 6 AM (next day)
     Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene, startTime, endTime);
 
-    assertTrue(rule.isActiveNow(LocalTime.of(23, 0)));  // 11 PM - active
-    assertTrue(rule.isActiveNow(LocalTime.of(3, 0)));   // 3 AM - active
+    assertTrue(rule.isActiveNow(LocalTime.of(23, 0))); // 11 PM - active
+    assertTrue(rule.isActiveNow(LocalTime.of(3, 0))); // 3 AM - active
     assertFalse(rule.isActiveNow(LocalTime.of(12, 0))); // Noon - inactive
     assertFalse(rule.isActiveNow(LocalTime.of(21, 0))); // 9 PM - inactive
   }

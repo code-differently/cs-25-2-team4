@@ -54,14 +54,28 @@ public class HomeManager {
     return false;
   }
 
-  public boolean removeDevice(Device device) {
+  public boolean removeDevice(Device device) throws DeviceNotFoundException {
+    if (device == null) {
+      throw new DeviceNotFoundException("Device cannot be null");
+    }
+
     boolean removed = false;
     for (Room r : rooms) {
-      if (r.removeDevice(device)) {
-        removed = true;
+      try {
+        if (r.removeDevice(device)) {
+          removed = true;
+        }
+      } catch (DeviceNotFoundException e) {
+        // Continue to next room if device not found in this room
+        continue;
       }
     }
-    return removed;
+
+    if (!removed) {
+      throw new DeviceNotFoundException("Device not found in any room: " + device.getDeviceName());
+    }
+
+    return true; // Always true if we reach here (device was removed successfully)
   }
 
   public Room getRoombyName(String name) {
