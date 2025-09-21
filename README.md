@@ -19,7 +19,7 @@ A **Java-based Smart Home CLI** for managing devices, rooms, rules, and scenes. 
 
 ### Run CLI
 ```bash
-./gradlew run
+./gradlew run --console=plain
 ```
 
 ### Run Test
