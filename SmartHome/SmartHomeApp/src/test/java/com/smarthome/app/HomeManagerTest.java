@@ -6,7 +6,6 @@ import com.smarthome.devices.Device;
 import com.smarthome.devices.Light;
 import com.smarthome.devices.Thermostat;
 import com.smarthome.exceptions.RoomNotFoundException;
-
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,7 +67,11 @@ public class HomeManagerTest {
 
     assertEquals(room1, homeManager.getRoombyName("Living Room"));
     assertEquals(room2, homeManager.getRoombyName("bedroom")); // case-insensitive
-    assertThrows(RoomNotFoundException.class, () -> homeManager.getRoombyName("Kitchen"), "Room not found: Kitchen");
+    assertThrows(
+        RoomNotFoundException.class,
+        () -> homeManager.getRoombyName("Kitchen"),
+        "Room not found: Kitchen");
+
   }
 
   @Test
