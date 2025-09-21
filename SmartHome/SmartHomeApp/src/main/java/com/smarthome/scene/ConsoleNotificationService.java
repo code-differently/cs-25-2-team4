@@ -6,4 +6,5 @@ public class ConsoleNotificationService implements NotificationService {
   public void sendAlert(String message) {
     System.out.println("🔔 Notification: " + message);
   }
+
 }

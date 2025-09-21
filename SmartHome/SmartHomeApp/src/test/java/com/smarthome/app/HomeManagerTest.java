@@ -100,3 +100,4 @@ public class HomeManagerTest {
     assertThrows(UnsupportedOperationException.class, () -> rooms.add(room2));
   }
 }
+

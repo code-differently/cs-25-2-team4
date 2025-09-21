@@ -41,4 +41,5 @@ public class SecurityCamera extends Device implements SwitchableDevice {
         "Camera ID: %s, Name: %s, Recording: %s",
         getDeviceId(), getDeviceName(), isRecording ? "Yes" : "No");
   }
+
 }
