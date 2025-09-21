@@ -34,7 +34,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("com.smarthome.app.SmartHomeApplication")
+    mainClass.set("com.smarthome.cli.SmartHomeCLI")
 }
 
 tasks.named<Test>("test") {

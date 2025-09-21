@@ -1,9 +1,9 @@
 package com.smarthome.scene;
 
-import com.smarthome.app.HomeManager;
 import com.smarthome.app.Room;
 import com.smarthome.devices.Device;
 import com.smarthome.exceptions.RuleConflictException;
+import com.smarthome.exceptions.SceneExecutionException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +12,11 @@ import java.util.Optional;
 /** Evaluates rules and triggers scenes and notifications. */
 public class RuleEngine {
 
-  private final HomeManager homeManager;
   private final SceneManager sceneManager;
   private final NotificationService notificationService;
   private final List<Rule> rules;
 
-  public RuleEngine(
-      HomeManager homeManager, SceneManager sceneManager, NotificationService notificationService) {
-    this.homeManager = homeManager;
+  public RuleEngine(SceneManager sceneManager, NotificationService notificationService) {
     this.sceneManager = sceneManager;
     this.notificationService = notificationService;
     this.rules = new ArrayList<>();
@@ -109,25 +106,21 @@ public class RuleEngine {
     Scene targetScene = rule.getTargetScene();
 
     System.out.println("Executing Scene: " + targetScene.getName());
-    for (Action a : targetScene.getActions()) {
-      Device device = homeManager.getDevicebyName(a.getDeviceId());
-      if (device != null) {
-        try {
-          homeManager.sendCommand(device, a.getCommand(), a.getValue());
-        } catch (Exception e) {
-          System.err.println("Failed to execute action on device " + device.getDeviceId());
-        }
-      }
+    try {
+      sceneManager.executeScene(targetScene);
+    } catch (SceneExecutionException e) {
+      System.err.println("Failed to execute scene " + targetScene.getName() + ": " + e.getMessage());
+      return; // Don't send notification if scene execution failed
     }
 
     // Send notification about the triggered rule
     String notificationMessage;
     if (rule.isDeviceSpecific()) {
       // Device-specific rule
-      Device triggeredDevice = homeManager.getDevicebyName(rule.getTriggerDeviceName());
+      Device triggeredDevice = sceneManager.getHomeManager().getDevicebyName(rule.getTriggerDeviceName());
       Room room = null;
       if (triggeredDevice != null) {
-        room = homeManager.getRooms().stream()
+        room = sceneManager.getHomeManager().getRooms().stream()
             .filter(r -> r.getDevices().contains(triggeredDevice))
             .findFirst()
             .orElse(null);

@@ -12,6 +12,7 @@ import java.util.Set;
 public class HomeManager {
   private final String accountId;
   private final Set<Room> rooms = new HashSet<>();
+  private final CommandExecutor commandExecutor = new CommandExecutor();
 
   public HomeManager(String accountId) {
     this.accountId = accountId;
@@ -82,7 +83,6 @@ public class HomeManager {
     return null;
   }
 
-  private final CommandExecutor commandExecutor = new CommandExecutor();
 
   public Set<Device> getDevices() {
     return getAllDevices();
