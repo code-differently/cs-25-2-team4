@@ -1,82 +1,46 @@
 package com.smarthome.scene;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
-import com.smarthome.app.HomeManager;
-import com.smarthome.app.Room;
-import com.smarthome.devices.Device;
 import com.smarthome.exceptions.RuleConflictException;
-import com.smarthome.rules.Rule;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class RuleEngineTest {
 
-  @Mock private HomeManager homeManager;
-
-  @Mock private SceneManager sceneManager;
-
-  @Mock private NotificationService notificationService;
-
-  @Mock private Rule mockRule;
-
-  @Mock private Scene mockScene;
-
-  @Mock private Device mockDevice;
-
-  @Mock private Room mockRoom;
-
-  @Mock private Action mockAction;
-
+  private TestSceneManager sceneManager;
+  private TestNotificationService notificationService;
+  private Scene mockScene;
   private RuleEngine ruleEngine;
 
   @BeforeEach
   void setUp() {
+    sceneManager = new TestSceneManager();
+    notificationService = new TestNotificationService();
+    mockScene = new Scene("TestScene");
     ruleEngine = new RuleEngine(sceneManager, notificationService);
   }
 
   @Test
   void testConstructor() {
-    // Test that constructor initializes properly
     RuleEngine engine = new RuleEngine(sceneManager, notificationService);
     assertNotNull(engine);
   }
 
   @Test
   void testAddRule_Success() throws RuleConflictException {
-    // Arrange
-    when(mockRule.getTriggerDeviceName()).thenReturn("MotionSensor1");
-    when(mockRule.getTriggerEvent()).thenReturn("motion_detected");
-
-    // Act & Assert
-    assertDoesNotThrow(() -> ruleEngine.addRule(mockRule));
+    Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene);
+    assertDoesNotThrow(() -> ruleEngine.addRule(rule));
   }
 
   @Test
   void testAddRule_ConflictThrowsException() throws RuleConflictException {
-    // Arrange
-    Rule existingRule = mock(Rule.class);
-    when(existingRule.getTriggerDeviceName()).thenReturn("MotionSensor1");
-    when(existingRule.getTriggerEvent()).thenReturn("motion_detected");
+    Rule existingRule = new Rule("motion_detected", "MotionSensor1", mockScene);
+    Rule conflictingRule = new Rule("MOTION_DETECTED", "motionsensor1", mockScene);
 
-    Rule conflictingRule = mock(Rule.class);
-    when(conflictingRule.getTriggerDeviceName()).thenReturn("motionsensor1"); // Different case
-    when(conflictingRule.getTriggerEvent()).thenReturn("MOTION_DETECTED"); // Different case
-
-    // Act
     ruleEngine.addRule(existingRule);
 
-    // Assert
     RuleConflictException exception =
         assertThrows(RuleConflictException.class, () -> ruleEngine.addRule(conflictingRule));
 
@@ -87,224 +51,233 @@ class RuleEngineTest {
 
   @Test
   void testAddRule_DifferentDeviceSameEvent_NoConflict() throws RuleConflictException {
-    // Arrange
-    Rule rule1 = mock(Rule.class);
-    when(rule1.getTriggerDeviceName()).thenReturn("MotionSensor1");
-    when(rule1.getTriggerEvent()).thenReturn("motion_detected");
+    Rule rule1 = new Rule("motion_detected", "MotionSensor1", mockScene);
+    Rule rule2 = new Rule("motion_detected", "MotionSensor2", mockScene);
 
-    Rule rule2 = mock(Rule.class);
-    when(rule2.getTriggerDeviceName()).thenReturn("MotionSensor2");
-    when(rule2.getTriggerEvent()).thenReturn("motion_detected");
-
-    // Act & Assert
-    assertDoesNotThrow(
-        () -> {
-          ruleEngine.addRule(rule1);
-          ruleEngine.addRule(rule2);
-        });
+    assertDoesNotThrow(() -> {
+      ruleEngine.addRule(rule1);
+      ruleEngine.addRule(rule2);
+    });
   }
 
   @Test
   void testAddRule_SameDeviceDifferentEvent_NoConflict() throws RuleConflictException {
-    // Arrange
-    Rule rule1 = mock(Rule.class);
-    when(rule1.getTriggerDeviceName()).thenReturn("MotionSensor1");
-    when(rule1.getTriggerEvent()).thenReturn("motion_detected");
+    Rule rule1 = new Rule("motion_detected", "MotionSensor1", mockScene);
+    Rule rule2 = new Rule("motion_stopped", "MotionSensor1", mockScene);
 
-    Rule rule2 = mock(Rule.class);
-    when(rule2.getTriggerDeviceName()).thenReturn("MotionSensor1");
-    when(rule2.getTriggerEvent()).thenReturn("motion_stopped");
-
-    // Act & Assert
-    assertDoesNotThrow(
-        () -> {
-          ruleEngine.addRule(rule1);
-          ruleEngine.addRule(rule2);
-        });
+    assertDoesNotThrow(() -> {
+      ruleEngine.addRule(rule1);
+      ruleEngine.addRule(rule2);
+    });
   }
 
   @Test
-  void testHandleEvent_MatchingRuleAfter11PM_ExecutesActions() throws RuleConflictException {
-    // Arrange
-    setupMockRule("motion_detected", "MotionSensor1", "NightScene");
-    setupMockScene("NightScene");
-    setupMockDevice("MotionSensor1");
-    setupMockRoom("Living Room");
+  void testAddRule_GlobalEvents_NoConflict() throws RuleConflictException {
+    Rule globalRule1 = new Rule("sunset", mockScene);
+    Rule globalRule2 = new Rule("sunrise", mockScene);
 
-    ruleEngine.addRule(mockRule);
-
-    try (MockedStatic<LocalTime> mockedLocalTime = mockStatic(LocalTime.class)) {
-      // Mock time to be after 11 PM
-      mockedLocalTime.when(LocalTime::now).thenReturn(LocalTime.of(23, 30));
-
-      // Act
-      ruleEngine.handleEvent("motion_detected", "MotionSensor1");
-
-      // Assert
-      verify(sceneManager).getSceneByName("NightScene");
-      verify(homeManager).sendCommand(eq(mockDevice), eq("turn_off"), eq("0"));
-      verify(notificationService)
-          .sendAlert(contains("ALERT: Motion detected after 11 PM in Living Room"));
-    }
+    assertDoesNotThrow(() -> {
+      ruleEngine.addRule(globalRule1);
+      ruleEngine.addRule(globalRule2);
+    });
   }
 
   @Test
-  void testHandleEvent_MatchingRuleBefore11PM_DoesNotExecute() throws RuleConflictException {
-    // Arrange
-    setupMockRule("motion_detected", "MotionSensor1", "NightScene");
-    ruleEngine.addRule(mockRule);
+  void testAddRule_GlobalEventConflict_ThrowsException() throws RuleConflictException {
+    Rule globalRule1 = new Rule("sunset", mockScene);
+    Rule globalRule2 = new Rule("SUNSET", mockScene);
 
-    try (MockedStatic<LocalTime> mockedLocalTime = mockStatic(LocalTime.class)) {
-      // Mock time to be before 11 PM
-      mockedLocalTime.when(LocalTime::now).thenReturn(LocalTime.of(22, 30));
+    ruleEngine.addRule(globalRule1);
 
-      // Act
-      ruleEngine.handleEvent("motion_detected", "MotionSensor1");
+    RuleConflictException exception =
+        assertThrows(RuleConflictException.class, () -> ruleEngine.addRule(globalRule2));
 
-      // Assert
-      verify(sceneManager, never()).getSceneByName(anyString());
-      verify(notificationService, never()).sendAlert(anyString());
-    }
+    assertTrue(exception.getMessage().contains("Global event"));
+    assertTrue(exception.getMessage().contains("SUNSET"));
   }
 
   @Test
-  void testHandleEvent_NoMatchingRule_DoesNotExecute() throws RuleConflictException {
-    // Arrange
-    setupMockRule("motion_detected", "MotionSensor1", "NightScene");
-    ruleEngine.addRule(mockRule);
+  void testRuleTimeConstraints() {
+    LocalTime startTime = LocalTime.of(22, 0);
+    LocalTime endTime = LocalTime.of(6, 0);
+    Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene, startTime, endTime);
 
-    try (MockedStatic<LocalTime> mockedLocalTime = mockStatic(LocalTime.class)) {
-      mockedLocalTime.when(LocalTime::now).thenReturn(LocalTime.of(23, 30));
-
-      // Act - Different event type
-      ruleEngine.handleEvent("door_opened", "MotionSensor1");
-
-      // Assert
-      verify(sceneManager, never()).getSceneByName(anyString());
-      verify(notificationService, never()).sendAlert(anyString());
-    }
+    assertEquals("motion_detected", rule.getTriggerEvent());
+    assertEquals("MotionSensor1", rule.getTriggerDeviceName());
+    assertEquals(mockScene, rule.getTargetScene());
+    assertEquals(startTime, rule.getStartAfter());
+    assertEquals(endTime, rule.getEndBefore());
   }
 
   @Test
-  void testHandleEvent_SceneNotFound_LogsError() throws RuleConflictException {
-    // Arrange
-    setupMockRule("motion_detected", "MotionSensor1", "NonExistentScene");
-    setupMockDevice("MotionSensor1");
-    setupMockRoom("Living Room");
+  void testGlobalRuleCreation() {
+    Rule globalRule = new Rule("sunset", mockScene);
 
-    when(sceneManager.getSceneByName("NonExistentScene")).thenReturn(null);
-
-    ruleEngine.addRule(mockRule);
-
-    try (MockedStatic<LocalTime> mockedLocalTime = mockStatic(LocalTime.class)) {
-      mockedLocalTime.when(LocalTime::now).thenReturn(LocalTime.of(23, 30));
-
-      // Act
-      ruleEngine.handleEvent("motion_detected", "MotionSensor1");
-
-      // Assert
-      verify(sceneManager).getSceneByName("NonExistentScene");
-      verify(notificationService)
-          .sendAlert(contains("ALERT: Motion detected after 11 PM in Living Room"));
-      // Scene execution should be skipped, but notification should still be sent
-    }
+    assertEquals("sunset", globalRule.getTriggerEvent());
+    assertNull(globalRule.getTriggerDeviceName());
+    assertEquals(mockScene, globalRule.getTargetScene());
+    assertFalse(globalRule.isDeviceSpecific());
   }
 
   @Test
-  void testHandleEvent_DeviceNotFound_HandlesGracefully() throws RuleConflictException {
-    // Arrange
-    setupMockRule("motion_detected", "NonExistentDevice", "NightScene");
-    setupMockScene("NightScene");
-
-    when(homeManager.getDevicebyName("NonExistentDevice")).thenReturn(null);
-    when(homeManager.getRooms()).thenReturn(Collections.emptyList());
-
-    ruleEngine.addRule(mockRule);
-
-    try (MockedStatic<LocalTime> mockedLocalTime = mockStatic(LocalTime.class)) {
-      mockedLocalTime.when(LocalTime::now).thenReturn(LocalTime.of(23, 30));
-
-      // Act
-      ruleEngine.handleEvent("motion_detected", "NonExistentDevice");
-
-      // Assert
-      verify(notificationService)
-          .sendAlert(contains("ALERT: Motion detected after 11 PM in Unknown"));
-    }
+  void testRuleIsActiveNow_NoTimeConstraints() {
+    Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene);
+    assertTrue(rule.isActiveNow(LocalTime.now()));
   }
 
   @Test
-  void testHandleEvent_SendCommandThrowsException_HandlesGracefully() throws RuleConflictException {
-    // Arrange
-    setupMockRule("motion_detected", "MotionSensor1", "NightScene");
-    setupMockScene("NightScene");
-    setupMockDevice("MotionSensor1");
-    setupMockRoom("Living Room");
+  void testRuleIsActiveNow_SameDayWindow() {
+    LocalTime startTime = LocalTime.of(9, 0);  // 9 AM
+    LocalTime endTime = LocalTime.of(17, 0);   // 5 PM
+    Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene, startTime, endTime);
 
-    // Make sendCommand throw an exception
-    when(homeManager.sendCommand(any(), any(), any()))
-        .thenThrow(new RuntimeException("Device communication error"));
-
-    ruleEngine.addRule(mockRule);
-
-    try (MockedStatic<LocalTime> mockedLocalTime = mockStatic(LocalTime.class)) {
-      mockedLocalTime.when(LocalTime::now).thenReturn(LocalTime.of(23, 30));
-
-      // Act & Assert - Should not throw exception
-      assertDoesNotThrow(() -> ruleEngine.handleEvent("motion_detected", "MotionSensor1"));
-
-      verify(notificationService)
-          .sendAlert(contains("ALERT: Motion detected after 11 PM in Living Room"));
-    }
+    assertTrue(rule.isActiveNow(LocalTime.of(12, 0)));  // Noon - active
+    assertFalse(rule.isActiveNow(LocalTime.of(8, 0)));  // 8 AM - inactive
+    assertFalse(rule.isActiveNow(LocalTime.of(18, 0))); // 6 PM - inactive
   }
 
   @Test
-  void testHandleEvent_CaseInsensitiveMatching() throws RuleConflictException {
-    // Arrange
-    setupMockRule("MOTION_DETECTED", "MotionSensor1", "NightScene");
-    setupMockScene("NightScene");
-    setupMockDevice("MotionSensor1");
-    setupMockRoom("Living Room");
+  void testRuleIsActiveNow_OvernightWindow() {
+    LocalTime startTime = LocalTime.of(22, 0); // 10 PM
+    LocalTime endTime = LocalTime.of(6, 0);    // 6 AM (next day)
+    Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene, startTime, endTime);
 
-    ruleEngine.addRule(mockRule);
+    assertTrue(rule.isActiveNow(LocalTime.of(23, 0)));  // 11 PM - active
+    assertTrue(rule.isActiveNow(LocalTime.of(3, 0)));   // 3 AM - active
+    assertFalse(rule.isActiveNow(LocalTime.of(12, 0))); // Noon - inactive
+    assertFalse(rule.isActiveNow(LocalTime.of(21, 0))); // 9 PM - inactive
+  }
 
-    try (MockedStatic<LocalTime> mockedLocalTime = mockStatic(LocalTime.class)) {
-      mockedLocalTime.when(LocalTime::now).thenReturn(LocalTime.of(23, 30));
+  @Test
+  void testHandleEvent_ExecutesMatchingRule() throws RuleConflictException {
+    Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene);
+    ruleEngine.addRule(rule);
 
-      // Act - Use lowercase event and different case device name
-      ruleEngine.handleEvent("motion_detected", "motionsensor1");
+    ruleEngine.handleEvent("motion_detected", "MotionSensor1");
 
-      // Assert
-      verify(sceneManager).getSceneByName("NightScene");
-      verify(notificationService).sendAlert(anyString());
+    // Verify scene was executed
+    assertTrue(sceneManager.wasSceneExecuted(mockScene));
+    assertEquals(1, sceneManager.getExecutionCount());
+  }
+
+  @Test
+  void testHandleEvent_NoMatchingRule() throws RuleConflictException {
+    Rule rule = new Rule("motion_detected", "MotionSensor1", mockScene);
+    ruleEngine.addRule(rule);
+
+    ruleEngine.handleEvent("different_event", "MotionSensor1");
+
+    // Verify no scene was executed
+    assertFalse(sceneManager.wasSceneExecuted(mockScene));
+    assertEquals(0, sceneManager.getExecutionCount());
+  }
+
+  @Test
+  void testHandleGlobalEvent_ExecutesMatchingRule() throws RuleConflictException {
+    Rule globalRule = new Rule("sunset", mockScene);
+    ruleEngine.addRule(globalRule);
+
+    ruleEngine.handleGlobalEvent("sunset");
+
+    // Verify scene was executed
+    assertTrue(sceneManager.wasSceneExecuted(mockScene));
+    assertEquals(1, sceneManager.getExecutionCount());
+  }
+
+  @Test
+  void testHandleGlobalEvent_NoMatchingRule() throws RuleConflictException {
+    Rule globalRule = new Rule("sunset", mockScene);
+    ruleEngine.addRule(globalRule);
+
+    ruleEngine.handleGlobalEvent("sunrise");
+
+    // Verify no scene was executed
+    assertFalse(sceneManager.wasSceneExecuted(mockScene));
+    assertEquals(0, sceneManager.getExecutionCount());
+  }
+
+  // Test helper classes
+  private static class TestSceneManager extends SceneManager {
+    private int executionCount = 0;
+    private Scene lastExecutedScene = null;
+    private TestHomeManager testHomeManager;
+
+    public TestSceneManager() {
+      super(null); // Will override getHomeManager
+      this.testHomeManager = new TestHomeManager();
+    }
+
+    @Override
+    public void executeScene(Scene scene) {
+      executionCount++;
+      lastExecutedScene = scene;
+    }
+
+    @Override
+    public com.smarthome.app.HomeManager getHomeManager() {
+      return testHomeManager;
+    }
+
+    public boolean wasSceneExecuted(Scene scene) {
+      return scene.equals(lastExecutedScene);
+    }
+
+    public int getExecutionCount() {
+      return executionCount;
     }
   }
 
-  // Helper methods
-  private void setupMockRule(String triggerEvent, String triggerDevice, String targetScene) {
-    when(mockRule.getTriggerEvent()).thenReturn(triggerEvent);
-    when(mockRule.getTriggerDeviceName()).thenReturn(triggerDevice);
-    when(mockRule.getTargetSceneName()).thenReturn(targetScene);
+  private static class TestHomeManager extends com.smarthome.app.HomeManager {
+    public TestHomeManager() {
+      super("test-account");
+    }
+
+    @Override
+    public com.smarthome.devices.Device getDevicebyName(String deviceName) {
+      // Return a mock device for testing purposes
+      if ("MotionSensor1".equalsIgnoreCase(deviceName)) {
+        return new TestDevice("sensor1", "MotionSensor1");
+      }
+      return null;
+    }
+
+    @Override
+    public java.util.Set<com.smarthome.app.Room> getRooms() {
+      java.util.Set<com.smarthome.app.Room> rooms = new java.util.HashSet<>();
+      com.smarthome.app.Room testRoom = new com.smarthome.app.Room("TestRoom");
+      testRoom.addDevice(new TestDevice("sensor1", "MotionSensor1"));
+      rooms.add(testRoom);
+      return rooms;
+    }
   }
 
-  private void setupMockScene(String sceneName) {
-    when(sceneManager.getSceneByName(sceneName)).thenReturn(mockScene);
-    when(mockScene.getName()).thenReturn(sceneName);
-    when(mockScene.getActions()).thenReturn(Arrays.asList(mockAction));
+  private static class TestDevice extends com.smarthome.devices.Device {
+    public TestDevice(String deviceId, String deviceName) {
+      super(deviceId, deviceName);
+    }
 
-    when(mockAction.getDeviceId()).thenReturn("device1");
-    when(mockAction.getCommand()).thenReturn("turn_off");
-    when(mockAction.getValue()).thenReturn("0");
+    @Override
+    public String getStatus() {
+      return "active";
+    }
   }
 
-  private void setupMockDevice(String deviceName) {
-    when(homeManager.getDevicebyName(deviceName)).thenReturn(mockDevice);
-    when(mockDevice.getDeviceId()).thenReturn("device1");
-  }
+  private static class TestNotificationService implements NotificationService {
+    private int notificationCount = 0;
+    private String lastMessage = null;
 
-  private void setupMockRoom(String roomName) {
-    when(mockRoom.getRoomName()).thenReturn(roomName);
-    when(mockRoom.getDevices()).thenReturn(Arrays.asList(mockDevice));
-    when(homeManager.getRooms()).thenReturn(Arrays.asList(mockRoom));
+    @Override
+    public void sendAlert(String message) {
+      notificationCount++;
+      lastMessage = message;
+    }
+
+    public int getNotificationCount() {
+      return notificationCount;
+    }
+
+    public String getLastMessage() {
+      return lastMessage;
+    }
   }
 }

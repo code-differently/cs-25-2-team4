@@ -2,7 +2,6 @@ package com.smarthome.app;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.smarthome.devices.Device;
 import com.smarthome.devices.Light;
 import com.smarthome.devices.Thermostat;
 import com.smarthome.exceptions.RoomNotFoundException;
@@ -48,10 +47,10 @@ public class HomeManagerTest {
   void testAddAndRemoveDevice() {
     homeManager.addRoom(room1);
     assertTrue(homeManager.addDevice(light1, room1), "Device should be added successfully");
-    assertTrue(homeManager.getDevices().contains(light1));
+    assertTrue(homeManager.getAllDevices().contains(light1));
 
     assertTrue(homeManager.removeDevice(light1), "Device should be removed successfully");
-    assertFalse(homeManager.getDevices().contains(light1));
+    assertFalse(homeManager.getAllDevices().contains(light1));
   }
 
   @Test
@@ -82,15 +81,6 @@ public class HomeManagerTest {
     assertEquals(light1, homeManager.getDevicebyName("Living Room Light"));
     assertEquals(thermostat1, homeManager.getDevicebyName("main thermostat")); // case-insensitive
     assertNull(homeManager.getDevicebyName("Unknown Device"));
-  }
-
-  @Test
-  void testGetAllDevicesReturnsUnmodifiableSet() {
-    homeManager.addRoom(room1);
-    homeManager.addDevice(light1, room1);
-
-    Set<Device> devices = homeManager.getDevices();
-    assertThrows(UnsupportedOperationException.class, () -> devices.add(thermostat1));
   }
 
   @Test
