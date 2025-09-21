@@ -42,7 +42,7 @@ A **Java-based Smart Home CLI** for managing devices, rooms, rules, and scenes. 
 > Add Room: Living Room
 > Add Device: Light L1, Thermostat T1, Camera C1
 > Create Scene: Night Comfort → Lights off, Thermostat 68°F, Camera records
-> Rule: At 11 PM trigger "Night Comfort"
+> Rule: At 11PM trigger "Night Comfort"
 ```
 
 ## SOLID Design
