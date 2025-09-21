@@ -43,6 +43,6 @@ public class Light extends Device implements SwitchableDevice {
   public void setBrightness(int brightness) {
     if (this.isOn) {
       this.brightness = brightness;
-    } 
+    }
   }
 }
