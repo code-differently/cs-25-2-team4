@@ -89,7 +89,6 @@ public class RuleEngine {
   private boolean evaluateRule(Rule rule, String eventType, String deviceName) {
     // Check if event type matches
     boolean eventMatches = rule.getTriggerEvent().equalsIgnoreCase(eventType);
-
     // Check if device matches (handle global events with null device names)
     boolean deviceMatches;
     if (rule.getTriggerDeviceName() == null) {
@@ -99,7 +98,6 @@ public class RuleEngine {
       // Device-specific event
       deviceMatches = rule.getTriggerDeviceName().equalsIgnoreCase(deviceName);
     }
-
     // Check time constraints using Rule's actual time window
     boolean timeMatches = rule.isActiveNow(LocalTime.now());
 

@@ -67,7 +67,6 @@ public class Rule {
     if (startAfter == null && endBefore == null) return true;
     if (startAfter == null) return !now.isAfter(endBefore);
     if (endBefore == null) return !now.isBefore(startAfter);
-
     // Check if time window crosses midnight (e.g., 23:00 to 02:00)
     if (endBefore.isBefore(startAfter)) {
       // Overnight window: active if after startAfter OR before endBefore

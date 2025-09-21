@@ -55,7 +55,6 @@ public class RuleTest {
   void testNoTimeConstraints() {
     Scene welcomeScene = new Scene("WelcomeScene");
     Rule rule = new Rule("DOOR_OPENED", "frontDoor", welcomeScene);
-
     // Should be active at any time when no constraints
     assertTrue(rule.isActiveNow(LocalTime.of(0, 0)));
     assertTrue(rule.isActiveNow(LocalTime.of(12, 0)));
@@ -111,7 +110,6 @@ public class RuleTest {
     assertNull(timedGlobalRule.getTriggerDeviceName());
     assertEquals(nightScene, timedGlobalRule.getTargetScene());
     assertFalse(timedGlobalRule.isDeviceSpecific());
-
     // Test time constraints
     assertTrue(timedGlobalRule.isActiveNow(LocalTime.of(23, 30)));
     assertTrue(timedGlobalRule.isActiveNow(LocalTime.of(0, 30)));
