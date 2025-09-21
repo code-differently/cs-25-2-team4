@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.smarthome.scene.Rule;
 import com.smarthome.scene.Scene;
+
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 

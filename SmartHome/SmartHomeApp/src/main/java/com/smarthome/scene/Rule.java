@@ -7,6 +7,7 @@ public class Rule {
   private final String triggerEvent;
   private final String triggerDeviceName;
   private final Scene targetScene;
+
   private final LocalTime startAfter;
   private final LocalTime endBefore;
 
@@ -36,6 +37,7 @@ public class Rule {
   // Convenience constructor for global events with time constraints
   public Rule(String triggerEvent, Scene targetScene, LocalTime startAfter, LocalTime endBefore) {
     this(triggerEvent, null, targetScene, startAfter, endBefore);
+
   }
 
   public String getTriggerEvent() {
@@ -48,6 +50,7 @@ public class Rule {
 
   public Scene getTargetScene() {
     return targetScene;
+
   }
 
   public LocalTime getStartAfter() {
@@ -86,6 +89,7 @@ public class Rule {
     return triggerEvent.equals(rule.triggerEvent)
         && java.util.Objects.equals(triggerDeviceName, rule.triggerDeviceName)
         && targetScene.equals(rule.targetScene)
+
         && java.util.Objects.equals(startAfter, rule.startAfter)
         && java.util.Objects.equals(endBefore, rule.endBefore);
   }
@@ -94,12 +98,14 @@ public class Rule {
   public int hashCode() {
     return java.util.Objects.hash(
         triggerEvent, triggerDeviceName, targetScene, startAfter, endBefore);
+
   }
 
   @Override
   public String toString() {
 
     String deviceName = (triggerDeviceName != null ? triggerDeviceName : "");
+
     return "Rule{"
         + "triggerEvent='"
         + triggerEvent
@@ -108,6 +114,7 @@ public class Rule {
         + '\''
         + ", targetScene='"
         + targetScene.getName()
+
         + '\''
         + ", startAfter="
         + startAfter

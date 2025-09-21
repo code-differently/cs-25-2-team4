@@ -144,5 +144,4 @@ public class RuleEngine {
     
     notificationService.sendAlert(notificationMessage);
   }
-
 }
