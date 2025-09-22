@@ -10,21 +10,19 @@ import org.junit.jupiter.api.Test;
 class RuleEngineTest {
 
   private TestSceneManager sceneManager;
-  private TestNotificationService notificationService;
   private Scene mockScene;
   private RuleEngine ruleEngine;
 
   @BeforeEach
   void setUp() {
     sceneManager = new TestSceneManager();
-    notificationService = new TestNotificationService();
     mockScene = new Scene("TestScene");
-    ruleEngine = new RuleEngine(sceneManager, notificationService);
+    ruleEngine = new RuleEngine(sceneManager, new ConsoleNotificationService());
   }
 
   @Test
   void testConstructor() {
-    RuleEngine engine = new RuleEngine(sceneManager, notificationService);
+    RuleEngine engine = new RuleEngine(sceneManager, new ConsoleNotificationService());
     assertNotNull(engine);
   }
 
@@ -265,22 +263,11 @@ class RuleEngineTest {
     }
   }
 
-  private static class TestNotificationService implements NotificationService {
-    private int notificationCount = 0;
-    private String lastMessage = null;
 
-    @Override
-    public void sendAlert(String message) {
-      notificationCount++;
-      lastMessage = message;
-    }
-
-    public int getNotificationCount() {
-      return notificationCount;
-    }
-
-    public String getLastMessage() {
-      return lastMessage;
-    }
+  @Test
+  void testRuleConflictExceptionConstructor() {
+    // Test RuleConflictException constructor within context of RuleEngine operations
+    RuleConflictException exception = new RuleConflictException("Test conflict message");
+    assertEquals("Test conflict message", exception.getMessage());
   }
 }

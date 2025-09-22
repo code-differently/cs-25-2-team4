@@ -40,19 +40,6 @@ public class SceneManager {
     return Collections.unmodifiableCollection(scenes.values());
   }
 
-  public void run(String sceneName) {
-    Scene s = scenes.get(sceneName);
-    if (s == null) return;
-    for (Action a : s.getActions()) {
-      System.out.println(
-          "Execute: device="
-              + a.getDeviceId()
-              + ", command="
-              + a.getCommand()
-              + (a.getValue() != null ? ", value=" + a.getValue() : ""));
-    }
-  }
-
   public void executeScene(String sceneName) throws SceneExecutionException {
     Scene scene = scenes.get(sceneName);
     if (scene == null) {

@@ -459,10 +459,5 @@ public class RuleEngineIntegrationTest {
         public String getLastNotification() {
             return lastNotification;
         }
-        
-        public void reset() {
-            notificationSent = false;
-            lastNotification = "";
-        }
     }
 }
