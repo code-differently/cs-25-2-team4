@@ -37,7 +37,7 @@ public class ThermostatTest {
     // Test turnOn
     thermostat.turnOn();
     assertTrue(thermostat.isOn(), "Thermostat should be on after turnOn()");
-    
+
     // Test turnOff
     thermostat.turnOff();
     assertFalse(thermostat.isOn(), "Thermostat should be off after turnOff()");
@@ -53,7 +53,7 @@ public class ThermostatTest {
   void testSetLinked() {
     thermostat.setLinked(true);
     assertTrue(thermostat.isLinked(), "Device should be linked after setLinked(true)");
-    
+
     thermostat.setLinked(false);
     assertFalse(thermostat.isLinked(), "Device should not be linked after setLinked(false)");
   }
@@ -63,10 +63,10 @@ public class ThermostatTest {
     // Test setting extreme temperatures
     thermostat.setTemp(-10.0);
     assertEquals(-10.0, thermostat.getTemp(), 0.01, "Should allow negative temperatures");
-    
+
     thermostat.setTemp(50.0);
     assertEquals(50.0, thermostat.getTemp(), 0.01, "Should allow high temperatures");
-    
+
     thermostat.setTemp(0.0);
     assertEquals(0.0, thermostat.getTemp(), 0.01, "Should allow zero temperature");
   }
@@ -79,7 +79,7 @@ public class ThermostatTest {
     String statusOff = thermostat.getStatus();
     assertTrue(statusOff.contains("OFF"), "Status should indicate thermostat is off");
     assertTrue(statusOff.contains("25.0"), "Status should contain current temperature");
-    
+
     // Test status when on
     thermostat.turnOn();
     String statusOn = thermostat.getStatus();

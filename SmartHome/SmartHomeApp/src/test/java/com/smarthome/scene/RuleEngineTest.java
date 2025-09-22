@@ -263,7 +263,6 @@ class RuleEngineTest {
     }
   }
 
-
   @Test
   void testRuleConflictExceptionConstructor() {
     // Test RuleConflictException constructor within context of RuleEngine operations

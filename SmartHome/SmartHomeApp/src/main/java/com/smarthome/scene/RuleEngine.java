@@ -65,10 +65,15 @@ public class RuleEngine {
 
   /** Handles an incoming event from a device. */
   public void handleEvent(String eventType, String deviceName) {
+    handleEvent(eventType, deviceName, LocalTime.now());
+  }
+
+  /** Handles an incoming event from a device with specific time (for testing). */
+  public void handleEvent(String eventType, String deviceName, LocalTime currentTime) {
     System.out.println("\nRuleEngine received event: " + eventType + " from " + deviceName);
 
     for (Rule rule : rules) {
-      if (evaluateRule(rule, eventType, deviceName)) {
+      if (evaluateRule(rule, eventType, deviceName, currentTime)) {
         executeActions(rule);
       }
     }
@@ -76,10 +81,15 @@ public class RuleEngine {
 
   /** Handles global events that are not tied to a specific device. */
   public void handleGlobalEvent(String eventType) {
+    handleGlobalEvent(eventType, LocalTime.now());
+  }
+
+  /** Handles global events that are not tied to a specific device with specific time (for testing). */
+  public void handleGlobalEvent(String eventType, LocalTime currentTime) {
     System.out.println("\nRuleEngine received global event: " + eventType);
 
     for (Rule rule : rules) {
-      if (evaluateRule(rule, eventType, null)) {
+      if (evaluateRule(rule, eventType, null, currentTime)) {
         executeActions(rule);
       }
     }
@@ -87,6 +97,11 @@ public class RuleEngine {
 
   /** Evaluates a single rule. */
   private boolean evaluateRule(Rule rule, String eventType, String deviceName) {
+    return evaluateRule(rule, eventType, deviceName, LocalTime.now());
+  }
+
+  /** Evaluates a single rule with specific time (for testing). */
+  private boolean evaluateRule(Rule rule, String eventType, String deviceName, LocalTime currentTime) {
     // Check if event type matches
     boolean eventMatches = rule.getTriggerEvent().equalsIgnoreCase(eventType);
     // Check if device matches (handle global events with null device names)
@@ -99,7 +114,7 @@ public class RuleEngine {
       deviceMatches = rule.getTriggerDeviceName().equalsIgnoreCase(deviceName);
     }
     // Check time constraints using Rule's actual time window
-    boolean timeMatches = rule.isActiveNow(LocalTime.now());
+    boolean timeMatches = rule.isActiveNow(currentTime);
 
     return eventMatches && deviceMatches && timeMatches;
   }

@@ -54,7 +54,7 @@ public class LightTest {
   void testSetLinked() {
     light.setLinked(true);
     assertTrue(light.isLinked(), "Device should be linked after setLinked(true)");
-    
+
     light.setLinked(false);
     assertFalse(light.isLinked(), "Device should not be linked after setLinked(false)");
   }
@@ -64,9 +64,10 @@ public class LightTest {
     light.turnOn();
     light.setBrightness(50);
     assertEquals(50, light.getBrightness(), "getBrightness should return the set brightness value");
-    
+
     light.setBrightness(100);
-    assertEquals(100, light.getBrightness(), "getBrightness should return updated brightness value");
+    assertEquals(
+        100, light.getBrightness(), "getBrightness should return updated brightness value");
   }
 
   @Test
@@ -81,18 +82,18 @@ public class LightTest {
   @Test
   void testBrightnessConstraints() {
     light.turnOn();
-    
+
     // Test edge values
     light.setBrightness(0);
     assertEquals(0, light.getBrightness(), "Should allow 0% brightness");
-    
+
     light.setBrightness(100);
     assertEquals(100, light.getBrightness(), "Should allow 100% brightness");
-    
+
     // Test clamping behavior - negative values become 0
     light.setBrightness(-10);
     assertEquals(0, light.getBrightness(), "Negative values should be clamped to 0");
-    
+
     // Test clamping behavior - values above 100 become 100
     light.setBrightness(150);
     assertEquals(100, light.getBrightness(), "Values above 100 should be clamped to 100");
@@ -102,7 +103,7 @@ public class LightTest {
   void testStatusReflectsBrightness() {
     light.turnOn();
     light.setBrightness(80);
-    
+
     String status = light.getStatus();
     assertTrue(status.contains("Status: ON"), "Status should show light is ON");
     assertTrue(status.contains("Brightness: 80"), "Status should show current brightness");

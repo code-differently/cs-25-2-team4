@@ -70,7 +70,7 @@ public class CommandExecutor {
           } else {
             throw new RuntimeException("setBrightness requires integer brightness value");
           }
-          
+
           ((Light) device).setBrightness(brightness);
         });
   }
@@ -95,7 +95,7 @@ public class CommandExecutor {
           } else {
             throw new RuntimeException("setTemp requires numeric temperature value");
           }
-          
+
           ((Thermostat) device).setTemp(temperature);
         });
 
