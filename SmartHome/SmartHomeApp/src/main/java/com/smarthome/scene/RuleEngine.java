@@ -1,5 +1,6 @@
 package com.smarthome.scene;
 
+
 import com.smarthome.app.Room;
 import com.smarthome.devices.Device;
 import com.smarthome.exceptions.RuleConflictException;
@@ -16,6 +17,7 @@ public class RuleEngine {
   private final NotificationService notificationService;
   private final List<Rule> rules;
 
+
   public RuleEngine(SceneManager sceneManager, NotificationService notificationService) {
     this.sceneManager = sceneManager;
     this.notificationService = notificationService;
@@ -29,6 +31,7 @@ public class RuleEngine {
             .filter(
                 r -> {
                   // Check if both rules have the same trigger event
+
                   boolean eventMatches =
                       r.getTriggerEvent().equalsIgnoreCase(rule.getTriggerEvent());
 
@@ -36,6 +39,7 @@ public class RuleEngine {
                   boolean deviceMatches;
                   if (r.getTriggerDeviceName() == null && rule.getTriggerDeviceName() == null) {
                     deviceMatches = true; // Both are global events
+
                   } else if (r.getTriggerDeviceName() == null
                       || rule.getTriggerDeviceName() == null) {
                     deviceMatches = false; // One is global, one is device-specific
@@ -65,6 +69,7 @@ public class RuleEngine {
 
   /** Handles an incoming event from a device. */
   public void handleEvent(String eventType, String deviceName) {
+
     handleEvent(eventType, deviceName, LocalTime.now());
   }
 
@@ -81,6 +86,7 @@ public class RuleEngine {
 
   /** Handles global events that are not tied to a specific device. */
   public void handleGlobalEvent(String eventType) {
+
     handleGlobalEvent(eventType, LocalTime.now());
   }
 
@@ -97,6 +103,7 @@ public class RuleEngine {
 
   /** Evaluates a single rule. */
   private boolean evaluateRule(Rule rule, String eventType, String deviceName) {
+
     return evaluateRule(rule, eventType, deviceName, LocalTime.now());
   }
 
@@ -124,6 +131,7 @@ public class RuleEngine {
     Scene targetScene = rule.getTargetScene();
 
     System.out.println("Executing Scene: " + targetScene.getName());
+
     try {
       sceneManager.executeScene(targetScene);
     } catch (SceneExecutionException e) {
@@ -136,6 +144,7 @@ public class RuleEngine {
     String notificationMessage;
     if (rule.isDeviceSpecific()) {
       // Device-specific rule
+
       Device triggeredDevice =
           sceneManager.getHomeManager().getDevicebyName(rule.getTriggerDeviceName());
       Room room = null;

@@ -42,6 +42,7 @@ public class Light extends Device implements SwitchableDevice {
   // A unique method for the Light class
   public void setBrightness(int brightness) {
     if (this.isOn) {
+
       this.brightness = Math.max(0, Math.min(100, brightness));
     }
   }

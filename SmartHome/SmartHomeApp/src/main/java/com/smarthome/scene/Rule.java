@@ -19,6 +19,7 @@ public class Rule {
       LocalTime endBefore) {
     this.triggerEvent = Objects.requireNonNull(triggerEvent, "triggerEvent cannot be null");
     this.triggerDeviceName = triggerDeviceName;
+
     this.targetScene = Objects.requireNonNull(targetScene, "targetScene cannot be null");
     this.startAfter = startAfter;
     this.endBefore = endBefore;
@@ -97,6 +98,7 @@ public class Rule {
 
   @Override
   public String toString() {
+
 
     String deviceName =
         (triggerDeviceName != null ? "triggerDeviceName='" + triggerDeviceName + '\'' : "");

@@ -4,6 +4,7 @@ import com.smarthome.devices.Device;
 import com.smarthome.exceptions.DeviceNotFoundException;
 import com.smarthome.exceptions.InvalidCommandException;
 import com.smarthome.exceptions.RoomNotFoundException;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +12,7 @@ import java.util.Set;
 public class HomeManager {
   private final String accountId;
   private final Set<Room> rooms = new HashSet<>();
+
   private final CommandExecutor commandExecutor = new CommandExecutor();
 
   public HomeManager(String accountId) {
@@ -95,7 +97,6 @@ public class HomeManager {
     }
     return null;
   }
-
   public Device getDeviceById(String id) {
     for (Device d : getAllDevices()) {
       if (d.getDeviceId().equalsIgnoreCase(id)) {

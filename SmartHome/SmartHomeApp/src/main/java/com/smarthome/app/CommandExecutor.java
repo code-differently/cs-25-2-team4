@@ -62,6 +62,7 @@ public class CommandExecutor {
             throw new RuntimeException("setBrightness requires brightness value");
           }
 
+
           int brightness;
           if (args[0] instanceof String) {
             brightness = Integer.parseInt((String) args[0]);
@@ -86,6 +87,7 @@ public class CommandExecutor {
           if (args.length == 0) {
             throw new RuntimeException("setTemp requires temperature value");
           }
+
 
           double temperature;
           if (args[0] instanceof String) {

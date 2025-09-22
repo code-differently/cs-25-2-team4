@@ -2,6 +2,7 @@ package com.smarthome.app;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 import com.smarthome.devices.Light;
 import com.smarthome.devices.Thermostat;
 import com.smarthome.exceptions.DeviceNotFoundException;
@@ -48,6 +49,7 @@ public class HomeManagerTest {
   void testAddAndRemoveDevice() {
     homeManager.addRoom(room1);
     assertTrue(homeManager.addDevice(light1, room1), "Device should be added successfully");
+
     assertTrue(homeManager.getAllDevices().contains(light1));
 
     assertTrue(homeManager.removeDevice(light1), "Device should be removed successfully");

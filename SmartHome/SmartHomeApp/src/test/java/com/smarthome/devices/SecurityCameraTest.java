@@ -29,12 +29,14 @@ public class SecurityCameraTest {
     assertTrue(status.contains("Recording: No"), "Status should show not recording initially");
   }
 
+
   @Test
   void testDeviceProperties() {
     assertEquals("C1", camera.getDeviceId(), "Device ID should match");
     assertEquals("Front Door Camera", camera.getDeviceName(), "Device name should match");
     assertFalse(camera.isLinked(), "Device should not be linked initially");
   }
+
 
   @Test
   void testTurnOnAndOff() {

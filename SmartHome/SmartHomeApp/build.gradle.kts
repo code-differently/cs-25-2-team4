@@ -36,6 +36,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
+
     mainClass.set("com.smarthome.cli.SmartHomeCLI")
 }
 
