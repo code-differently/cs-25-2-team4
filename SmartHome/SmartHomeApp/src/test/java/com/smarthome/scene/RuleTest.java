@@ -1,4 +1,4 @@
-package com.smarthome.rules;
+package com.smarthome.scene;
 
 import static org.junit.jupiter.api.Assertions.*;
 
