@@ -98,7 +98,8 @@ public class Rule {
   @Override
   public String toString() {
 
-    String deviceName = (triggerDeviceName != null ? "triggerDeviceName='" + triggerDeviceName + '\'' : "");
+    String deviceName =
+        (triggerDeviceName != null ? "triggerDeviceName='" + triggerDeviceName + '\'' : "");
 
     return "Rule{"
         + "triggerEvent='"
