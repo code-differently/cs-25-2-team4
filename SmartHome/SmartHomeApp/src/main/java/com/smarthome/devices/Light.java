@@ -45,4 +45,8 @@ public class Light extends Device implements SwitchableDevice {
       this.brightness = brightness;
     }
   }
+
+  public int getBrightness() {
+    return this.brightness;
+  }
 }
