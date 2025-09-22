@@ -31,4 +31,60 @@ public class ThermostatTest {
     assertEquals("Main Thermostat", thermostat.getDeviceName(), "Device name should match");
     assertFalse(thermostat.isLinked(), "Device should not be linked initially");
   }
+
+  @Test
+  void testTurnOnAndOff() {
+    // Test turnOn
+    thermostat.turnOn();
+    assertTrue(thermostat.isOn(), "Thermostat should be on after turnOn()");
+    
+    // Test turnOff
+    thermostat.turnOff();
+    assertFalse(thermostat.isOn(), "Thermostat should be off after turnOff()");
+  }
+
+  @Test
+  void testSetDeviceName() {
+    thermostat.setDeviceName("Updated Thermostat");
+    assertEquals("Updated Thermostat", thermostat.getDeviceName(), "Device name should be updated");
+  }
+
+  @Test
+  void testSetLinked() {
+    thermostat.setLinked(true);
+    assertTrue(thermostat.isLinked(), "Device should be linked after setLinked(true)");
+    
+    thermostat.setLinked(false);
+    assertFalse(thermostat.isLinked(), "Device should not be linked after setLinked(false)");
+  }
+
+  @Test
+  void testTemperatureConstraints() {
+    // Test setting extreme temperatures
+    thermostat.setTemp(-10.0);
+    assertEquals(-10.0, thermostat.getTemp(), 0.01, "Should allow negative temperatures");
+    
+    thermostat.setTemp(50.0);
+    assertEquals(50.0, thermostat.getTemp(), 0.01, "Should allow high temperatures");
+    
+    thermostat.setTemp(0.0);
+    assertEquals(0.0, thermostat.getTemp(), 0.01, "Should allow zero temperature");
+  }
+
+  @Test
+  void testStatusReflectsState() {
+    // Test status when off
+    thermostat.turnOff();
+    thermostat.setTemp(25.0);
+    String statusOff = thermostat.getStatus();
+    assertTrue(statusOff.contains("OFF"), "Status should indicate thermostat is off");
+    assertTrue(statusOff.contains("25.0"), "Status should contain current temperature");
+    
+    // Test status when on
+    thermostat.turnOn();
+    String statusOn = thermostat.getStatus();
+    assertTrue(statusOn.contains("ON"), "Status should indicate thermostat is on");
+    assertTrue(statusOn.contains("T1"), "Status should contain thermostat ID");
+    assertTrue(statusOn.contains("Main Thermostat"), "Status should contain thermostat name");
+  }
 }

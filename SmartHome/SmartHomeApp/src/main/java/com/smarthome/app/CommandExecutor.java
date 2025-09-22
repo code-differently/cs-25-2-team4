@@ -62,7 +62,15 @@ public class CommandExecutor {
             throw new RuntimeException("setBrightness requires brightness value");
           }
 
-          int brightness = (Integer) args[0];
+          int brightness;
+          if (args[0] instanceof String) {
+            brightness = Integer.parseInt((String) args[0]);
+          } else if (args[0] instanceof Integer) {
+            brightness = (Integer) args[0];
+          } else {
+            throw new RuntimeException("setBrightness requires integer brightness value");
+          }
+          
           ((Light) device).setBrightness(brightness);
         });
   }
@@ -79,7 +87,15 @@ public class CommandExecutor {
             throw new RuntimeException("setTemp requires temperature value");
           }
 
-          double temperature = ((Number) args[0]).doubleValue();
+          double temperature;
+          if (args[0] instanceof String) {
+            temperature = Double.parseDouble((String) args[0]);
+          } else if (args[0] instanceof Number) {
+            temperature = ((Number) args[0]).doubleValue();
+          } else {
+            throw new RuntimeException("setTemp requires numeric temperature value");
+          }
+          
           ((Thermostat) device).setTemp(temperature);
         });
 
