@@ -4,4 +4,3 @@ package com.smarthome.scene;
 public interface NotificationService {
   void sendAlert(String message);
 }
-

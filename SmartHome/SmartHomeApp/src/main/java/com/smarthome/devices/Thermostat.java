@@ -36,8 +36,8 @@ public class Thermostat extends Device implements SwitchableDevice {
   @Override
   public String getStatus() {
     return String.format(
-        "Thermostat ID: %s, Name: %s, Temperature: %.1f°C",
-        getDeviceId(), getDeviceName(), temperature);
+
+        "Thermostat ID: %s, Name: %s, Status: %s, Temperature: %.1f°C",
+        getDeviceId(), getDeviceName(), (isOn ? "ON" : "OFF"), temperature);
   }
 }
-

@@ -2,7 +2,6 @@ package com.smarthome.app;
 
 import com.smarthome.devices.Device;
 import com.smarthome.exceptions.DeviceNotFoundException;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;

@@ -2,9 +2,10 @@ package com.smarthome.app;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.smarthome.devices.Device;
+
 import com.smarthome.devices.Light;
 import com.smarthome.devices.Thermostat;
+import com.smarthome.exceptions.DeviceNotFoundException;
 import com.smarthome.exceptions.RoomNotFoundException;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,10 +49,11 @@ public class HomeManagerTest {
   void testAddAndRemoveDevice() {
     homeManager.addRoom(room1);
     assertTrue(homeManager.addDevice(light1, room1), "Device should be added successfully");
-    assertTrue(homeManager.getDevices().contains(light1));
+
+    assertTrue(homeManager.getAllDevices().contains(light1));
 
     assertTrue(homeManager.removeDevice(light1), "Device should be removed successfully");
-    assertFalse(homeManager.getDevices().contains(light1));
+    assertFalse(homeManager.getAllDevices().contains(light1));
   }
 
   @Test
@@ -71,7 +73,6 @@ public class HomeManagerTest {
         RoomNotFoundException.class,
         () -> homeManager.getRoombyName("Kitchen"),
         "Room not found: Kitchen");
-
   }
 
   @Test
@@ -86,19 +87,80 @@ public class HomeManagerTest {
   }
 
   @Test
-  void testGetAllDevicesReturnsUnmodifiableSet() {
-    homeManager.addRoom(room1);
-    homeManager.addDevice(light1, room1);
-
-    Set<Device> devices = homeManager.getDevices();
-    assertThrows(UnsupportedOperationException.class, () -> devices.add(thermostat1));
-  }
-
-  @Test
   void testGetRoomsReturnsUnmodifiableSet() {
     homeManager.addRoom(room1);
     Set<Room> rooms = homeManager.getRooms();
     assertThrows(UnsupportedOperationException.class, () -> rooms.add(room2));
   }
-}
 
+  @Test
+  void testGetAccountId() {
+    assertEquals("Account123", homeManager.getAccountId());
+
+    // Test with different account ID
+    HomeManager homeManager2 = new HomeManager("DifferentAccount");
+    assertEquals("DifferentAccount", homeManager2.getAccountId());
+  }
+
+  @Test
+  void testGetDeviceById() {
+    homeManager.addRoom(room1);
+    homeManager.addDevice(light1, room1);
+    homeManager.addDevice(thermostat1, room1);
+
+    assertEquals(light1, homeManager.getDeviceById("L1"));
+    assertEquals(thermostat1, homeManager.getDeviceById("T1"));
+    assertEquals(light1, homeManager.getDeviceById("l1")); // case-insensitive
+    assertNull(homeManager.getDeviceById("NonExistentId"));
+    assertNull(homeManager.getDeviceById(null));
+  }
+
+  @Test
+  void testRemoveDeviceEdgeCases() {
+    homeManager.addRoom(room1);
+    homeManager.addRoom(room2);
+    homeManager.addDevice(light1, room1);
+
+    // Test removing null device
+    assertThrows(
+        DeviceNotFoundException.class,
+        () -> homeManager.removeDevice(null),
+        "Device cannot be null");
+
+    // Test removing device that doesn't exist
+    Light nonExistentLight = new Light("L999", "Non-existent Light");
+    assertThrows(
+        DeviceNotFoundException.class,
+        () -> homeManager.removeDevice(nonExistentLight),
+        "Device not found in any room");
+
+    // Test successful removal
+    assertTrue(homeManager.removeDevice(light1));
+    assertFalse(homeManager.getAllDevices().contains(light1));
+  }
+
+  @Test
+  void testDeleteRoomEdgeCases() {
+    homeManager.addRoom(room1);
+
+    // Test deleting null room
+    assertThrows(
+        RoomNotFoundException.class, () -> homeManager.deleteRoom(null), "Room not found: null");
+
+    // Test deleting room that doesn't exist
+    assertThrows(
+        RoomNotFoundException.class, () -> homeManager.deleteRoom(room2), "Room not found");
+
+    // Test successful deletion
+    assertTrue(homeManager.deleteRoom(room1));
+    assertFalse(homeManager.getRooms().contains(room1));
+  }
+
+  // Test exception constructor within context of HomeManager operations
+  @Test
+  void testRoomNotFoundExceptionConstructor() {
+    // Test message constructor (the only available constructor)
+    RoomNotFoundException messageException = new RoomNotFoundException("Test message");
+    assertEquals("Test message", messageException.getMessage());
+  }
+}

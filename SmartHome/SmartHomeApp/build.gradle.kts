@@ -25,6 +25,8 @@ dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
     testImplementation("org.assertj:assertj-core:3.26.3")
+    testImplementation("org.mockito:mockito-core:5.8.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.8.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
@@ -34,7 +36,13 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("com.smarthome.app.SmartHomeApplication")
+
+    mainClass.set("com.smarthome.cli.SmartHomeCLI")
+}
+
+// Configure run task for interactive CLI applications
+tasks.named<JavaExec>("run") {
+    standardInput = System.`in`
 }
 
 tasks.named<Test>("test") {
