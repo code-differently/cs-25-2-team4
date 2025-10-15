@@ -6,15 +6,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: SmartHomeCapstone/frontend
     steps:
       - uses: actions/checkout@v4
+
+      - name: Show context
+        run: |
+          node -v || true
+          npm -v || true
+          pwd
+          ls -la
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: SmartHomeCapstone/frontend/package-lock.json
-      - run: npm ci
-      - run: npm run build
+
+      - name: Install deps
+        working-directory: SmartHomeCapstone/frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: SmartHomeCapstone/frontend
+        run: npm run build
+        env:
+          CI: false
