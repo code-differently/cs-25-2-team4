@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route, NavLink, Outlet } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Devices from "./pages/Devices";
+import DeviceAdd from "./pages/DeviceAdd";
+import DeviceRemove from "./pages/DeviceRemove";
+import NotFound from "./pages/NotFound";
+import "./Layout.css";
 
-function App() {
+function Layout() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <aside className="sidebar">
+        <h2 className="brand">SmartHome</h2>
+        <nav className="nav">
+          <NavLink to="/login">Login</NavLink>
+          <NavLink to="/register">Register</NavLink>
+          <NavLink to="/devices">Devices</NavLink>
+          <NavLink to="/devices/add">Add Device</NavLink>
+        </nav>
+      </aside>
+      <main className="main">
+        <Outlet />
+      </main>
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/devices" element={<Devices />} />
+        <Route path="/devices/add" element={<DeviceAdd />} />
+        <Route path="/devices/:deviceId/remove" element={<DeviceRemove />} />
+      </Route>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
