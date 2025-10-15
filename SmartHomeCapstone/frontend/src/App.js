@@ -7,8 +7,8 @@ import DeviceRemove from "./pages/DeviceRemove";
 import NotFound from "./pages/NotFound";
 import "./Layout.css";
 
-function Layout() {
-  return (
+function Layout(){
+  return(
     <div className="container">
       <aside className="sidebar">
         <h2 className="brand">SmartHome</h2>
@@ -19,25 +19,23 @@ function Layout() {
           <NavLink to="/devices/add">Add Device</NavLink>
         </nav>
       </aside>
-      <main className="main">
-        <Outlet />
-      </main>
+      <main className="main"><Outlet /></main>
     </div>
   );
 }
 
-export default function App() {
-  return (
+export default function App(){
+  return(
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/devices" element={<Devices />} />
-        <Route path="/devices/add" element={<DeviceAdd />} />
-        <Route path="/devices/:deviceId/remove" element={<DeviceRemove />} />
+        <Route path="/" element={<Login/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/register" element={<Register/>}/>
+        <Route path="/devices" element={<Devices/>}/>
+        <Route path="/devices/add" element={<DeviceAdd/>}/>
+        <Route path="/devices/:deviceId/remove" element={<DeviceRemove/>}/>
       </Route>
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<NotFound/>}/>
     </Routes>
   );
 }
