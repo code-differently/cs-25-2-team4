@@ -4,7 +4,7 @@ import { Header } from './Header';
 
 describe('Header', () => {
   it('renders correctly', () => {
-    //Act
+    // Act
     render(<Header />);
     
     expect(screen.getByText('SmartHome')).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe('Header', () => {
   });
 
   it('toggles dropdown when profile section is clicked', () => {
-    //Act
+    // Act
     render(<Header />);
     
   // Use a more semantic approach - look for a clickable element
@@ -36,7 +36,7 @@ describe('Header', () => {
   });
 
   it('toggles dark mode when toggle switch is clicked', () => {
-    //Act
+    // Act
     render(<Header />);
     
     const toggleSwitch = screen.getByRole('checkbox');
@@ -47,5 +47,36 @@ describe('Header', () => {
     // Click to toggle
     fireEvent.click(toggleSwitch);
     expect(toggleSwitch).toBeChecked();
+  });
+
+  it('closes dropdown when profile section is clicked again', () => {
+    // Act
+    render(<Header />);
+
+    const profileDropdown = screen.getByText('John Doe');
+
+    // Open dropdown
+    fireEvent.click(profileDropdown);
+    expect(screen.getByText('Profile')).toBeInTheDocument();
+    
+    // Click again to close dropdown
+    fireEvent.click(profileDropdown);
+    expect(screen.queryByText('Profile')).not.toBeInTheDocument();
+  });
+
+  it('changes icon when dark mode is toggled', () => {
+    // Act
+    render(<Header />);
+
+    expect(screen.getByText('🌙')).toBeInTheDocument();
+    expect(screen.queryByText('☀️')).not.toBeInTheDocument();
+
+    // Toggle dark mode
+    const toggleSwitch = screen.getByRole('checkbox');
+    fireEvent.click(toggleSwitch);
+
+    // After toggling, the sun icon should be visible
+    expect(screen.getByText('☀️')).toBeInTheDocument();
+    expect(screen.queryByText('🌙')).not.toBeInTheDocument();
   });
 });
