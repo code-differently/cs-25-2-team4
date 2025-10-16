@@ -1,28 +1,25 @@
-import React from 'react';
+import React from 'react';  
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Header } from './Header';
 
 describe('Header', () => {
   it('renders correctly', () => {
+    //Act
     render(<Header />);
     
-    // Check if Dashboard title is rendered
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('SmartHome')).toBeInTheDocument();
     
-    // Check if search bar is rendered
-    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Search type of keywords')).toBeInTheDocument();
     
-    // Check if profile name is rendered
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     
-    // Check if toggle switch is rendered
     expect(screen.getByRole('checkbox')).toBeInTheDocument();
     
-    // Check if profile picture is rendered
     expect(screen.getByAltText('Profile')).toBeInTheDocument();
   });
 
   it('toggles dropdown when profile section is clicked', () => {
+    //Act
     render(<Header />);
     
     const profileDropdown = screen.getByText('John Doe').closest('.profile-dropdown');
@@ -38,6 +35,7 @@ describe('Header', () => {
   });
 
   it('toggles dark mode when toggle switch is clicked', () => {
+    //Act
     render(<Header />);
     
     const toggleSwitch = screen.getByRole('checkbox');
