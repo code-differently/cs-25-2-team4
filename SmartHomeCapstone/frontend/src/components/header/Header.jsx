@@ -24,7 +24,7 @@ export const Header = () => {
           <div className="header-search">
             <input 
               type="text" 
-              placeholder="Search..." 
+              placeholder="Search type of keywords" 
               className="search-input"
             />
           </div>
