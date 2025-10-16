@@ -1,4 +1,4 @@
-import './Header.scss';
+import './Header.css';
 import React, { useState } from 'react';
 
 export const Header = () => {
