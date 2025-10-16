@@ -39,7 +39,9 @@ export const Header = () => {
               onChange={toggleDarkMode}
             />
             <label htmlFor="dark-mode-toggle" className="toggle-label">
-              <span className="toggle-slider"></span>
+              <span className="toggle-slider">
+                {isDarkMode ? '☀️' : '🌙'}
+              </span>
             </label>
           </div>
 
