@@ -1,25 +1,38 @@
 import './App.css';
 import { Header } from './components/header/Header';
+import { Routes, Route, NavLink, Outlet } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Devices from "./pages/Devices";
+import DeviceAdd from "./pages/DeviceAdd";
+import DeviceRemove from "./pages/DeviceRemove";
+import NotFound from "./pages/NotFound";
+import "./Layout.css";
 
-function App() {
-  return (
-    <div className="App">
-      <Header />
-      <main className="App-main">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </main>
+function Layout(){
+  return(
+    <div className="container">
+      <aside className="sidebar">
+        <h2 className="brand">SmartHome</h2>
+        <Header />
+      </aside>
+      <main className="main"><Outlet /></main>
     </div>
   );
 }
 
-export default App;
+export default function App(){
+  return(
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Login/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/register" element={<Register/>}/>
+        <Route path="/devices" element={<Devices/>}/>
+        <Route path="/devices/add" element={<DeviceAdd/>}/>
+        <Route path="/devices/:deviceId/remove" element={<DeviceRemove/>}/>
+      </Route>
+      <Route path="*" element={<NotFound/>}/>
+    </Routes>
+  );
+}
