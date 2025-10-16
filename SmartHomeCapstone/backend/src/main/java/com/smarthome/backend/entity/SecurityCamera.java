@@ -1,6 +1,7 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "camera_properties")
@@ -9,12 +10,14 @@ import jakarta.persistence.*;
 public class SecurityCamera extends Device {
     
     @Column(name = "stream_url")
+    @Size(max = 255, message = "Stream URL cannot exceed 255 characters")
     private String streamUrl;
     
     @Column(name = "is_recording")
     private Boolean isRecording = false;
     
     @Column(name = "resolution", length = 20)
+    @Size(max = 20, message = "Resolution cannot exceed 20 characters")
     private String resolution = "1080p";
     
     @Column(name = "motion_detection")

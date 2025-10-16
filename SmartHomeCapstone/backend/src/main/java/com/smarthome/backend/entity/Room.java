@@ -1,7 +1,10 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -15,16 +18,21 @@ public class Room {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "home_id", nullable = false)
+    @NotNull(message = "Home cannot be null")
     private Home home;
     
     @Column(name = "name", nullable = false, length = 100)
+    @NotBlank(message = "Room name cannot be blank")
+    @Size(min = 1, max = 100, message = "Room name must be between 1 and 100 characters")
     private String name;
     
     // Relationships
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Device> devices;
     
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<RoomAccess> roomAccesses;
     
     // Constructors
@@ -101,5 +109,31 @@ public class Room {
             this.roomAccesses.remove(roomAccess);
             roomAccess.setRoom(null);
         }
+    }
+    
+    // toString, equals, and hashCode
+    @Override
+    public String toString() {
+        return "Room{" +
+                "roomId=" + roomId +
+                ", name='" + name + '\'' +
+                ", homeId=" + (home != null ? home.getHomeId() : null) +
+                '}';
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Room room = (Room) o;
+        return Objects.equals(roomId, room.roomId) &&
+               Objects.equals(name, room.name) &&
+               Objects.equals(home != null ? home.getHomeId() : null, 
+                            room.home != null ? room.home.getHomeId() : null);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(roomId, name, home != null ? home.getHomeId() : null);
     }
 }

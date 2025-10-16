@@ -1,7 +1,10 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -14,16 +17,21 @@ public class Home {
     private Long homeId;
     
     @Column(name = "name", nullable = false, length = 100)
+    @NotBlank(message = "Home name cannot be blank")
+    @Size(min = 1, max = 100, message = "Home name must be between 1 and 100 characters")
     private String name;
     
     @Column(name = "address", length = 255)
+    @Size(max = 255, message = "Address cannot exceed 255 characters")
     private String address;
     
     // Relationships
     @OneToMany(mappedBy = "home", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<HomeMembership> homeMemberships;
     
     @OneToMany(mappedBy = "home", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Room> rooms;
     
     // Constructors
@@ -100,5 +108,30 @@ public class Home {
             this.rooms.remove(room);
             room.setHome(null);
         }
+    }
+    
+    // toString, equals, and hashCode
+    @Override
+    public String toString() {
+        return "Home{" +
+                "homeId=" + homeId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Home home = (Home) o;
+        return Objects.equals(homeId, home.homeId) &&
+               Objects.equals(name, home.name) &&
+               Objects.equals(address, home.address);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(homeId, name, address);
     }
 }

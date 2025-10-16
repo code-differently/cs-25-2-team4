@@ -1,7 +1,10 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.smarthome.backend.enums.Permission;
+import java.util.Objects;
 
 @Entity
 @Table(name = "RoomAccess", uniqueConstraints = {
@@ -16,10 +19,14 @@ public class RoomAccess {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @NotNull(message = "User cannot be null")
+    @JsonIgnore
     private User user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
+    @NotNull(message = "Room cannot be null")
+    @JsonIgnore
     private Room room;
     
     @Enumerated(EnumType.STRING)
@@ -68,5 +75,37 @@ public class RoomAccess {
     
     public void setPermission(Permission permission) {
         this.permission = permission;
+    }
+    
+    // toString, equals, and hashCode
+    @Override
+    public String toString() {
+        return "RoomAccess{" +
+                "accessId=" + accessId +
+                ", userId=" + (user != null ? user.getUserId() : null) +
+                ", roomId=" + (room != null ? room.getRoomId() : null) +
+                ", permission=" + permission +
+                '}';
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoomAccess that = (RoomAccess) o;
+        return Objects.equals(accessId, that.accessId) &&
+               Objects.equals(user != null ? user.getUserId() : null,
+                            that.user != null ? that.user.getUserId() : null) &&
+               Objects.equals(room != null ? room.getRoomId() : null,
+                            that.room != null ? that.room.getRoomId() : null) &&
+               permission == that.permission;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(accessId,
+                          user != null ? user.getUserId() : null,
+                          room != null ? room.getRoomId() : null,
+                          permission);
     }
 }

@@ -1,6 +1,7 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import com.smarthome.backend.enums.ThermostatMode;
 
 @Entity
@@ -10,10 +11,14 @@ import com.smarthome.backend.enums.ThermostatMode;
 public class Thermostat extends Device {
     
     @Column(name = "current_temp")
+    @DecimalMin(value = "50.0")
+    @DecimalMax(value = "100.0")
     private Double currentTemp;
     
     @Column(name = "target_temp")
-    private Double targetTemp = 20.0; // Default 20°C
+    @DecimalMin(value = "50.0")
+    @DecimalMax(value = "100.0")
+    private Double targetTemp = 20.0; // Default 20°F
     
     @Enumerated(EnumType.STRING)
     @Column(name = "thermostat_mode", length = 20)

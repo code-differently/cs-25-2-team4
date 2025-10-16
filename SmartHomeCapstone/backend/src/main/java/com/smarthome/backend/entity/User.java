@@ -1,7 +1,10 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -14,19 +17,28 @@ public class User {
     private Long userId;
     
     @Column(name = "username", nullable = false, unique = true, length = 100)
+    @NotBlank(message = "Username cannot be blank")
+    @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters")
     private String username;
     
     @Column(name = "email", nullable = false, unique = true, length = 255)
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email should be valid")
+    @Size(max = 255)
     private String email;
     
     @Column(name = "password_hash", nullable = false, length = 255)
+    @NotBlank(message = "Password cannot be blank")
+    @Size(max = 255)
     private String passwordHash;
     
     // Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<HomeMembership> homeMemberships;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<RoomAccess> roomAccesses;
     
     // Constructors
@@ -112,5 +124,30 @@ public class User {
             this.roomAccesses.remove(roomAccess);
             roomAccess.setUser(null);
         }
+    }
+    
+    // toString, equals, and hashCode
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userId, user.userId) &&
+               Objects.equals(username, user.username) &&
+               Objects.equals(email, user.email);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, username, email);
     }
 }

@@ -1,7 +1,10 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.smarthome.backend.enums.MembershipRole;
+import java.util.Objects;
 
 @Entity
 @Table(name = "HomeMembership", uniqueConstraints = {
@@ -16,10 +19,14 @@ public class HomeMembership {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @NotNull(message = "User cannot be null")
+    @JsonIgnore
     private User user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "home_id", nullable = false)
+    @NotNull(message = "Home cannot be null")
+    @JsonIgnore
     private Home home;
     
     @Enumerated(EnumType.STRING)
@@ -68,5 +75,37 @@ public class HomeMembership {
     
     public void setRole(MembershipRole role) {
         this.role = role;
+    }
+    
+    // toString, equals, and hashCode
+    @Override
+    public String toString() {
+        return "HomeMembership{" +
+                "membershipId=" + membershipId +
+                ", userId=" + (user != null ? user.getUserId() : null) +
+                ", homeId=" + (home != null ? home.getHomeId() : null) +
+                ", role=" + role +
+                '}';
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HomeMembership that = (HomeMembership) o;
+        return Objects.equals(membershipId, that.membershipId) &&
+               Objects.equals(user != null ? user.getUserId() : null,
+                            that.user != null ? that.user.getUserId() : null) &&
+               Objects.equals(home != null ? home.getHomeId() : null,
+                            that.home != null ? that.home.getHomeId() : null) &&
+               role == that.role;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(membershipId, 
+                          user != null ? user.getUserId() : null,
+                          home != null ? home.getHomeId() : null,
+                          role);
     }
 }

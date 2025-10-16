@@ -1,6 +1,7 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "light_properties")
@@ -9,9 +10,12 @@ import jakarta.persistence.*;
 public class Light extends Device {
     
     @Column(name = "brightness")
+    @Min(value = 0)
+    @Max(value = 100)
     private int brightness = 0; // 0-100
     
     @Column(name = "color_hex", length = 7)
+    @Pattern(regexp = "^#[0-9A-Fa-f]{6}$")
     private String colorHex = "#FFFFFF"; // Default white
     
     // Constructors
