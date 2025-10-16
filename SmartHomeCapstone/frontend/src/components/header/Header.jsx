@@ -59,7 +59,7 @@ export const Header = () => {
             {isDropdownOpen && (
               <div className="dropdown-menu">
                 <a href="/profile">Profile</a>
-                <a href="/settings">Settings</a>
+                <a href="/settings">About</a>
                 <a href="/logout">Logout</a>
               </div>
             )}

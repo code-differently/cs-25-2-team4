@@ -22,7 +22,8 @@ describe('Header', () => {
     //Act
     render(<Header />);
     
-    const profileDropdown = screen.getByText('John Doe').closest('.profile-dropdown');
+  // Use a more semantic approach - look for a clickable element
+    const profileDropdown = screen.getByText('John Doe');
     
     // Initially dropdown should not be visible
     expect(screen.queryByText('Profile')).not.toBeInTheDocument();
@@ -30,7 +31,7 @@ describe('Header', () => {
     // Click to open dropdown
     fireEvent.click(profileDropdown);
     expect(screen.getByText('Profile')).toBeInTheDocument();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
+    expect(screen.getByText('About')).toBeInTheDocument();
     expect(screen.getByText('Logout')).toBeInTheDocument();
   });
 
