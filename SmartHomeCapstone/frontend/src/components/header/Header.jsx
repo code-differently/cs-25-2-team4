@@ -17,7 +17,7 @@ export const Header = () => {
     <header className="header">
       <nav className="header-top-menu">
         <div className="header-left">
-          <h1 className="header-title">SmartHome</h1>
+          <h1 className="header-title"><a href="/">SmartHome</a></h1>
         </div>
         
         <div className="header-center">

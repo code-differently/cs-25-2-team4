@@ -19,6 +19,11 @@
   margin: 0;
 }
 
+h1.header-title a {
+    color: #fff;
+    text-decoration: none;
+}
+
 /* === Center (Search Bar) === */
 .header-center .header-search {
   position: relative;
