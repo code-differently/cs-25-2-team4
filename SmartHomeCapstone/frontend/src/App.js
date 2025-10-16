@@ -1,3 +1,5 @@
+import './App.css';
+import { Header } from './components/header/Header';
 import { Routes, Route, NavLink, Outlet } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -12,12 +14,7 @@ function Layout(){
     <div className="container">
       <aside className="sidebar">
         <h2 className="brand">SmartHome</h2>
-        <nav className="nav">
-          <NavLink to="/login">Login</NavLink>
-          <NavLink to="/register">Register</NavLink>
-          <NavLink to="/devices">Devices</NavLink>
-          <NavLink to="/devices/add">Add Device</NavLink>
-        </nav>
+        <Header />
       </aside>
       <main className="main"><Outlet /></main>
     </div>
