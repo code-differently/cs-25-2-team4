@@ -56,10 +56,6 @@ public abstract class Device {
         return deviceId;
     }
     
-    public void setDeviceId(Long deviceId) {
-        this.deviceId = deviceId;
-    }
-    
     public String getDeviceName() {
         return deviceName;
     }
