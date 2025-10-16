@@ -1,6 +1,7 @@
 package com.smarthome.backend.entity;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -80,5 +81,36 @@ public class User {
     
     public void setRoomAccesses(Set<RoomAccess> roomAccesses) {
         this.roomAccesses = roomAccesses;
+    }
+    
+    // Convenience methods for managing relationships
+    public void addHomeMembership(HomeMembership membership) {
+        if (this.homeMemberships == null) {
+            this.homeMemberships = new HashSet<>();
+        }
+        this.homeMemberships.add(membership);
+        membership.setUser(this);
+    }
+    
+    public void removeHomeMembership(HomeMembership membership) {
+        if (this.homeMemberships != null) {
+            this.homeMemberships.remove(membership);
+            membership.setUser(null);
+        }
+    }
+    
+    public void addRoomAccess(RoomAccess roomAccess) {
+        if (this.roomAccesses == null) {
+            this.roomAccesses = new HashSet<>();
+        }
+        this.roomAccesses.add(roomAccess);
+        roomAccess.setUser(this);
+    }
+    
+    public void removeRoomAccess(RoomAccess roomAccess) {
+        if (this.roomAccesses != null) {
+            this.roomAccesses.remove(roomAccess);
+            roomAccess.setUser(null);
+        }
     }
 }
