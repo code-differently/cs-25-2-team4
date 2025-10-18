@@ -1,53 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Home.css';
-import { useState } from 'react';
 
 export const Home = () => {
+
   const [rooms, setRooms] = useState([{ name: 'All', active: true }]);
   const [showAddRoomForm, setShowAddRoomForm] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
 
+
   const [showAddDeviceForm, setShowAddDeviceForm] = useState(false);
   const [deviceName, setDeviceName] = useState('');
-  const [devices, setDevices] = useState([]);
-  
- // --- ROOM HANDLERS ---
-  const handleAddRoomClick = () => {
-    setShowAddRoomForm(true);
-  };
+  const [devices, setDevices] = useState([]); 
+
+
+  const handleAddRoomClick = () => setShowAddRoomForm(true);
 
   const handleSaveRoom = () => {
     if (!newRoomName.trim()) return;
-    const newRoom = { name: newRoomName, active: true };
-
-    // Deactivate all others (including All)
-    const updatedRooms = rooms.map((room) => ({ ...room, active: false }));
-
-    // Add and set new one as active
+    const updatedRooms = rooms.map((r) => ({ ...r, active: false }));
+    const newRoom = { name: newRoomName.trim(), active: true };
     setRooms([...updatedRooms, newRoom]);
     setNewRoomName('');
     setShowAddRoomForm(false);
   };
 
-  // --- DEVICE HANDLERS ---
-  const handleAddDeviceClick = () => {
-    setShowAddDeviceForm(true);
+  const handleRoomClick = (roomName) => {
+    setRooms(rooms.map((r) => ({ ...r, active: r.name === roomName })));
   };
 
-   const handleSaveDevice = () => {
-    setDevices([...devices, { name: deviceName }]);
-    setShowAddDeviceForm(false);
+  const handleAddDeviceClick = () => setShowAddDeviceForm(true);
+
+  const handleSaveDevice = () => {
+    const activeRoom = rooms.find((r) => r.active)?.name;
+    if (!deviceName.trim() || !activeRoom) return;
+    setDevices([...devices, { name: deviceName.trim(), room: activeRoom }]);
     setDeviceName('');
+    setShowAddDeviceForm(false);
   };
+
+  const activeRoom = rooms.find((r) => r.active)?.name;
+  const filteredDevices =
+    activeRoom === 'All'
+      ? devices
+      : devices.filter((d) => d.room === activeRoom);
 
   return (
     <div className="home">
-        {/* Rooms bar */}
       <div className="rooms-bar" role="navigation" aria-label="rooms">
         {rooms.map((room, index) => (
           <button
             key={index}
             className={room.active ? 'active' : ''}
+            onClick={() => handleRoomClick(room.name)}
           >
             {room.name}
           </button>
@@ -68,7 +72,7 @@ export const Home = () => {
           </div>
         )}
       </div>
-      {/* Devices Section */}
+
       <section className="devices-section">
         <div className="devices-header">
           <h2>My Devices</h2>
@@ -90,20 +94,13 @@ export const Home = () => {
                 value={deviceName}
                 onChange={(e) => setDeviceName(e.target.value)}
               />
-
-              <select aria-label="Select Room">
-                 {rooms.map((room) => (
-                  <option key={room.name}>{room.name}</option>
-                ))}
-              </select>
-
               <button onClick={handleSaveDevice}>Save</button>
             </div>
-          )} 
+          )}
         </div>
-       {/* Render devices */}
+
         <div className="devices-list">
-          {devices.map((device, index) => (
+          {filteredDevices.map((device, index) => (
             <div
               key={index}
               data-testid="device-card"
@@ -111,10 +108,9 @@ export const Home = () => {
             >
               {device.name}
             </div>
-            ))}
-          </div>
+          ))}
+        </div>
       </section>
-
     </div>
   );
 };

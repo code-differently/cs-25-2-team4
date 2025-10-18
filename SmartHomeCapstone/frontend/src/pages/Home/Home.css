@@ -71,46 +71,35 @@ body {
   opacity: 0.9;
 }
 
-/* --- Add Device Form Inline Row --- */
+/* Shared layout for inline forms */
+.add-room-form,
 .add-device-form {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* Input matches search bar style */
+/* Shared input styling (matches search bar look) */
+.add-room-form input,
 .add-device-form input {
   background-color: #1e1e1e;
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
   color: #ddd;
-  width: 180px;
   font-size: 0.9rem;
+  width: 180px;
 }
 
+.add-room-form input:focus,
 .add-device-form input:focus {
   outline: none;
   background-color: #2a2a2a;
-  color: #fff;
+  color: white;
 }
 
-/* Room dropdown styled similar to input */
-.add-device-form select {
-  background-color: #1e1e1e;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: #ddd;
-  font-size: 0.9rem;
-}
-
-.add-device-form select:focus {
-  outline: none;
-  background-color: #2a2a2a;
-}
-
-/* Gradient Save Button */
+/* Gradient save buttons */
+.add-room-form button,
 .add-device-form button {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
   color: #111;
@@ -120,9 +109,10 @@ body {
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
 }
 
+.add-room-form button:hover,
 .add-device-form button:hover {
   transform: scale(1.05);
 }

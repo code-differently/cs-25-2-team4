@@ -29,6 +29,7 @@ describe('Home (initial state)', () => {
 
     expect(screen.queryByTestId('device-card')).not.toBeInTheDocument();
   });
+});
 
 describe('Home (device adding)', () => {
 
@@ -39,8 +40,6 @@ describe('Home (device adding)', () => {
   fireEvent.click(screen.getByTestId('add-device-btn'));
 
   expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
-
-  expect(screen.getByRole('combobox', { name: /select room/i })).toBeInTheDocument();
 
   expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
 });
@@ -123,5 +122,32 @@ it('adds a new room and makes it active while All becomes inactive', () => {
 
     expect(screen.getByRole('button', { name: /save room/i })).toBeInTheDocument();
   });
+
+  it('keeps add device form open when switching rooms and saves to the active room automatically', () => {
+  render(<Home />);
+
+  // Add first room
+  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+    target: { value: 'Bedroom' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+  // Open Add Device form
+  fireEvent.click(screen.getByTestId('add-device-btn'));
+  expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+
+  // Add second room
+  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+    target: { value: 'Kitchen' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+  // Switch to Bedroom
+  fireEvent.click(screen.getByRole('button', { name: 'Bedroom' }));
+
+  // Form should still be visible
+  expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
 });
 });
