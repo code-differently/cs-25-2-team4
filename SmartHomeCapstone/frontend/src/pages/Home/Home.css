@@ -3,3 +3,36 @@ body {
     color: white;
     padding: 20px;
 }
+
+/* Layout containers */
+.rooms-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* Second row: My Devices + Add Device */
+.devices-section .devices-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* Add Device button */
+.add-device-btn {
+  background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
+  color: #111;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.add-device-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
