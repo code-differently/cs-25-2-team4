@@ -62,15 +62,16 @@ export const Home = () => {
         )}
 
         {showAddRoomForm && (
-          <div className="add-room-form">
-            <input
-              placeholder="Room Name"
-              value={newRoomName}
-              onChange={(e) => setNewRoomName(e.target.value)}
-            />
-            <button onClick={handleSaveRoom}>Save Room</button>
-          </div>
-        )}
+            <div className="add-room-form">
+                <input
+                    placeholder="Room Name"
+                    value={newRoomName}
+                    onChange={(e) => setNewRoomName(e.target.value)}
+                />
+                <button onClick={handleSaveRoom}>Save Room</button>
+                <button onClick={() => setShowAddRoomForm(false)}>Cancel</button>
+            </div>
+            )}
       </div>
 
       <section className="devices-section">
