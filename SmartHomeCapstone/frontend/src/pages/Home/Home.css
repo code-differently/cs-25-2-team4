@@ -11,6 +11,40 @@ body {
   margin-bottom: 24px;
 }
 
+/* Rooms bar layout */
+.rooms-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+/* Default inactive room button */
+.rooms-bar button {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #ccc;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.9rem;
+}
+
+/* Hover for inactive */
+.rooms-bar button:hover {
+  border-color: rgba(255,255,255,0.35);
+  color: #fff;
+}
+
+/* Active gradient bubble */
+.rooms-bar button.active {
+  background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
+  color: #111;
+  border: none;
+  font-weight: 500;
+}
+
 /* Second row: My Devices + Add Device */
 .devices-section .devices-header {
   display: flex;
@@ -36,3 +70,60 @@ body {
   transform: scale(1.05);
   opacity: 0.9;
 }
+
+/* --- Add Device Form Inline Row --- */
+.add-device-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Input matches search bar style */
+.add-device-form input {
+  background-color: #1e1e1e;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #ddd;
+  width: 180px;
+  font-size: 0.9rem;
+}
+
+.add-device-form input:focus {
+  outline: none;
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+/* Room dropdown styled similar to input */
+.add-device-form select {
+  background-color: #1e1e1e;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #ddd;
+  font-size: 0.9rem;
+}
+
+.add-device-form select:focus {
+  outline: none;
+  background-color: #2a2a2a;
+}
+
+/* Gradient Save Button */
+.add-device-form button {
+  background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
+  color: #111;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: transform 0.2s;
+}
+
+.add-device-form button:hover {
+  transform: scale(1.05);
+}
+
