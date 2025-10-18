@@ -7,23 +7,24 @@ describe('Home (initial state)', () => {
     // Act
     render(<Home />);
 
-    expect(screen.getByText('All')).toBeInTheDocument();
-    expect(screen.getByText('+ Add')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '+ Add' })).toBeInTheDocument();
 
-    // There should only be exactly 2 room tabs at first
-    const roomTabs = screen.getAllByRole('button', { name: /All|\+ Add/ });
-    expect(roomTabs.length).toBe(2);
+    // Should only have exactly 2 room buttons on initial load
+    const roomButtons = screen.getAllByRole('button');
+    expect(roomButtons).toHaveLength(2);
   });
 
   it('renders Add Device button on first load', () => {
     render(<Home />);
-    expect(screen.getByText('+ Add Device')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '+ Add Device' })).toBeInTheDocument();
   });
 
   it('renders My Devices title but no devices initially', () => {
     render(<Home />);
     expect(screen.getByText('My Devices')).toBeInTheDocument();
 
+    // No device cards yet
     expect(screen.queryByTestId('device-card')).not.toBeInTheDocument();
   });
 
