@@ -35,14 +35,30 @@ describe('Home (device adding)', () => {
 
   fireEvent.click(screen.getByTestId('add-device-btn'));
 
-  // Device name input
   expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
 
-  // Room dropdown
   expect(screen.getByRole('combobox', { name: /select room/i })).toBeInTheDocument();
 
-  // Save button
   expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
+});
+
+it('adds a new device and hides the form when Save is clicked', () => {
+  //Act
+  render(<Home />);
+
+  fireEvent.click(screen.getByTestId('add-device-btn'));
+
+  fireEvent.change(screen.getByPlaceholderText(/device name/i), {
+    target: { value: 'Lamp' }
+  });
+
+  fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+  expect(screen.getByTestId('device-card')).toBeInTheDocument();
+  expect(screen.getByText('Lamp')).toBeInTheDocument();
+
+  expect(screen.queryByPlaceholderText(/device name/i)).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /save/i })).not.toBeInTheDocument();
 });
 
 });
@@ -54,10 +70,8 @@ describe('Rooms bar (adding rooms)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
 
-    // Now an inline input should appear
     expect(screen.getByPlaceholderText(/room name/i)).toBeInTheDocument();
 
-    // And a save button for that room
     expect(screen.getByRole('button', { name: /save room/i })).toBeInTheDocument();
   });
 });
