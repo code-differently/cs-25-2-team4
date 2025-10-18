@@ -17,11 +17,13 @@ describe('Home (initial state)', () => {
   });
 
   it('renders Add Device button on first load', () => {
+    // Act
     render(<Home />);
     expect(screen.getByRole('button', { name: '+ Add Device' })).toBeInTheDocument();
   });
 
   it('renders My Devices title but no devices initially', () => {
+    // Act
     render(<Home />);
     expect(screen.getByText('My Devices')).toBeInTheDocument();
 
@@ -31,7 +33,8 @@ describe('Home (initial state)', () => {
 describe('Home (device adding)', () => {
 
   it('opens an inline add device form with name and room fields when clicking + Add Device', () => {
-  render(<Home />);
+    // Act
+    render(<Home />);
 
   fireEvent.click(screen.getByTestId('add-device-btn'));
 
@@ -61,10 +64,56 @@ it('adds a new device and hides the form when Save is clicked', () => {
   expect(screen.queryByRole('button', { name: /save/i })).not.toBeInTheDocument();
 });
 
+it('adds a new device bubble after saving the device form', () => {
+    render(<Home />);
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+
+    const deviceName = 'Test Device';
+    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
+      target: { value: deviceName },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(screen.getByTestId('device-card')).toBeInTheDocument();
+    expect(screen.getByText(deviceName)).toBeInTheDocument();
+  });
+
 });
 
 describe('Rooms bar (adding rooms)', () => {
   it('shows an inline input when + Add is clicked', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+
+    expect(screen.getByPlaceholderText(/room name/i)).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: /save room/i })).toBeInTheDocument();
+  });
+
+it('adds a new room and makes it active while All becomes inactive', () => {
+  render(<Home />);
+
+  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+
+  const roomName = 'Bedroom';
+  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+    target: { value: roomName },
+  });
+
+  fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+  expect(screen.getByRole('button', { name: roomName })).toBeInTheDocument();
+
+  expect(screen.getByRole('button', { name: roomName })).toHaveClass('active');
+
+  expect(screen.getByRole('button', { name: 'All' })).not.toHaveClass('active');
+});
+
+  it('shows an inline room form when clicking + Add in rooms bar', () => {
     // Act
     render(<Home />);
 
