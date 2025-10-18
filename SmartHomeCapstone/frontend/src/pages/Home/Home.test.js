@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Home } from './Home';
 
 describe('Home (initial state)', () => {
@@ -11,7 +11,8 @@ describe('Home (initial state)', () => {
     expect(screen.getByRole('button', { name: '+ Add' })).toBeInTheDocument();
 
     // Should only have exactly 2 room buttons on initial load
-    const roomButtons = screen.getAllByRole('button');
+    const roomsBar = screen.getByRole('navigation', { name: 'Rooms Bar' });
+    const roomButtons = within(roomsBar).getAllByRole('button');
     expect(roomButtons).toHaveLength(2);
   });
 
