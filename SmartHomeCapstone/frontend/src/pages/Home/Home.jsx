@@ -90,12 +90,13 @@ export const Home = () => {
 
           {showAddDeviceForm && (
             <div className="add-device-form">
-              <input
-                placeholder="Device Name"
-                value={deviceName}
-                onChange={(e) => setDeviceName(e.target.value)}
-              />
-              <button onClick={handleSaveDevice}>Save</button>
+                <input
+                    placeholder="Device Name"
+                    value={deviceName}
+                    onChange={(e) => setDeviceName(e.target.value)}
+                />
+                <button onClick={handleSaveDevice}>Save</button>
+                <button onClick={() => setShowAddDeviceForm(false)}>Cancel</button>
             </div>
           )}
         </div>

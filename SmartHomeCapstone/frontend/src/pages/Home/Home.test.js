@@ -37,33 +37,34 @@ describe('Home (device adding)', () => {
     // Act
     render(<Home />);
 
-  fireEvent.click(screen.getByTestId('add-device-btn'));
+    fireEvent.click(screen.getByTestId('add-device-btn'));
 
-  expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
 
-  expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
-});
-
-it('adds a new device and hides the form when Save is clicked', () => {
-  //Act
-  render(<Home />);
-
-  fireEvent.click(screen.getByTestId('add-device-btn'));
-
-  fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-    target: { value: 'Lamp' }
+    expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
   });
 
-  fireEvent.click(screen.getByRole('button', { name: /save/i }));
+  it('adds a new device and hides the form when Save is clicked', () => {
+    // Act
+    render(<Home />);
 
-  expect(screen.getByTestId('device-card')).toBeInTheDocument();
-  expect(screen.getByText('Lamp')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('add-device-btn'));
 
-  expect(screen.queryByPlaceholderText(/device name/i)).not.toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: /save/i })).not.toBeInTheDocument();
-});
+    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
+        target: { value: 'Lamp' }
+    });
 
-it('adds a new device bubble after saving the device form', () => {
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(screen.getByTestId('device-card')).toBeInTheDocument();
+    expect(screen.getByText('Lamp')).toBeInTheDocument();
+
+    expect(screen.queryByPlaceholderText(/device name/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /save/i })).not.toBeInTheDocument();
+  });
+
+  it('adds a new device bubble after saving the device form', () => {
+    // Act
     render(<Home />);
 
     fireEvent.click(screen.getByTestId('add-device-btn'));
@@ -79,6 +80,24 @@ it('adds a new device bubble after saving the device form', () => {
     expect(screen.getByText(deviceName)).toBeInTheDocument();
   });
 
+  it('closes the add device form when Cancel is clicked without clearing the input', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+
+    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
+        target: { value: 'Fan' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(screen.queryByPlaceholderText(/device name/i)).not.toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: '+ Add Device' })).toBeInTheDocument();
+  });
+
+
 });
 
 describe('Rooms bar (adding rooms)', () => {
@@ -93,24 +112,25 @@ describe('Rooms bar (adding rooms)', () => {
     expect(screen.getByRole('button', { name: /save room/i })).toBeInTheDocument();
   });
 
-it('adds a new room and makes it active while All becomes inactive', () => {
-  render(<Home />);
+  it('adds a new room and makes it active while All becomes inactive', () => {
+    // Act
+    render(<Home />);
 
-  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
 
-  const roomName = 'Bedroom';
-  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-    target: { value: roomName },
+    const roomName = 'Bedroom';
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: roomName },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    expect(screen.getByRole('button', { name: roomName })).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: roomName })).toHaveClass('active');
+
+    expect(screen.getByRole('button', { name: 'All' })).not.toHaveClass('active');
   });
-
-  fireEvent.click(screen.getByRole('button', { name: /save room/i }));
-
-  expect(screen.getByRole('button', { name: roomName })).toBeInTheDocument();
-
-  expect(screen.getByRole('button', { name: roomName })).toHaveClass('active');
-
-  expect(screen.getByRole('button', { name: 'All' })).not.toHaveClass('active');
-});
 
   it('shows an inline room form when clicking + Add in rooms bar', () => {
     // Act
@@ -124,71 +144,72 @@ it('adds a new room and makes it active while All becomes inactive', () => {
   });
 
   it('keeps add device form open when switching rooms and saves to the active room automatically', () => {
-  render(<Home />);
+    // Act
+    render(<Home />);
 
-  // Add first room
-  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
-  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-    target: { value: 'Bedroom' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+    // Add first room
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
 
-  // Open Add Device form
-  fireEvent.click(screen.getByTestId('add-device-btn'));
-  expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+    // Open Add Device form
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
 
-  // Add second room
-  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
-  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-    target: { value: 'Kitchen' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+    // Add second room
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Kitchen' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
 
-  // Switch to Bedroom
-  fireEvent.click(screen.getByRole('button', { name: 'Bedroom' }));
+    // Switch to Bedroom
+    fireEvent.click(screen.getByRole('button', { name: 'Bedroom' }));
 
-  // Form should still be visible
-  expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
-});
-
-it('activates a clicked room and deactivates the previously active one', () => {
-  //Act
-  render(<Home />);
-
-  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
-  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-    target: { value: 'Bedroom' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: /save room/i }));
-
-  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
-  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-    target: { value: 'Kitchen' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: /save room/i }));
-
-  fireEvent.click(screen.getByRole('button', { name: 'Bedroom' }));
-
-  expect(screen.getByRole('button', { name: 'Bedroom' })).toHaveClass('active');
-  expect(screen.getByRole('button', { name: 'Kitchen' })).not.toHaveClass('active');
-});
-
-it('closes the add room form when Cancel is clicked without clearing the input', () => {
-   // Act
-  render(<Home />);
-
-  fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
-
-  fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-    target: { value: 'Garage' },
+    // Form should still be visible
+    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
   });
 
-  fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+  it('activates a clicked room and deactivates the previously active one', () => {
+    //Act
+    render(<Home />);
 
-  expect(screen.queryByPlaceholderText(/room name/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
 
-  expect(screen.getByRole('button', { name: '+ Add' })).toBeInTheDocument();
-});
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Kitchen' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Bedroom' }));
+
+    expect(screen.getByRole('button', { name: 'Bedroom' })).toHaveClass('active');
+    expect(screen.getByRole('button', { name: 'Kitchen' })).not.toHaveClass('active');
+  });
+
+  it('closes the add room form when Cancel is clicked without clearing the input', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Garage' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(screen.queryByPlaceholderText(/room name/i)).not.toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: '+ Add' })).toBeInTheDocument();
+  });
 
 
 
