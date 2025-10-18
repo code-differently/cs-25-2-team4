@@ -1,8 +1,17 @@
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 95%;
+  z-index: 1000;
   background-color: #202020;
   color: #fff;
   font-family: "Inter", sans-serif;
   padding: 20px 40px;
+}
+
+main {
+  padding-top: 100px; /* Adjust based on header height */
 }
 
 .header-top-menu {
