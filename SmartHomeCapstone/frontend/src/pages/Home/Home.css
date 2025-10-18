@@ -19,7 +19,6 @@ body {
   align-items: center;
 }
 
-/* Default inactive room button */
 .rooms-bar button {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.15);
@@ -31,13 +30,11 @@ body {
   font-size: 0.9rem;
 }
 
-/* Hover for inactive */
 .rooms-bar button:hover {
   border-color: rgba(255,255,255,0.35);
   color: #fff;
 }
 
-/* Active gradient bubble */
 .rooms-bar button.active {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
   color: #111;
@@ -45,15 +42,14 @@ body {
   font-weight: 500;
 }
 
-/* Second row: My Devices + Add Device */
 .devices-section .devices-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
 }
 
-/* Add Device button */
 .add-device-btn {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
   color: #111;
@@ -71,7 +67,6 @@ body {
   opacity: 0.9;
 }
 
-/* Shared layout for inline forms */
 .add-room-form,
 .add-device-form {
   display: flex;
@@ -79,7 +74,6 @@ body {
   gap: 10px;
 }
 
-/* Shared input styling (matches search bar look) */
 .add-room-form input,
 .add-device-form input {
   background-color: #1e1e1e;
@@ -98,7 +92,6 @@ body {
   color: white;
 }
 
-/* Gradient save buttons */
 .add-room-form button,
 .add-device-form button {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
@@ -117,3 +110,15 @@ body {
   transform: scale(1.05);
 }
 
+.toast-error {
+  position: absolute;
+  top: -40px;               
+  right: 0;
+  background: #ff4d4f;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  z-index: 10;
+}

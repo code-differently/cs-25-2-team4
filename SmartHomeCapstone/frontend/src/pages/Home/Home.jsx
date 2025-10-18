@@ -11,6 +11,8 @@ export const Home = () => {
   const [showAddDeviceForm, setShowAddDeviceForm] = useState(false);
   const [deviceName, setDeviceName] = useState('');
   const [devices, setDevices] = useState([]); 
+  const [deviceError, setDeviceError] = useState('');
+
 
 
   const handleAddRoomClick = () => setShowAddRoomForm(true);
@@ -32,11 +34,17 @@ export const Home = () => {
 
   const handleSaveDevice = () => {
     const activeRoom = rooms.find((r) => r.active)?.name;
-    if (!deviceName.trim() || !activeRoom) return;
+    if (!deviceName.trim()) {
+        setDeviceError('Device name is required');
+        return;
+    }
+
     setDevices([...devices, { name: deviceName.trim(), room: activeRoom }]);
     setDeviceName('');
     setShowAddDeviceForm(false);
+    setDeviceError('');
   };
+
 
   const activeRoom = rooms.find((r) => r.active)?.name;
   const filteredDevices =
@@ -93,12 +101,22 @@ export const Home = () => {
                 <input
                     placeholder="Device Name"
                     value={deviceName}
-                    onChange={(e) => setDeviceName(e.target.value)}
+                    onChange={(e) => {
+                      setDeviceName(e.target.value);
+                      setDeviceError('');
+                    }}
                 />
                 <button onClick={handleSaveDevice}>Save</button>
                 <button onClick={() => setShowAddDeviceForm(false)}>Cancel</button>
             </div>
           )}
+
+          {deviceError && (
+            <div className="toast-error">
+                {deviceError}
+            </div>
+          )}
+
         </div>
 
         <div className="devices-list">

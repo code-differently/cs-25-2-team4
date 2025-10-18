@@ -97,6 +97,31 @@ describe('Home (device adding)', () => {
     expect(screen.getByRole('button', { name: '+ Add Device' })).toBeInTheDocument();
   });
 
+  it('shows a validation message if trying to save a device with an empty name', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(screen.getByText(/device name is required/i)).toBeInTheDocument();
+
+    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+  });
+
+  it('shows a toast error when trying to save a device with an empty name', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(screen.getByText(/device name is required/i)).toBeInTheDocument();
+
+    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+  });
 
 });
 
@@ -210,7 +235,4 @@ describe('Rooms bar (adding rooms)', () => {
 
     expect(screen.getByRole('button', { name: '+ Add' })).toBeInTheDocument();
   });
-
-
-
 });
