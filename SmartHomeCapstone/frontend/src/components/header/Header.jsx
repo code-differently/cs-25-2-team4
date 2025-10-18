@@ -1,5 +1,6 @@
 import './Header.css';
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 
 export const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -12,6 +13,11 @@ export const Header = () => {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+
+   useEffect(() => {
+    document.body.classList.toggle('dark-mode', !isDarkMode);
+  }, [isDarkMode]);
+
 
   return (
     <header className="header">

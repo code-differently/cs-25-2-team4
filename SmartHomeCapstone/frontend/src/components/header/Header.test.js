@@ -77,4 +77,24 @@ describe('Header', () => {
     expect(screen.getByText('☀️')).toBeInTheDocument();
     expect(screen.queryByText('🌙')).not.toBeInTheDocument();
   });
+
+  it('adds and removes dark-mode class on body when toggle is clicked', () => {
+    // Act
+    render(<Header />);
+
+    // By default dark mode should be ON (because !isDarkMode = true)
+    expect(document.body).toHaveClass('dark-mode');
+
+    // Click to toggle to light mode
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    // Now dark-mode should be removed
+    expect(document.body).not.toHaveClass('dark-mode');
+
+    // Click again to toggle back
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    // dark-mode should be applied again
+    expect(document.body).toHaveClass('dark-mode');
+  });
 });
