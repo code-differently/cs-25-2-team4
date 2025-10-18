@@ -16,12 +16,15 @@ public class DeviceCreateRequest {
     @NotBlank(message = "Device type is required")
     private String deviceType; // "LIGHT", "THERMOSTAT", "CAMERA"
 
-    // Type-specific properties (optional)
-    private Integer brightness;     // For lights
-    private String colorHex;        // For lights
-    private Double temperature;     // For thermostats
-    private String streamUrl;       // For cameras
-    private String resolution;      // For cameras
+    // Type-specific properties
+    // For lights
+    private Integer brightness;
+    private String colorHex;
+    // For thermostats
+    private Double temperature;
+    // For cameras
+    private String streamUrl;
+    private String resolution;
 
     // Constructors
     public DeviceCreateRequest() {}

@@ -13,13 +13,10 @@ import java.util.Optional;
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
-    // Find devices by room
     List<Device> findByRoom_RoomId(Long roomId);
 
-    // Find devices by device name
     List<Device> findByDeviceNameContainingIgnoreCase(String deviceName);
 
-    // Find devices by status (on/off)
     List<Device> findByStatus(DeviceStatus status);
 
     // Find devices by type (discriminator)
@@ -30,7 +27,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query("SELECT d FROM Device d WHERE d.room.home.homeId = :homeId")
     List<Device> findByHomeId(@Param("homeId") Long homeId);
 
-    // Count devices in a room
     long countByRoom_RoomId(Long roomId);
 
     // Check if device name exists in a room

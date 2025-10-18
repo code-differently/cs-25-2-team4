@@ -9,18 +9,20 @@ public class DeviceResponse {
     private String deviceName;
     private String deviceType;
     private Boolean isOn;
-    private LocalDateTime createdAt;
     private Long roomId;
     private String roomName;
 
     // Type-specific properties
-    private Integer brightness;     // For lights
-    private String colorHex;        // For lights
-    private Double temperature;     // For thermostats
-    private Double targetTemp;      // For thermostats
-    private String streamUrl;       // For cameras
-    private Boolean isRecording;    // For cameras
-    private String resolution;      // For cameras
+    // For lights
+    private Integer brightness;     
+    private String colorHex;        
+    // For thermostats
+    private Double temperature;     
+    private Double targetTemp;      
+    // For cameras
+    private String streamUrl;       
+    private Boolean isRecording;    
+    private String resolution;      
 
     // Constructors
     public DeviceResponse() {}
@@ -30,8 +32,6 @@ public class DeviceResponse {
         this.deviceName = device.getDeviceName();
         this.deviceType = device.getClass().getSimpleName().toUpperCase();
         this.isOn = device.isOn();
-        // Note: We don't have createdAt in Device entity yet
-        this.createdAt = null;
         this.roomId = device.getRoom().getRoomId();
         this.roomName = device.getRoom().getName();
 
@@ -80,14 +80,6 @@ public class DeviceResponse {
 
     public void setIsOn(Boolean isOn) {
         this.isOn = isOn;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public Long getRoomId() {

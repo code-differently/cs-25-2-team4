@@ -60,6 +60,8 @@ public class DeviceController {
     /**
      * Get all devices in a room, or a home if roomId is not provided
      * GET /api/devices?roomId={roomId}
+     * GET /api/devices?homeId={homeId} Frontend should default to this based on user context
+     * GET /api/devices?search={deviceName}
      */
     @GetMapping
     public ResponseEntity<List<DeviceResponse>> getDevices(@RequestParam(required = false) Long roomId,
@@ -74,7 +76,7 @@ public class DeviceController {
         } else if (search != null && !search.trim().isEmpty()) {
             devices = deviceService.searchDevicesByName(search);
         } else {
-            return ResponseEntity.badRequest().build(); // Must provide at least one filter
+            return ResponseEntity.badRequest().build();
         }
 
         List<DeviceResponse> response = devices.stream()

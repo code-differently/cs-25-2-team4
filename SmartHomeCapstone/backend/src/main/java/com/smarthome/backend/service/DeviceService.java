@@ -28,16 +28,16 @@ public class DeviceService {
      * Create a new device in the database
      */
     public Device createDevice(DeviceCreateRequest request) {
-        // BUSINESS RULE: Check if room exists
+        // Check if room exists
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found with ID: " + request.getRoomId()));
 
-        // BUSINESS RULE: Check if device name already exists in this room
+        // Check if device name already exists in this room
         if (deviceRepository.existsByDeviceNameAndRoom_RoomId(request.getDeviceName(), request.getRoomId())) {
             throw new RuntimeException("Device with name '" + request.getDeviceName() + "' already exists in this room");
         }
 
-        // BUSINESS RULE: Create device based on type
+        // Create device based on type
         Device device = createDeviceByType(request, room);
 
         // Save and return the device
@@ -64,11 +64,11 @@ public class DeviceService {
      * Control a device (turn on/off, set properties)
      */
     public Device controlDevice(Long deviceId, String action, Object value) {
-        // BUSINESS RULE: Check if device exists
+        // Check if device exists
         Device device = deviceRepository.findById(deviceId)
                 .orElseThrow(() -> new RuntimeException("Device not found with ID: " + deviceId));
 
-        // BUSINESS RULE: Perform the action using the entity's method
+        // Perform the action using the device's method
         try {
             device.performAction(action, value);
         } catch (IllegalArgumentException e) {
@@ -83,7 +83,7 @@ public class DeviceService {
      * Delete a device
      */
     public void deleteDevice(Long deviceId) {
-        // BUSINESS RULE: Check if device exists
+        // Check if device exists
         if (!deviceRepository.existsById(deviceId)) {
             throw new RuntimeException("Device not found with ID: " + deviceId);
         }

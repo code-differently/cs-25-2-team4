@@ -18,7 +18,6 @@ public class DeviceControlRequest {
         this.value = value;
     }
 
-    // Getters and setters
     public String getAction() {
         return action;
     }
