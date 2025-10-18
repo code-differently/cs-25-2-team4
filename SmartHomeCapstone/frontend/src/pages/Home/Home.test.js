@@ -11,7 +11,7 @@ describe('Home (initial state)', () => {
     expect(screen.getByRole('button', { name: '+ Add' })).toBeInTheDocument();
 
     // Should only have exactly 2 room buttons on initial load
-    const roomsBar = screen.getByRole('navigation', { name: 'Rooms Bar' });
+    const roomsBar = screen.getByRole('navigation', { name: /rooms/i });
     const roomButtons = within(roomsBar).getAllByRole('button');
     expect(roomButtons).toHaveLength(2);
   });
@@ -25,22 +25,26 @@ describe('Home (initial state)', () => {
     render(<Home />);
     expect(screen.getByText('My Devices')).toBeInTheDocument();
 
-    // No device cards yet
     expect(screen.queryByTestId('device-card')).not.toBeInTheDocument();
   });
 
 describe('Home (device adding)', () => {
 
-  it('opens a device form when clicking + Add Device', () => {
-    // Act
-    render(<Home />);
+  it('opens an inline add device form with name and room fields when clicking + Add Device', () => {
+  render(<Home />);
 
-    fireEvent.click(screen.getByTestId('add-device-btn'));
+  fireEvent.click(screen.getByTestId('add-device-btn'));
 
-    // Modal or form should now exist
-    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
-  });
+  // Device name input
+  expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+
+  // Room dropdown
+  expect(screen.getByRole('combobox', { name: /select room/i })).toBeInTheDocument();
+
+  // Save button
+  expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
+});
+
 });
 
 describe('Rooms bar (adding rooms)', () => {
