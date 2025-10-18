@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Home } from './Home';
 
 describe('Home (initial state)', () => {
@@ -28,4 +28,32 @@ describe('Home (initial state)', () => {
     expect(screen.queryByTestId('device-card')).not.toBeInTheDocument();
   });
 
+describe('Home (device adding)', () => {
+
+  it('opens a device form when clicking + Add Device', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+
+    // Modal or form should now exist
+    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
+  });
+});
+
+describe('Rooms bar (adding rooms)', () => {
+  it('shows an inline input when + Add is clicked', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+
+    // Now an inline input should appear
+    expect(screen.getByPlaceholderText(/room name/i)).toBeInTheDocument();
+
+    // And a save button for that room
+    expect(screen.getByRole('button', { name: /save room/i })).toBeInTheDocument();
+  });
+});
 });
