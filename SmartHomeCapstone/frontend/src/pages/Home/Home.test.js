@@ -235,4 +235,17 @@ describe('Rooms bar (adding rooms)', () => {
 
     expect(screen.getByRole('button', { name: '+ Add' })).toBeInTheDocument();
   });
+
+  it('shows a toast error when trying to save a room with an empty name', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    expect(screen.getByText(/room name is required/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/room name/i)).toBeInTheDocument();
+  });
+
 });

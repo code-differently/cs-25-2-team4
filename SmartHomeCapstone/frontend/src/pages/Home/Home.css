@@ -6,6 +6,7 @@ body {
 
 /* Layout containers */
 .rooms-bar {
+  position: relative;
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
@@ -112,7 +113,7 @@ body {
 
 .toast-error {
   position: absolute;
-  top: -40px;               
+  top: 0px;               
   right: 0;
   background: #ff4d4f;
   color: white;

@@ -6,6 +6,7 @@ export const Home = () => {
   const [rooms, setRooms] = useState([{ name: 'All', active: true }]);
   const [showAddRoomForm, setShowAddRoomForm] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
+  const [roomError, setRoomError] = useState('');
 
 
   const [showAddDeviceForm, setShowAddDeviceForm] = useState(false);
@@ -18,7 +19,12 @@ export const Home = () => {
   const handleAddRoomClick = () => setShowAddRoomForm(true);
 
   const handleSaveRoom = () => {
-    if (!newRoomName.trim()) return;
+    if (!newRoomName.trim()) {
+        setRoomError('Room name is required');
+        return;
+    }
+
+    setRoomError('');
     const updatedRooms = rooms.map((r) => ({ ...r, active: false }));
     const newRoom = { name: newRoomName.trim(), active: true };
     setRooms([...updatedRooms, newRoom]);
@@ -74,12 +80,20 @@ export const Home = () => {
                 <input
                     placeholder="Room Name"
                     value={newRoomName}
-                    onChange={(e) => setNewRoomName(e.target.value)}
+                    onChange={(e) => {
+                        setNewRoomName(e.target.value);
+                        setRoomError('');   
+                    }}
                 />
                 <button onClick={handleSaveRoom}>Save Room</button>
                 <button onClick={() => setShowAddRoomForm(false)}>Cancel</button>
             </div>
             )}
+        {roomError && (
+            <div className="toast-error">
+                {roomError}
+            </div>
+        )}
       </div>
 
       <section className="devices-section">
