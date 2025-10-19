@@ -111,6 +111,7 @@ export const Home = () => {
         room: roomToAssign,
         type: deviceType,
         status: statusByType[deviceType],
+        isOn: true,
       },
     ]);
 
@@ -127,6 +128,32 @@ export const Home = () => {
         ...r,
         active: r.name === roomToAssign,
       })),
+    );
+  };
+
+  const handleToggle = (deviceNameToFlip) => {
+    const statusByType = {
+      Light: "On",
+      Thermostat: "Set to 72°F",
+      Camera: "Online",
+    };
+
+    const offStatusByType = {
+      Light: "Off",
+      Thermostat: "Standby",
+      Camera: "Offline",
+    };
+
+    setDevices((prev) =>
+      prev.map((d) => {
+        if (d.name !== deviceNameToFlip) return d;
+        const nextOn = !d.isOn;
+        return {
+          ...d,
+          isOn: nextOn,
+          status: nextOn ? statusByType[d.type] : offStatusByType[d.type],
+        };
+      }),
     );
   };
 
@@ -294,15 +321,41 @@ export const Home = () => {
                 <div
                   key={index}
                   data-testid="device-card"
-                  className="device-card"
+                  className={`device-card ${device.isOn ? "is-on" : "is-off"}`}
                 >
                   <div className="device-card-header">
-                    <DeviceIcon type={device.type} />
-                    <span className="device-title">
-                      {device.name} ({device.type})
-                    </span>
+                    <div className="device-head-left">
+                      <span className="icon-box">
+                        <DeviceIcon type={device.type} />
+                      </span>
+                    </div>
+
+                    <label
+                      className="device-toggle"
+                      aria-label={`Toggle ${device.name}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!device.isOn}
+                        onChange={() => handleToggle(device.name)}
+                      />
+                      <span className="slider"></span>
+                    </label>
                   </div>
-                  <span className="device-status-badge">{device.status}</span>
+
+                  <span className={`device-title ${device.isOn ? "" : "dim"}`}>
+                    {device.name}
+                  </span>
+
+                  {device.status && (
+                    <span
+                      className={`device-status-text ${
+                        device.isOn ? "" : "status-dim"
+                      }`}
+                    >
+                      {device.status}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>

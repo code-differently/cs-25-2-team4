@@ -278,10 +278,11 @@ describe("Home (device adding)", () => {
     fireEvent.click(saveBtn);
 
     const deviceCard = screen.getByTestId("device-card");
-    expect(deviceCard).toHaveTextContent("Lamp (Light)");
+    expect(deviceCard).toHaveTextContent(/Lamp/);
+    expect(deviceCard).toHaveTextContent(/On|Online/);
   });
 
-  it("displays device name, type, and default status after saving", () => {
+  it("displays device name and default status after saving", () => {
     // Act
     render(<Home />);
 
@@ -304,15 +305,10 @@ describe("Home (device adding)", () => {
     fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
     const card = screen.getByTestId("device-card");
-    expect(card).toBeInTheDocument();
-    expect(
-      within(card).getByText(
-        (t) =>
-          t.toLowerCase().includes("lamp") &&
-          t.toLowerCase().includes("(light)"),
-      ),
-    ).toBeInTheDocument();
-    expect(within(card).getByText(/on/i)).toBeInTheDocument();
+
+    expect(card).toHaveTextContent(/lamp/i);
+    expect(card).toHaveTextContent(/on|online/i);
+    expect(card).not.toHaveTextContent(/\(/);
   });
 });
 
@@ -478,7 +474,7 @@ describe("Rooms bar (adding rooms)", () => {
 });
 
 describe("Device cards (read-only dashboard view)", () => {
-  it("renders a read-only device card with icon, name, type, and status", () => {
+  it("renders a read-only device card with icon, name, and status", () => {
     // Act
     render(<Home />);
 
@@ -498,15 +494,10 @@ describe("Device cards (read-only dashboard view)", () => {
     fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
     const card = screen.getByTestId("device-card");
-    expect(card).toBeInTheDocument();
-    expect(
-      within(card).getByText(
-        (t) =>
-          t.toLowerCase().includes("lamp") &&
-          t.toLowerCase().includes("(light)"),
-      ),
-    ).toBeInTheDocument();
-    expect(within(card).getByText(/on/i)).toBeInTheDocument();
+
+    expect(card).toHaveTextContent(/lamp/i);
+    expect(card).toHaveTextContent(/on|online/i);
+    expect(card).not.toHaveTextContent(/\(/);
   });
 
   it("renders device cards with the correct base CSS class", () => {
