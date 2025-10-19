@@ -234,8 +234,9 @@ export const Home = () => {
                 <div key={index} data-testid="device-card" className="device-card">
                   <div className="device-card-header">
                     <DeviceIcon type={device.type} />
-                    <span className="device-title">{device.name} ({device.type}) — {device.status}</span>
+                    <span className="device-title">{device.name} ({device.type})</span>
                   </div>
+                  <span className="device-status-badge">{device.status}</span>
                 </div>
               ))}
             </div>
