@@ -2,12 +2,3 @@
   text-align: center;
 }
 
-body.dark-mode {
-  background:#202020;
-  color:#fff;
-}
-
-body:not(.dark-mode) {
-  background:#f5f5f5;
-  color:#111;
-}
