@@ -29,6 +29,7 @@ describe('Home (initial state)', () => {
 
     expect(screen.queryByTestId('device-card')).not.toBeInTheDocument();
   });
+
 });
 
 describe('Home (device adding)', () => {
@@ -59,11 +60,16 @@ describe('Home (device adding)', () => {
     fireEvent.change(screen.getByPlaceholderText(/device name/i), {
         target: { value: 'Lamp' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    expect(screen.getByText('Lamp')).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+        target: { value: 'Light' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+    expect(screen.getByText(/lamp/i)).toBeInTheDocument();
     expect(screen.getByTestId('device-card')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /save/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^save$/i })).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText(/device name/i)).not.toBeInTheDocument();
   });
 
@@ -82,10 +88,13 @@ describe('Home (device adding)', () => {
     fireEvent.change(screen.getByPlaceholderText(/device name/i), {
         target: { value: deviceName },
     });
-    fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    expect(screen.getByTestId('device-card')).toBeInTheDocument();
-    expect(screen.getByText(deviceName)).toBeInTheDocument();
+     fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+       target: { value: 'Light' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+    expect(screen.getByText(/test device/i)).toBeInTheDocument();
   });
 
   it('closes the add device form when Cancel is clicked without clearing the input', () => {
@@ -111,7 +120,11 @@ describe('Home (device adding)', () => {
 
     fireEvent.click(screen.getByTestId('add-device-btn'));
 
-    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+        target: { value: 'Light' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
     expect(screen.getByText(/device name is required/i)).toBeInTheDocument();
 
@@ -124,7 +137,11 @@ describe('Home (device adding)', () => {
 
     fireEvent.click(screen.getByTestId('add-device-btn'));
 
-    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+        target: { value: 'Light' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
     expect(screen.getByText(/device name is required/i)).toBeInTheDocument();
 
@@ -157,8 +174,12 @@ describe('Home (device adding)', () => {
     expect(dropdown).toBeInTheDocument();
     expect(dropdown.value).toBe('');
 
-    const saveBtn = screen.getByRole('button', { name: /save/i });
+    const saveBtn = screen.getByRole('button', { name: /^save$/i });
     expect(saveBtn).toBeDisabled();
+
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+        target: { value: 'Light' },
+    });
 
     fireEvent.change(dropdown, { target: { value: 'Bedroom' } });
     expect(saveBtn).not.toBeDisabled();
@@ -188,19 +209,56 @@ describe('Home (device adding)', () => {
         target: { value: 'Lamp' },
     });
 
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+        target: { value: 'Light' },
+    });
+
     fireEvent.change(screen.getByRole('combobox', { name: /select room/i }), {
         target: { value: 'Kitchen' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
     expect(screen.getByRole('button', { name: 'Kitchen' })).toHaveClass('active');
 
-    expect(screen.getByText('Lamp')).toBeInTheDocument();
+    expect(screen.getByText(/lamp/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Bedroom' }));
-    expect(screen.queryByText('Lamp')).not.toBeInTheDocument();
+    expect(screen.queryByText(/lamp/i)).not.toBeInTheDocument();
   });
+
+  it('requires selecting a device type before saving and displays it on the device card', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+
+    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
+        target: { value: 'Lamp' },
+    });
+
+    const typeDropdown = screen.getByRole('combobox', { name: /select type/i });
+    expect(typeDropdown).toBeInTheDocument();
+    expect(typeDropdown.value).toBe(''); // placeholder
+
+    const saveBtn = screen.getByRole('button', { name: /save/i });
+    expect(saveBtn).toBeDisabled();
+
+    fireEvent.change(typeDropdown, { target: { value: 'Light' } });
+    expect(saveBtn).not.toBeDisabled();
+
+    fireEvent.click(saveBtn);
+
+    const deviceCard = screen.getByTestId('device-card');
+    expect(deviceCard).toHaveTextContent('Lamp (Light)');
+  });
+
 
 });
 
@@ -209,7 +267,7 @@ describe('Empty State', () => {
     // Act
     render(<Home />);
 
-    expect(screen.getByText(/no devices in this room yet/i)).toBeInTheDocument();
+    expect(screen.queryByText(/no devices in this room yet/i)).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
     fireEvent.change(screen.getByPlaceholderText(/room name/i), {
@@ -223,7 +281,11 @@ describe('Empty State', () => {
     fireEvent.change(screen.getByPlaceholderText(/device name/i), {
         target: { value: 'Lamp' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+        target: { value: 'Light' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
     expect(screen.queryByText(/no devices in this room yet/i)).not.toBeInTheDocument();
   });

@@ -16,6 +16,7 @@ export const Home = () => {
   const [devices, setDevices] = useState([]); 
   const [deviceError, setDeviceError] = useState('');
   const [fadeOutDevice, setFadeOutDevice] = useState(false);
+  const [deviceType, setDeviceType] = useState('');
 
 
 
@@ -66,12 +67,13 @@ export const Home = () => {
 
     if (!roomToAssign) return;
 
-        setDevices([...devices, { name: deviceName.trim(), room: roomToAssign }]);
+        setDevices([...devices, { name: deviceName.trim(), room: roomToAssign, type: deviceType }]);
 
         setDeviceName('');
         setSelectedRoom('');          
         setShowAddDeviceForm(false);
         setDeviceError('');
+        setDeviceType('');
 
         setShowAddRoomForm(false);
 
@@ -153,6 +155,17 @@ export const Home = () => {
                                 setDeviceError('');
                             }}
                         />
+                        <select
+                            aria-label="Select Type"
+                            value={deviceType}
+                            onChange={(e) => setDeviceType(e.target.value)}
+                        >
+                            <option value="">-- Select Type --</option>
+                            <option value="Light">Light</option>
+                            <option value="Thermostat">Thermostat</option>
+                            <option value="Camera">Camera</option>
+                        </select>
+
 
                         {activeRoom === 'All' && rooms.filter(r => r.name !== 'All').length > 1 && (
                             <select
@@ -174,6 +187,7 @@ export const Home = () => {
                         <button
                             onClick={handleSaveDevice}
                             disabled={
+                                !deviceType ||
                                 (activeRoom === 'All' && rooms.filter(r => r.name !== 'All').length > 1 && !selectedRoom)
                             }
                         >
@@ -192,12 +206,12 @@ export const Home = () => {
         </div>
 
         <div className="devices-list">
-          {filteredDevices.length === 0 ? (
+          {activeRoom !== 'All' && filteredDevices.length === 0 ? (
             <p className="empty-devices-msg">No devices in this room yet</p>
           ) : (
             filteredDevices.map((device, index) => (
               <div key={index} data-testid="device-card" className="device-card">
-                {device.name}
+                {device.name} ({device.type})
               </div>
             ))
           )}
