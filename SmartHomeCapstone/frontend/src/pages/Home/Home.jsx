@@ -67,7 +67,13 @@ export const Home = () => {
 
     if (!roomToAssign) return;
 
-        setDevices([...devices, { name: deviceName.trim(), room: roomToAssign, type: deviceType }]);
+        const statusByType = {
+            Light: 'On',
+            Thermostat: 'Set to 72°F',
+            Camera: 'Online',
+            };
+
+        setDevices([...devices, { name: deviceName.trim(), room: roomToAssign, type: deviceType, status: statusByType[deviceType], }]);
 
         setDeviceName('');
         setSelectedRoom('');          
@@ -211,7 +217,7 @@ export const Home = () => {
           ) : (
             filteredDevices.map((device, index) => (
               <div key={index} data-testid="device-card" className="device-card">
-                {device.name} ({device.type})
+                {device.name} ({device.type}) — {device.status}
               </div>
             ))
           )}

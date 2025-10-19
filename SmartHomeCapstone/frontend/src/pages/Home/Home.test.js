@@ -259,7 +259,33 @@ describe('Home (device adding)', () => {
     expect(deviceCard).toHaveTextContent('Lamp (Light)');
   });
 
+  it('displays device name, type, and default status after saving', () => {
+    // Act
+    render(<Home />);
 
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+
+    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
+        target: { value: 'Lamp' },
+    });
+
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+        target: { value: 'Light' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+    expect(
+        screen.getByText(/lamp \(light\) — on/i)
+    ).toBeInTheDocument();
+});
 });
 
 describe('Empty State', () => {
