@@ -168,5 +168,21 @@ body {
     right: 170px;
 }
 
-
+.devices-grid { 
+    display: grid; 
+    gap: 12px; 
+}
+.device-card { 
+    padding: 12px; 
+    border-radius: 10px; 
+    background: rgba(255,255,255,0.06); 
+}
+.device-card-header { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+.device-title { 
+    font-weight: 500; 
+}
 

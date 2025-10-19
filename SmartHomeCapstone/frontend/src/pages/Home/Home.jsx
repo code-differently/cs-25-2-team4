@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Home.css';
+import { Lightbulb, Thermometer, Camera as CameraIcon } from 'lucide-react';
 
 export const Home = () => {
 
@@ -92,12 +93,25 @@ export const Home = () => {
     };
 
 
-
   const activeRoom = rooms.find((r) => r.active)?.name;
   const filteredDevices =
     activeRoom === 'All'
       ? devices
       : devices.filter((d) => d.room === activeRoom);
+
+  const DeviceIcon = ({ type }) => {
+    switch (type) {
+        case 'Light':
+            return <span role="img" aria-label="Light icon"><Lightbulb size={18} /></span>;
+        case 'Thermostat':
+            return <span role="img" aria-label="Thermostat icon"><Thermometer size={18} /></span>;
+        case 'Camera':
+            return <span role="img" aria-label="Camera icon"><CameraIcon size={18} /></span>;
+        default:
+            return null;
+    }
+  };
+
 
   return (
     <div className="home">
@@ -215,11 +229,16 @@ export const Home = () => {
           {activeRoom !== 'All' && filteredDevices.length === 0 ? (
             <p className="empty-devices-msg">No devices in this room yet</p>
           ) : (
-            filteredDevices.map((device, index) => (
-              <div key={index} data-testid="device-card" className="device-card">
-                {device.name} ({device.type}) — {device.status}
-              </div>
-            ))
+            <div className="devices-grid">
+              {filteredDevices.map((device, index) => (
+                <div key={index} data-testid="device-card" className="device-card">
+                  <div className="device-card-header">
+                    <DeviceIcon type={device.type} />
+                    <span className="device-title">{device.name} ({device.type}) — {device.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </section>

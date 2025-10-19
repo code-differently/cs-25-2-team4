@@ -436,4 +436,53 @@ describe('Rooms bar (adding rooms)', () => {
     expect(screen.getByPlaceholderText(/room name/i)).toBeInTheDocument();
   });
 
-});
+describe('Device cards (read-only dashboard view)', () => {
+  it('renders a read-only device card with icon, name, type, and status', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), { target: { value: 'Bedroom' } });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+    fireEvent.change(screen.getByPlaceholderText(/device name/i), { target: { value: 'Lamp' } });
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), { target: { value: 'Light' } });
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+    const card = screen.getByTestId('device-card');
+    expect(card).toBeInTheDocument();
+
+    expect(screen.getByLabelText(/light icon/i)).toBeInTheDocument();
+
+    expect(screen.getByText((t) =>
+        t.toLowerCase().includes('lamp') &&
+        t.toLowerCase().includes('(light)') &&
+        t.toLowerCase().includes('on')
+    )).toBeInTheDocument();
+    });
+
+  it('renders device cards with the correct base CSS class', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
+        target: { value: 'Lamp' },
+    });
+    fireEvent.change(screen.getByRole('combobox', { name: /select type/i }), {
+        target: { value: 'Light' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+    const card = screen.getByTestId('device-card');
+    expect(card).toHaveClass('device-card');
+  });
+  });
+}); 
