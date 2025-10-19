@@ -48,32 +48,40 @@ describe('Home (device adding)', () => {
     // Act
     render(<Home />);
 
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
     fireEvent.click(screen.getByTestId('add-device-btn'));
 
     fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-        target: { value: 'Lamp' }
+        target: { value: 'Lamp' },
     });
-
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    expect(screen.getByTestId('device-card')).toBeInTheDocument();
     expect(screen.getByText('Lamp')).toBeInTheDocument();
-
-    expect(screen.queryByPlaceholderText(/device name/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId('device-card')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /save/i })).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/device name/i)).not.toBeInTheDocument();
   });
 
   it('adds a new device bubble after saving the device form', () => {
     // Act
     render(<Home />);
 
-    fireEvent.click(screen.getByTestId('add-device-btn'));
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
 
+    fireEvent.click(screen.getByTestId('add-device-btn'));
     const deviceName = 'Test Device';
     fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: deviceName },
+        target: { value: deviceName },
     });
-
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
     expect(screen.getByTestId('device-card')).toBeInTheDocument();
@@ -121,6 +129,64 @@ describe('Home (device adding)', () => {
     expect(screen.getByText(/device name is required/i)).toBeInTheDocument();
 
     expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+  });
+
+  it('shows a room dropdown in All when multiple rooms exist, defaults to placeholder, and disables Save until a room is chosen', () => {
+    // Act
+    render(<Home />);
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Kitchen' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    expect(screen.getByRole('button', { name: 'Kitchen' })).toHaveClass('active');
+
+    fireEvent.click(screen.getByRole('button', { name: 'All' }));
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+
+    const dropdown = screen.getByRole('combobox', { name: /select room/i });
+    expect(dropdown).toBeInTheDocument();
+    expect(dropdown.value).toBe('');
+
+    const saveBtn = screen.getByRole('button', { name: /save/i });
+    expect(saveBtn).toBeDisabled();
+
+    fireEvent.change(dropdown, { target: { value: 'Bedroom' } });
+    expect(saveBtn).not.toBeDisabled();
+    });
+});
+
+describe('Empty State', () => {
+  it('shows an empty state message when the active room has no devices', () => {
+    // Act
+    render(<Home />);
+
+    expect(screen.getByText(/no devices in this room yet/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add' }));
+    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
+        target: { value: 'Bedroom' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save room/i }));
+
+    expect(screen.getByText(/no devices in this room yet/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('add-device-btn'));
+    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
+        target: { value: 'Lamp' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(screen.queryByText(/no devices in this room yet/i)).not.toBeInTheDocument();
   });
 
 });
