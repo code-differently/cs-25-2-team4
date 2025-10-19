@@ -25,6 +25,8 @@ body:not(.dark-mode) {
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
+  max-width: 90%; 
+  margin: 0 auto;
 }
 
 /* Rooms bar layout */
@@ -39,7 +41,7 @@ body:not(.dark-mode) {
   background: #202020;
   border: 1px solid rgba(255,255,255,0.15);
   color: #9b9b9b;
-  padding: 6px 14px;
+  padding: 0.75rem 1.5rem;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -66,6 +68,10 @@ body:not(.dark-mode) {
   margin-bottom: 16px;
 }
 
+.devices-header {
+  max-width: 900px;  
+  margin: 0 auto;
+}
 .devices-list {
   display: flex;
   justify-content: center;
