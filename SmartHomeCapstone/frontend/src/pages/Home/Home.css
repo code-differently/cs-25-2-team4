@@ -129,9 +129,8 @@ body {
   transform: scale(1.05);
 }
 
-.toast-room-error, .toast-device-error {
-  position: absolute;    
-  top: -32px;        
+.toast-room-error, .toast-device-error, .toast-block-error {
+  position: absolute;          
   background: #ff4d4f;
   color: white;
   padding: 8px 12px;
@@ -166,6 +165,12 @@ body {
 
 .toast-device-error {
     right: 170px;
+    top: -32px;  
+}
+
+.toast-block-error {
+    bottom: -32px;
+    left: 0;
 }
 
 .devices-grid { 
