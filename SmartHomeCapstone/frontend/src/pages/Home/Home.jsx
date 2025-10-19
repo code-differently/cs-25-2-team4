@@ -7,12 +7,14 @@ export const Home = () => {
   const [showAddRoomForm, setShowAddRoomForm] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
   const [roomError, setRoomError] = useState('');
+  const [fadeOutRoom, setFadeOutRoom] = useState(false);
 
 
   const [showAddDeviceForm, setShowAddDeviceForm] = useState(false);
   const [deviceName, setDeviceName] = useState('');
   const [devices, setDevices] = useState([]); 
   const [deviceError, setDeviceError] = useState('');
+  const [fadeOutDevice, setFadeOutDevice] = useState(false);
 
 
 
@@ -21,6 +23,9 @@ export const Home = () => {
   const handleSaveRoom = () => {
     if (!newRoomName.trim()) {
         setRoomError('Room name is required');
+        setFadeOutRoom(false);
+        setTimeout(() => { setFadeOutRoom(true); }, 1500);
+        setTimeout(() => { setRoomError(''); setFadeOutRoom(false); }, 2250);
         return;
     }
 
@@ -42,6 +47,9 @@ export const Home = () => {
     const activeRoom = rooms.find((r) => r.active)?.name;
     if (!deviceName.trim()) {
         setDeviceError('Device name is required');
+        setFadeOutDevice(false);
+        setTimeout(() => { setFadeOutDevice(true); }, 1500);
+        setTimeout(() => { setDeviceError(''); setFadeOutDevice(false); }, 2250);
         return;
     }
 
@@ -60,11 +68,16 @@ export const Home = () => {
 
   return (
     <div className="home">
-      <div className="rooms-bar" role="navigation" aria-label="rooms">
-        {rooms.map((room, index) => (
-          <button
-            key={index}
-            className={room.active ? 'active' : ''}
+        {roomError && (
+            <div className={`toast-room-error ${fadeOutRoom ? 'fade-out' : ''}`}>
+                {roomError}
+            </div>
+        )}
+        <div className="rooms-bar" role="navigation" aria-label="rooms">
+          {rooms.map((room, index) => (
+            <button
+              key={index}
+              className={room.active ? 'active' : ''}
             onClick={() => handleRoomClick(room.name)}
           >
             {room.name}
@@ -89,11 +102,6 @@ export const Home = () => {
                 <button onClick={() => setShowAddRoomForm(false)}>Cancel</button>
             </div>
             )}
-        {roomError && (
-            <div className="toast-error">
-                {roomError}
-            </div>
-        )}
       </div>
 
       <section className="devices-section">
@@ -126,7 +134,7 @@ export const Home = () => {
           )}
 
           {deviceError && (
-            <div className="toast-error">
+            <div className={`toast-device-error ${fadeOutDevice ? 'fade-out' : ''}`}>
                 {deviceError}
             </div>
           )}

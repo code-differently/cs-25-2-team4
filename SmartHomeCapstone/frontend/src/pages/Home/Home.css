@@ -4,6 +4,11 @@ body {
     padding: 20px;
 }
 
+.home {
+  position: relative;
+  padding-top: 15px;
+}
+
 /* Layout containers */
 .rooms-bar {
   position: relative;
@@ -111,10 +116,9 @@ body {
   transform: scale(1.05);
 }
 
-.toast-error {
-  position: absolute;
-  top: 0px;               
-  right: 0;
+.toast-room-error, .toast-device-error {
+  position: absolute;    
+  top: -32px;        
   background: #ff4d4f;
   color: white;
   padding: 8px 12px;
@@ -122,4 +126,34 @@ body {
   font-size: 0.9rem;
   box-shadow: 0 4px 14px rgba(0,0,0,0.25);
   z-index: 10;
+  animation: fadeIn 0.2s ease-out forwards;
+  opacity: 1;
 }
+
+.toast-room-error.fade-out, .toast-device-error.fade-out {
+    animation: fadeOut 0.5s ease-in forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+
+.toast-room-error {
+    top: -32px;
+    left: 70px;
+    z-index: 20;
+}
+
+.toast-device-error {
+    right: 170px;
+}
+
+
+
