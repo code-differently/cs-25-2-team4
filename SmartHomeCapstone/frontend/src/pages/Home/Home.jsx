@@ -72,6 +72,15 @@ export const Home = () => {
         setSelectedRoom('');          
         setShowAddDeviceForm(false);
         setDeviceError('');
+
+        setShowAddRoomForm(false);
+
+        setRooms(prev =>
+          prev.map(r => ({
+            ...r,
+            active: r.name === roomToAssign
+          }))
+        );
     };
 
 
