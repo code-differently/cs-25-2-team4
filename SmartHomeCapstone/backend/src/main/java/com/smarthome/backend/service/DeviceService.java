@@ -37,7 +37,7 @@ public class DeviceService {
             throw new RuntimeException("Device with name '" + request.getDeviceName() + "' already exists in this room");
         }
 
-        // Create device based on type
+        // Create device based on type using the request data and the room.
         Device device = createDeviceByType(request, room);
 
         // Save and return the device
@@ -68,9 +68,20 @@ public class DeviceService {
         Device device = deviceRepository.findById(deviceId)
                 .orElseThrow(() -> new RuntimeException("Device not found with ID: " + deviceId));
 
-        // Perform the action using the device's method
+        // Handle basic on/off actions using Device class methods
         try {
-            device.performAction(action, value);
+            switch (action.toLowerCase()) {
+                case "turn_on":
+                    device.turnOn();
+                    break;
+                case "turn_off":
+                    device.turnOff();
+                    break;
+                default:
+                    // Use performAction for device-specific actions
+                    device.performAction(action, value);
+                    break;
+            }
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid action '" + action + "' for device type: " + device.getClass().getSimpleName());
         }
