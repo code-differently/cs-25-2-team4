@@ -29,7 +29,7 @@ export default function App(){
             <Route path="/devices" element={<Devices/>}/>
             <Route path="/devices/add" element={<DeviceAdd/>}/>
             <Route path="/devices/:deviceId/remove" element={<DeviceRemove/>}/>
-      </Route>
+          </Route>
       <Route path="*" element={<NotFound/>}/>
     </Routes>
   );
