@@ -55,9 +55,9 @@ export const useDevices = () => {
         await deviceService.turnDeviceOn(deviceId);
       }
       // Update the device status in local state
-      setDevices(prev => 
-        prev.map(device => 
-          device.id === deviceId 
+      setDevices(prev =>
+        prev.map(device =>
+          device.id === deviceId
             ? { ...device, status: currentStatus === 'ON' ? 'OFF' : 'ON' }
             : device
         )
@@ -67,14 +67,14 @@ export const useDevices = () => {
     }
   };
 
-  return { 
-    devices, 
-    loading, 
-    error, 
-    refreshDevices, 
-    addDevice, 
-    deleteDevice, 
-    toggleDevice 
+  return {
+    devices,
+    loading,
+    error,
+    refreshDevices,
+    addDevice,
+    deleteDevice,
+    toggleDevice
   };
 };
 
@@ -89,7 +89,7 @@ export const useDevicesByRoom = (roomId) => {
 
   const fetchDevices = useCallback(async () => {
     if (!roomId) return;
-    
+
     try {
       setLoading(true);
       setError(null);

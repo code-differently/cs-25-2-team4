@@ -20,7 +20,7 @@ apiClient.interceptors.response.use(
       // Server responded with error status
       const status = error.response.status;
       let message = 'An error occurred';
-      
+
       switch (status) {
         case 400:
           message = 'Invalid request. Please check your input.';
@@ -34,7 +34,7 @@ apiClient.interceptors.response.use(
         default:
           message = `Server error (${status}). Please try again.`;
       }
-      
+
       throw new Error(message);
     } else if (error.request) {
       // Network error
@@ -48,7 +48,7 @@ apiClient.interceptors.response.use(
 // Device API service
 export const deviceService = {
   // GET requests
-  
+
   // Get all devices
   getAllDevices: async () => {
     try {
@@ -59,7 +59,7 @@ export const deviceService = {
       throw error;
     }
   },
-  
+
   // Get devices by room ID
   getDevicesByRoom: async (roomId) => {
     try {
@@ -105,7 +105,7 @@ export const deviceService = {
   },
 
   // POST requests
-  
+
   // Create a new device
   createDevice: async (deviceData) => {
     try {
@@ -140,7 +140,7 @@ export const deviceService = {
   },
 
   // PUT requests
-  
+
   // Control device (generic control method)
   controlDevice: async (deviceId, controlData) => {
     try {
@@ -153,7 +153,7 @@ export const deviceService = {
   },
 
   // DELETE requests
-  
+
   // Delete device
   deleteDevice: async (deviceId) => {
     try {

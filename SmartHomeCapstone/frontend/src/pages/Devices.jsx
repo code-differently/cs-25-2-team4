@@ -21,12 +21,12 @@ export default function Devices() {
 
   useEffect(() => { load(); }, []);
 
-  if (loading) return <div style={{padding:12}}>Loading…</div>;
+  if (loading) return <div style={{ padding: 12 }}>Loading…</div>;
   if (error) return (
-    <div style={{padding:12, border:'1px solid #f5c6cb', background:'#fdecea', borderRadius:8}}>
+    <div style={{ padding: 12, border: '1px solid #f5c6cb', background: '#fdecea', borderRadius: 8 }}>
       <strong>Unable to load devices</strong>
       <div>{error}</div>
-      <button onClick={load} style={{marginTop:8}}>Retry</button>
+      <button onClick={load} style={{ marginTop: 8 }}>Retry</button>
     </div>
   );
   const handleToggleDevice = async (deviceId, currentStatus) => {
@@ -47,7 +47,7 @@ export default function Devices() {
     if (!confirm('Are you sure you want to delete this device?')) {
       return;
     }
-    
+
     try {
       await deviceService.deleteDevice(deviceId);
       load(); // Refresh the list
@@ -57,8 +57,8 @@ export default function Devices() {
   };
 
   if (!data || data.length === 0) return (
-    <div style={{padding:12}}>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16}}>
+    <div style={{ padding: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2>Devices</h2>
         <a href="/device-add" style={{
           padding: '8px 16px',
@@ -73,10 +73,10 @@ export default function Devices() {
   );
 
   return (
-    <div style={{padding:12}}>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16}}>
+    <div style={{ padding: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2>Devices</h2>
-        <div style={{display: 'flex', gap: 8}}>
+        <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={load} style={{
             padding: '8px 16px',
             backgroundColor: '#6c757d',
@@ -96,8 +96,8 @@ export default function Devices() {
           }}>Add Device</a>
         </div>
       </div>
-      
-      <div style={{display: 'grid', gap: 12}}>
+
+      <div style={{ display: 'grid', gap: 12 }}>
         {data.map(device => (
           <div key={device.id} style={{
             padding: 16,
@@ -109,17 +109,17 @@ export default function Devices() {
             alignItems: 'center'
           }}>
             <div>
-              <h3 style={{margin: '0 0 8px 0'}}>{device.name}</h3>
-              <p style={{margin: '0 0 4px 0', color: '#666'}}>
+              <h3 style={{ margin: '0 0 8px 0' }}>{device.name}</h3>
+              <p style={{ margin: '0 0 4px 0', color: '#666' }}>
                 <strong>Type:</strong> {device.type}
               </p>
               {device.roomId && (
-                <p style={{margin: '0 0 4px 0', color: '#666'}}>
+                <p style={{ margin: '0 0 4px 0', color: '#666' }}>
                   <strong>Room:</strong> {device.roomId}
                 </p>
               )}
-              <p style={{margin: 0, color: '#666'}}>
-                <strong>Status:</strong> 
+              <p style={{ margin: 0, color: '#666' }}>
+                <strong>Status:</strong>
                 <span style={{
                   marginLeft: 8,
                   padding: '2px 8px',
@@ -132,8 +132,8 @@ export default function Devices() {
                 </span>
               </p>
             </div>
-            
-            <div style={{display: 'flex', gap: 8}}>
+
+            <div style={{ display: 'flex', gap: 8 }}>
               <button
                 onClick={() => handleToggleDevice(device.id, device.status)}
                 style={{
