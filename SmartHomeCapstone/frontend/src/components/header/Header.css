@@ -1,3 +1,4 @@
+/* ==================== Header Layout ==================== */
 .header {
   position: fixed;
   top: 0;
@@ -20,6 +21,7 @@ main {
   justify-content: space-between;
 }
 
+/* ==================== Header Left (Title) ==================== */
 .header-left .header-title {
   font-size: 1.4rem;
   font-weight: 700;
@@ -31,6 +33,7 @@ h1.header-title a {
     text-decoration: none;
 }
 
+/* ==================== Header Center (Search) ==================== */
 .header-center .header-search {
   position: relative;
 }
@@ -52,12 +55,14 @@ h1.header-title a {
   color: #fff;
 }
 
+/* ==================== Header Right (Toggle + Profile) ==================== */
 .header-right {
   display: flex;
   align-items: center;
   gap: 25px;
 }
 
+/* === Dark Mode Toggle === */
 .toggle-switch {
   position: relative;
   width: 54px;
@@ -86,6 +91,7 @@ h1.header-title a {
   align-items: center;
 }
 
+/* === Circle / Slider === */
 .toggle-slider {
   position: absolute;
   top: 3px;
@@ -106,6 +112,7 @@ h1.header-title a {
   transition: opacity 0.2s ease;
 }
 
+/* When toggled on */
 .toggle-switch input:checked + .toggle-label {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
 }
@@ -114,6 +121,7 @@ h1.header-title a {
   transform: translateX(22px);
 }
 
+/* === Profile Section === */
 .profile-section {
   position: relative;
 }
@@ -155,6 +163,7 @@ h1.header-title a {
   transform: rotate(180deg);
 }
 
+/* === Dropdown Menu === */
 .dropdown-menu {
   position: absolute;
   top: 50px;
