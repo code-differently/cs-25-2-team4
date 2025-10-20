@@ -50,11 +50,9 @@ public class RoomController {
         }
 
         /**
-         * Get all rooms or search rooms
-         * GET /api/rooms - Get all rooms
-         * GET /api/rooms?homeId={homeId} - Get rooms for a specific home
-         * GET /api/rooms?userId={userId} - Get rooms for a specific user (via access)
-         * GET /api/rooms?search={name} - Search rooms by name
+         * Get all rooms or search rooms GET /api/rooms - Get all rooms GET /api/rooms?homeId={homeId} -
+         * Get rooms for a specific home GET /api/rooms?userId={userId} - Get rooms for a specific user
+         * (via access) GET /api/rooms?search={name} - Search rooms by name
          */
         @GetMapping
         public ResponseEntity<List<RoomResponse>> getRooms(

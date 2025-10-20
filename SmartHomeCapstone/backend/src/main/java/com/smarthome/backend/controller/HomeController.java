@@ -50,11 +50,9 @@ public class HomeController {
         }
 
         /**
-         * Get all homes or search homes
-         * GET /api/homes - Get all homes
-         * GET /api/homes?userId={userId} - Get homes for a specific user
-         * GET /api/homes?search={name} - Search homes by name
-         * GET /api/homes?address={address} - Search homes by address
+         * Get all homes or search homes GET /api/homes - Get all homes GET /api/homes?userId={userId} -
+         * Get homes for a specific user GET /api/homes?search={name} - Search homes by name GET
+         * /api/homes?address={address} - Search homes by address
          */
         @GetMapping
         public ResponseEntity<List<HomeResponse>> getHomes(

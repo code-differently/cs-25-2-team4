@@ -34,8 +34,8 @@ public class RoomService {
 
                 // Check if room with same name already exists in this home
                 if (roomRepository.existsByNameAndHome_HomeId(request.getName(), request.getHomeId())) {
-                        throw new RuntimeException("Room with name '" + request.getName() + 
-                                        "' already exists in this home");
+                        throw new RuntimeException(
+                                        "Room with name '" + request.getName() + "' already exists in this home");
                 }
 
                 Room room = new Room(home.get(), request.getName());
@@ -75,7 +75,7 @@ public class RoomService {
                 }
 
                 Room room = existingRoom.get();
-                
+
                 // Check if home exists if being changed
                 if (!room.getHome().getHomeId().equals(request.getHomeId())) {
                         Optional<Home> newHome = homeRepository.findById(request.getHomeId());
@@ -86,14 +86,15 @@ public class RoomService {
                 }
 
                 // Check if new name conflicts with existing room in the same home
-                if (!room.getName().equals(request.getName()) 
-                                && roomRepository.existsByNameAndHome_HomeId(request.getName(), request.getHomeId())) {
-                        throw new RuntimeException("Room with name '" + request.getName() + 
-                                        "' already exists in this home");
+                if (!room.getName().equals(request.getName())
+                                && roomRepository.existsByNameAndHome_HomeId(
+                                                request.getName(), request.getHomeId())) {
+                        throw new RuntimeException(
+                                        "Room with name '" + request.getName() + "' already exists in this home");
                 }
 
                 room.setName(request.getName());
-                
+
                 return roomRepository.save(room);
         }
 

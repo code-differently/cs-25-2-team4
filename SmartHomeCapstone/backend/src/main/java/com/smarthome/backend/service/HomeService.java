@@ -64,16 +64,16 @@ public class HomeService {
                 }
 
                 Home home = existingHome.get();
-                
+
                 // Check if new name conflicts with existing home
-                if (!home.getName().equals(request.getName()) 
+                if (!home.getName().equals(request.getName())
                                 && homeRepository.existsByName(request.getName())) {
                         throw new RuntimeException("Home with name '" + request.getName() + "' already exists");
                 }
 
                 home.setName(request.getName());
                 home.setAddress(request.getAddress());
-                
+
                 return homeRepository.save(home);
         }
 

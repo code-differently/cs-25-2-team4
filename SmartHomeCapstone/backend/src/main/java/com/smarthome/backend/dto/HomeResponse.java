@@ -19,12 +19,13 @@ public class HomeResponse {
                 this.homeId = home.getHomeId();
                 this.name = home.getName();
                 this.address = home.getAddress();
-                
+
                 if (home.getRooms() != null) {
                         this.roomCount = home.getRooms().size();
-                        this.roomIds = home.getRooms().stream()
-                                        .map(room -> room.getRoomId())
-                                        .collect(Collectors.toSet());
+                        this.roomIds =
+                                        home.getRooms().stream()
+                                                        .map(room -> room.getRoomId())
+                                                        .collect(Collectors.toSet());
                 } else {
                         this.roomCount = 0;
                         this.roomIds = Set.of();

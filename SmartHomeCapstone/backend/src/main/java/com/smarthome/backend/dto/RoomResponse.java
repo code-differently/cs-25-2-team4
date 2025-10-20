@@ -21,12 +21,13 @@ public class RoomResponse {
                 this.name = room.getName();
                 this.homeId = room.getHome().getHomeId();
                 this.homeName = room.getHome().getName();
-                
+
                 if (room.getDevices() != null) {
                         this.deviceCount = room.getDevices().size();
-                        this.deviceIds = room.getDevices().stream()
-                                        .map(device -> device.getDeviceId())
-                                        .collect(Collectors.toSet());
+                        this.deviceIds =
+                                        room.getDevices().stream()
+                                                        .map(device -> device.getDeviceId())
+                                                        .collect(Collectors.toSet());
                 } else {
                         this.deviceCount = 0;
                         this.deviceIds = Set.of();
