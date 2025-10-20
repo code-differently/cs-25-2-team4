@@ -3,46 +3,22 @@ import { useState } from "react";
 export default function Register() {
   const [step, setStep] = useState(1);
   const [msg, setMsg] = useState("");
-  const [user, setUser] = useState({
-    firstName: "", lastName: "", username: "", email: "", password: "", dob: ""
-  });
-  const [house, setHouse] = useState({
-    name: "", address: "", type: ""
-  });
+  const [user, setUser] = useState({ firstName: "", lastName: "", username: "", email: "", password: "", dob: "" });
+  const [house, setHouse] = useState({ name: "", address: "", type: "" });
 
-  function onChangeUser(e) {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  }
-  function onChangeHouse(e) {
-    setHouse({ ...house, [e.target.name]: e.target.value });
-  }
+  function onChangeUser(e) { setUser({ ...user, [e.target.name]: e.target.value }); }
+  function onChangeHouse(e) { setHouse({ ...house, [e.target.name]: e.target.value }); }
 
   function next() {
-    if (!user.firstName || !user.lastName || !user.username || !user.email || !user.password) {
-      setMsg("Please fill all user fields.");
-      return;
-    }
-    setMsg("");
-    setStep(2);
+    if (!user.firstName || !user.lastName || !user.username || !user.email || !user.password) { setMsg("Please fill all user fields."); return; }
+    setMsg(""); setStep(2);
   }
-
-  function back() {
-    setMsg("");
-    setStep(1);
-  }
+  function back() { setMsg(""); setStep(1); }
 
   function submit(e) {
     e.preventDefault();
-    if (!house.name || !house.address || !house.type) {
-      setMsg("Please fill all house fields.");
-      return;
-    }
-    setMsg("Creating account (demo)...");
-    const payload = { user, house };
-    setTimeout(() => {
-      console.log(payload);
-      setMsg("Account created (demo).");
-    }, 500);
+    if (!house.name || !house.address || !house.type) { setMsg("Please fill all house fields."); return; }
+    setMsg("Account created (demo).");
   }
 
   const card = { width: 420, background: "#13325B", color: "#fff", padding: 24, borderRadius: 16 };
@@ -85,7 +61,6 @@ export default function Register() {
               <option>Townhouse</option>
               <option>Condo</option>
             </select>
-
             <div style={{ display: "flex", gap: 8 }}>
               <button type="button" onClick={back} style={{ flex: 1, padding: 10, borderRadius: 6, border: 0, background: "#0b1f3b", color: "#fff" }}>Back</button>
               <button type="submit" style={{ flex: 1, padding: 10, borderRadius: 6, border: 0, background: "#1e4fa1", color: "#fff" }}>Create Account</button>
