@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -28,6 +29,9 @@ export default function Login() {
         <input name="password" type="password" value={form.password} onChange={onChange} placeholder="Password" style={{ width: "100%", padding: 10, borderRadius: 6, border: 0, margin: "6px 0 16px" }} />
         <button type="submit" style={{ width: "100%", padding: 10, borderRadius: 6, border: 0, background: "#1e4fa1", color: "#fff" }}>Sign in</button>
         {msg && <div style={{ marginTop: 12, background: "#0b1f3b", padding: 8, borderRadius: 6 }}>{msg}</div>}
+        <div style={{ marginTop: 12, fontSize: 14 }}>
+          Don’t have an account? <Link to="/register" style={{ color: "#bfe3ff" }}>Register</Link>
+        </div>
       </form>
     </div>
   );
