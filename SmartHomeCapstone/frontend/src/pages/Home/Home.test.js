@@ -279,7 +279,7 @@ describe("Home (device adding)", () => {
 
     const deviceCard = screen.getByTestId("device-card");
     expect(deviceCard).toHaveTextContent(/Lamp/);
-    expect(deviceCard).toHaveTextContent(/On|Online/);
+    expect(deviceCard).toHaveTextContent(/Off|Offline/);
   });
 
   it("displays device name and default status after saving", () => {
@@ -307,7 +307,7 @@ describe("Home (device adding)", () => {
     const card = screen.getByTestId("device-card");
 
     expect(card).toHaveTextContent(/lamp/i);
-    expect(card).toHaveTextContent(/on|online/i);
+    expect(card).toHaveTextContent(/off|offline/i);
     expect(card).not.toHaveTextContent(/\(/);
   });
 });
@@ -496,7 +496,7 @@ describe("Device cards (read-only dashboard view)", () => {
     const card = screen.getByTestId("device-card");
 
     expect(card).toHaveTextContent(/lamp/i);
-    expect(card).toHaveTextContent(/on|online/i);
+    expect(card).toHaveTextContent(/off|offline/i);
     expect(card).not.toHaveTextContent(/\(/);
   });
 

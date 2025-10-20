@@ -98,10 +98,10 @@ export const Home = () => {
 
     if (!roomToAssign) return;
 
-    const statusByType = {
-      Light: "On",
-      Thermostat: "Set to 72°F",
-      Camera: "Online",
+    const offStatusByType = {
+      Light: "Off",
+      Thermostat: "Idle",
+      Camera: "Offline",
     };
 
     setDevices([
@@ -110,8 +110,8 @@ export const Home = () => {
         name: deviceName.trim(),
         room: roomToAssign,
         type: deviceType,
-        status: statusByType[deviceType],
-        isOn: true,
+        status: offStatusByType[deviceType],
+        isOn: false,
       },
     ]);
 
@@ -140,7 +140,7 @@ export const Home = () => {
 
     const offStatusByType = {
       Light: "Off",
-      Thermostat: "Standby",
+      Thermostat: "Idle",
       Camera: "Offline",
     };
 
