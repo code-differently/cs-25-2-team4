@@ -4,6 +4,7 @@ import { RoomsBar } from "./RoomsBar.jsx";
 import { DevicesList } from "./DevicesList.jsx";
 import { CameraModal } from "./CameraModal.jsx";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal.jsx";
+import { AddDeviceForm } from "./AddDeviceForm.jsx";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -248,67 +249,21 @@ export const Home = () => {
           )}
 
           {showAddDeviceForm && (
-            <div className="add-device-form">
-              {/* --- Add Device Form --- */}
-              <input
-                placeholder="Device Name"
-                value={deviceName}
-                onChange={(e) => {
-                  setDeviceName(e.target.value);
-                  setDeviceError("");
-                }}
-              />
-              <select
-                aria-label="Select Type"
-                value={deviceType}
-                onChange={(e) => setDeviceType(e.target.value)}
-              >
-                <option value="">-- Select Type --</option>
-                <option value="Light">Light</option>
-                <option value="Thermostat">Thermostat</option>
-                <option value="Camera">Camera</option>
-              </select>
-
-              {deviceTypeError && (
-                <div
-                  className={`toast-device-error ${fadeOutDevice ? "fade-out" : ""}`}
-                >
-                  {deviceTypeError}
-                </div>
-              )}
-
-              {activeRoom === "All" &&
-                rooms.filter((r) => r.name !== "All").length > 1 && (
-                  <select
-                    aria-label="Select Room"
-                    value={selectedRoom}
-                    onChange={(e) => setSelectedRoom(e.target.value)}
-                  >
-                    <option value="">-- Select Room --</option>
-                    {rooms
-                      .filter((r) => r.name !== "All")
-                      .map((r, i) => (
-                        <option key={i} value={r.name}>
-                          {r.name}
-                        </option>
-                      ))}
-                  </select>
-                )}
-
-              <button
-                onClick={handleSaveDevice}
-                disabled={
-                  activeRoom === "All" &&
-                  rooms.filter((r) => r.name !== "All").length > 1 &&
-                  !selectedRoom
-                }
-              >
-                Save
-              </button>
-              <button onClick={() => setShowAddDeviceForm(false)}>
-                Cancel
-              </button>
-            </div>
+            <AddDeviceForm
+              rooms={rooms}
+              activeRoom={activeRoom}
+              deviceName={deviceName}
+              deviceType={deviceType}
+              selectedRoom={selectedRoom}
+              deviceError={deviceError}
+              deviceTypeError={deviceTypeError}
+              fadeOutDevice={fadeOutDevice}
+              onDeviceNameChange={setDeviceName}
+              onDeviceTypeChange={setDeviceType}
+              onRoomSelect={setSelectedRoom}
+              onSave={handleSaveDevice}
+              onCancel={() => setShowAddDeviceForm(false)}
+            />
           )}
 
           {/* --- Device Error Toast --- */}
