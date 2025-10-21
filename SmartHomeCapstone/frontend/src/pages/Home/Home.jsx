@@ -4,9 +4,9 @@ import { RoomsBar } from "./RoomsBar.jsx";
 import { DevicesList } from "./DevicesList.jsx";
 import { CameraModal } from "./CameraModal.jsx";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal.jsx";
-import { AddDeviceForm } from "./AddDeviceForm.jsx";
 import { useDevices } from "./hooks/useDevices";
 import { useRooms } from "./hooks/useRooms";
+import { DevicesHeader } from "./DevicesHeader";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -150,7 +150,6 @@ export const Home = () => {
   /* ==================== Render ==================== */
   return (
     <div className="home">
-
       {/* === Rooms Bar === */}
       <RoomsBar
         rooms={rooms}
@@ -167,47 +166,27 @@ export const Home = () => {
 
       {/* === Devices Section === */}
       <section className="devices-section">
-        <div className="devices-header">
-          {/* --- Devices Header & Add Button --- */}
-          <h2>My Devices</h2>
-
-          {!showAddDeviceForm && (
-            <button
-              data-testid="add-device-btn"
-              className="add-device-btn"
-              onClick={handleAddDeviceClick}
-            >
-              + Add Device
-            </button>
-          )}
-
-          {showAddDeviceForm && (
-            <AddDeviceForm
-              rooms={rooms}
-              activeRoom={activeRoom}
-              deviceName={deviceName}
-              deviceType={deviceType}
-              selectedRoom={selectedRoom}
-              deviceError={deviceError}
-              deviceTypeError={deviceTypeError}
-              fadeOutDevice={fadeOutDevice}
-              onDeviceNameChange={setDeviceName}
-              onDeviceTypeChange={setDeviceType}
-              onRoomSelect={setSelectedRoom}
-              onSave={handleSaveDevice}
-              onCancel={() => setShowAddDeviceForm(false)}
-            />
-          )}
-
-          {/* --- Device Error Toast --- */}
-          {deviceError && (
-            <div
-              className={`toast-device-error ${fadeOutDevice ? "fade-out" : ""}`}
-            >
-              {deviceError}
-            </div>
-          )}
-        </div>
+        <DevicesHeader
+          form={{
+            show: showAddDeviceForm,
+            name: deviceName,
+            type: deviceType,
+            selectedRoom,
+            rooms,
+            activeRoom,
+            deviceError,
+            deviceTypeError,
+            fade: fadeOutDevice,
+          }}
+          actions={{
+            open: handleAddDeviceClick,
+            save: handleSaveDevice,
+            cancel: () => setShowAddDeviceForm(false),
+            changeName: setDeviceName,
+            changeType: setDeviceType,
+            changeRoom: setSelectedRoom,
+          }}
+        />
 
         {/* === Devices List === */}
         <DevicesList
