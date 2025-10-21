@@ -1,2 +1,12 @@
-.auth-page{max-width:460px;padding:16px}
-.auth-title{margin:0 0 12px}
+.auth-wrap{min-height:100vh;display:grid;place-items:center;background:#111}
+.register-card{width:420px;background:#13325B;color:#fff;padding:24px;border-radius:16px}
+.title{margin:0 0 8px}
+.step{font-size:12px;opacity:.9;margin-bottom:12px}
+.input,.select{width:100%;padding:10px;border-radius:6px;border:0;margin:6px 0 12px}
+.mb16{margin-bottom:16px}
+.row{display:flex;gap:8px}
+.btn-primary{padding:10px;border:0;border-radius:6px;background:#1e4fa1;color:#fff;cursor:pointer}
+.btn-secondary{padding:10px;border:0;border-radius:6px;background:#0b1f3b;color:#fff;cursor:pointer}
+.grow{flex:1}
+.btn-full{width:100%}
+.msg{margin-top:12px;background:#0b1f3b;padding:8px;border-radius:6px}
