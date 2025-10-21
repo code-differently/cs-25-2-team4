@@ -6,15 +6,23 @@ import { CameraModal } from "./CameraModal.jsx";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal.jsx";
 import { AddDeviceForm } from "./AddDeviceForm.jsx";
 import { useDevices } from "./hooks/useDevices";
+import { useRooms } from "./hooks/useRooms";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
   /* ==================== State ==================== */
-  const [rooms, setRooms] = useState([{ name: "All", active: true }]);
-  const [showAddRoomForm, setShowAddRoomForm] = useState(false);
-  const [newRoomName, setNewRoomName] = useState("");
-  const [roomError, setRoomError] = useState("");
-  const [fadeOutRoom, setFadeOutRoom] = useState(false);
+  const {
+    rooms,
+    roomError,
+    fadeOutRoom,
+    newRoomName,
+    showAddRoomForm,
+    openAddRoomForm,
+    cancelAddRoomForm,
+    setNewRoomName,
+    activateRoom,
+    addRoom,
+  } = useRooms();
   const [selectedRoom, setSelectedRoom] = useState("");
 
   const { devices, addDevice, toggleDevice, deleteDevice } = useDevices();
@@ -53,35 +61,6 @@ export const Home = () => {
 
   const returnToCameraModal = () => {
     setModalType("camera");
-  };
-
-  /* === Room Handlers === */
-  const handleAddRoomClick = () => setShowAddRoomForm(true);
-
-  const handleSaveRoom = () => {
-    if (!newRoomName.trim()) {
-      setRoomError("Room name is required");
-      setFadeOutRoom(false);
-      setTimeout(() => {
-        setFadeOutRoom(true);
-      }, 1500);
-      setTimeout(() => {
-        setRoomError("");
-        setFadeOutRoom(false);
-      }, 2250);
-      return;
-    }
-
-    setRoomError("");
-    const updatedRooms = rooms.map((r) => ({ ...r, active: false }));
-    const newRoom = { name: newRoomName.trim(), active: true };
-    setRooms([...updatedRooms, newRoom]);
-    setNewRoomName("");
-    setShowAddRoomForm(false);
-  };
-
-  const handleRoomClick = (roomName) => {
-    setRooms(rooms.map((r) => ({ ...r, active: r.name === roomName })));
   };
 
   /* === Device Handlers === */
@@ -150,14 +129,7 @@ export const Home = () => {
     setDeviceError("");
     setDeviceType("");
 
-    setShowAddRoomForm(false);
-
-    setRooms((prev) =>
-      prev.map((r) => ({
-        ...r,
-        active: r.name === roomToAssign,
-      })),
-    );
+    activateRoom(roomToAssign);
   };
 
   const handleToggle = (deviceNameToFlip) => {
@@ -192,11 +164,11 @@ export const Home = () => {
         newRoomName={newRoomName}
         roomError={roomError}
         fadeOutRoom={fadeOutRoom}
-        onRoomClick={handleRoomClick}
-        onAddRoomClick={handleAddRoomClick}
+        onRoomClick={activateRoom}
+        onAddRoomClick={openAddRoomForm}
         onNewRoomNameChange={setNewRoomName}
-        onSaveRoom={handleSaveRoom}
-        onCancelAddRoom={() => setShowAddRoomForm(false)}
+        onSaveRoom={addRoom}
+        onCancelAddRoom={cancelAddRoomForm}
       />
 
       {/* === Devices Section === */}

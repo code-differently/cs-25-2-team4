@@ -17,7 +17,14 @@ export function useDevices() {
   };
 
   const addDevice = (newDevice) => {
-    setDevices((prev) => [...prev, newDevice]);
+    setDevices((prev) => [
+      ...prev,
+      {
+        ...newDevice,
+        isOn: false,
+        status: offStatusByType[newDevice.type],
+      },
+    ]);
   };
 
   const toggleDevice = (deviceName) => {
