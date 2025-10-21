@@ -1,5 +1,5 @@
 import React from "react";
-import { AddDeviceForm } from "./AddDeviceForm";
+import { AddDeviceForm } from "./modals/AddDeviceForm";
 
 export const DevicesHeader = ({ form, actions }) => {
   const {

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import "./Home.css";
 import { RoomsBar } from "./RoomsBar.jsx";
-import { DevicesList } from "./DevicesList.jsx";
-import { CameraModal } from "./CameraModal.jsx";
-import { ConfirmDeleteModal } from "./ConfirmDeleteModal.jsx";
+import { DevicesList } from "./components/DevicesList.jsx";
+import { CameraModal } from "./components/modals/CameraModal.jsx";
+import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
 import { useDevices } from "./hooks/useDevices";
 import { useRooms } from "./hooks/useRooms";
-import { DevicesHeader } from "./DevicesHeader";
+import { DevicesHeader } from "./components/DevicesHeader.jsx";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {

@@ -1,5 +1,5 @@
 import React from "react";
-import cameraGif from "../../assets/camera.gif";
+import cameraGif from "../../../../assets/camera.gif";
 import { Trash } from "lucide-react";
 
 export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
