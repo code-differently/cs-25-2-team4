@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { deviceService } from "../services/deviceService";
+import "./Device.css";
 
 export default function DeviceRemove() {
     const { deviceId } = useParams();
@@ -47,33 +48,19 @@ export default function DeviceRemove() {
     };
 
     if (loading) {
-        return <div style={{ padding: 12 }}>Loading device details...</div>;
+        return <div className="device-loading">Loading device details...</div>;
     }
 
     if (error && !device) {
         return (
-            <div style={{ padding: 12 }}>
+            <div className="device-remove-container">
                 <h1>Remove Device</h1>
-                <div style={{
-                    padding: 8,
-                    border: '1px solid #f5c6cb',
-                    background: '#fdecea',
-                    borderRadius: 4,
-                    color: '#721c24',
-                    marginBottom: 12
-                }}>
+                <div className="device-error">
                     {error}
                 </div>
                 <button
                     onClick={() => navigate("/devices")}
-                    style={{
-                        padding: '8px 16px',
-                        backgroundColor: '#6c757d',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: 4,
-                        cursor: 'pointer'
-                    }}
+                    className="btn btn-secondary"
                 >
                     Back to Devices
                 </button>
@@ -82,28 +69,15 @@ export default function DeviceRemove() {
     }
 
     return (
-        <div style={{ padding: 12 }}>
+        <div className="device-remove-container">
             <h1>Remove Device</h1>
             {error && (
-                <div style={{
-                    padding: 8,
-                    marginBottom: 12,
-                    border: '1px solid #f5c6cb',
-                    background: '#fdecea',
-                    borderRadius: 4,
-                    color: '#721c24'
-                }}>
+                <div className="device-error">
                     {error}
                 </div>
             )}
             {device && (
-                <div style={{
-                    padding: 12,
-                    border: '1px solid #ddd',
-                    borderRadius: 4,
-                    marginBottom: 12,
-                    backgroundColor: '#f8f9fa'
-                }}>
+                <div className="device-details">
                     <h3>Device Details</h3>
                     <p><strong>ID:</strong> {device.id}</p>
                     <p><strong>Name:</strong> {device.name}</p>
@@ -112,31 +86,17 @@ export default function DeviceRemove() {
                     {device.homeId && <p><strong>Home ID:</strong> {device.homeId}</p>}
                 </div>
             )}
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="device-remove-actions">
                 <button
                     onClick={handleDelete}
                     disabled={deleting || !device}
-                    style={{
-                        padding: '8px 16px',
-                        backgroundColor: deleting || !device ? '#ccc' : '#dc3545',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: 4,
-                        cursor: deleting || !device ? 'not-allowed' : 'pointer'
-                    }}
+                    className="btn btn-danger"
                 >
                     {deleting ? 'Deleting...' : 'Delete Device'}
                 </button>
                 <button
                     onClick={() => navigate("/devices")}
-                    style={{
-                        padding: '8px 16px',
-                        backgroundColor: '#6c757d',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: 4,
-                        cursor: 'pointer'
-                    }}
+                    className="btn btn-secondary"
                 >
                     Cancel
                 </button>

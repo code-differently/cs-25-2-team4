@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { deviceService } from "../services/deviceService";
+import "./Device.css";
 
 export default function DeviceAdd() {
     const [formData, setFormData] = useState({
@@ -37,23 +38,16 @@ export default function DeviceAdd() {
     };
 
     return (
-        <div style={{ padding: 12 }}>
+        <div className="device-add-container">
             <h1>Add Device</h1>
             {error && (
-                <div style={{
-                    padding: 8,
-                    marginBottom: 12,
-                    border: '1px solid #f5c6cb',
-                    background: '#fdecea',
-                    borderRadius: 4,
-                    color: '#721c24'
-                }}>
+                <div className="device-error">
                     {error}
                 </div>
             )}
-            <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
-                <div style={{ marginBottom: 12 }}>
-                    <label htmlFor="name" style={{ display: 'block', marginBottom: 4 }}>
+            <form onSubmit={handleSubmit} className="device-add-form">
+                <div className="form-group">
+                    <label htmlFor="name">
                         Device Name:
                     </label>
                     <input
@@ -63,16 +57,11 @@ export default function DeviceAdd() {
                         value={formData.name}
                         onChange={handleInputChange}
                         required
-                        style={{
-                            width: '100%',
-                            padding: 8,
-                            border: '1px solid #ccc',
-                            borderRadius: 4
-                        }}
+                        className="form-control"
                     />
                 </div>
-                <div style={{ marginBottom: 12 }}>
-                    <label htmlFor="type" style={{ display: 'block', marginBottom: 4 }}>
+                <div className="form-group">
+                    <label htmlFor="type">
                         Device Type:
                     </label>
                     <select
@@ -81,12 +70,7 @@ export default function DeviceAdd() {
                         value={formData.type}
                         onChange={handleInputChange}
                         required
-                        style={{
-                            width: '100%',
-                            padding: 8,
-                            border: '1px solid #ccc',
-                            borderRadius: 4
-                        }}
+                        className="form-control"
                     >
                         <option value="">Select a type</option>
                         <option value="LIGHT">Light</option>
@@ -94,8 +78,8 @@ export default function DeviceAdd() {
                         <option value="CAMERA">Security Camera</option>
                     </select>
                 </div>
-                <div style={{ marginBottom: 12 }}>
-                    <label htmlFor="roomId" style={{ display: 'block', marginBottom: 4 }}>
+                <div className="form-group">
+                    <label htmlFor="roomId">
                         Room ID:
                     </label>
                     <input
@@ -104,16 +88,11 @@ export default function DeviceAdd() {
                         name="roomId"
                         value={formData.roomId}
                         onChange={handleInputChange}
-                        style={{
-                            width: '100%',
-                            padding: 8,
-                            border: '1px solid #ccc',
-                            borderRadius: 4
-                        }}
+                        className="form-control"
                     />
                 </div>
-                <div style={{ marginBottom: 12 }}>
-                    <label htmlFor="homeId" style={{ display: 'block', marginBottom: 4 }}>
+                <div className="form-group">
+                    <label htmlFor="homeId">
                         Home ID:
                     </label>
                     <input
@@ -122,40 +101,21 @@ export default function DeviceAdd() {
                         name="homeId"
                         value={formData.homeId}
                         onChange={handleInputChange}
-                        style={{
-                            width: '100%',
-                            padding: 8,
-                            border: '1px solid #ccc',
-                            borderRadius: 4
-                        }}
+                        className="form-control"
                     />
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div className="form-actions">
                     <button
                         type="submit"
                         disabled={loading}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: loading ? '#ccc' : '#007bff',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: 4,
-                            cursor: loading ? 'not-allowed' : 'pointer'
-                        }}
+                        className="btn btn-primary"
                     >
                         {loading ? 'Adding...' : 'Add Device'}
                     </button>
                     <button
                         type="button"
                         onClick={() => navigate("/devices")}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#6c757d',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: 4,
-                            cursor: 'pointer'
-                        }}
+                        className="btn btn-secondary"
                     >
                         Cancel
                     </button>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { deviceService } from "../services/deviceService";
+import "./Device.css";
 
 export default function Devices() {
   const [data, setData] = useState(null);
@@ -21,12 +22,12 @@ export default function Devices() {
 
   useEffect(() => { load(); }, []);
 
-  if (loading) return <div style={{ padding: 12 }}>Loading…</div>;
+  if (loading) return <div className="device-loading">Loading…</div>;
   if (error) return (
-    <div style={{ padding: 12, border: '1px solid #f5c6cb', background: '#fdecea', borderRadius: 8 }}>
+    <div className="device-error">
       <strong>Unable to load devices</strong>
       <div>{error}</div>
-      <button onClick={load} style={{ marginTop: 8 }}>Retry</button>
+      <button onClick={load}>Retry</button>
     </div>
   );
   const handleToggleDevice = async (deviceId, currentStatus) => {
@@ -58,108 +59,58 @@ export default function Devices() {
   };
 
   if (!data || data.length === 0) return (
-    <div style={{ padding: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+    <div className="devices-container">
+      <div className="devices-header">
         <h2>Devices</h2>
-        <a href="/device-add" style={{
-          padding: '8px 16px',
-          backgroundColor: '#007bff',
-          color: 'white',
-          textDecoration: 'none',
-          borderRadius: 4
-        }}>Add Device</a>
+        <a href="/device-add" className="btn btn-primary">Add Device</a>
       </div>
-      <div>No devices yet.</div>
+      <div className="devices-empty">No devices yet.</div>
     </div>
   );
 
   return (
-    <div style={{ padding: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+    <div className="devices-container">
+      <div className="devices-header">
         <h2>Devices</h2>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={load} style={{
-            padding: '8px 16px',
-            backgroundColor: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: 4,
-            cursor: 'pointer'
-          }}>
+        <div className="devices-header-actions">
+          <button onClick={load} className="btn btn-secondary">
             Refresh
           </button>
-          <a href="/device-add" style={{
-            padding: '8px 16px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: 4
-          }}>Add Device</a>
+          <a href="/device-add" className="btn btn-primary">Add Device</a>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gap: 12 }}>
+      <div className="devices-grid">
         {data.map(device => (
-          <div key={device.id} style={{
-            padding: 16,
-            border: '1px solid #ddd',
-            borderRadius: 8,
-            backgroundColor: '#f8f9fa',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div>
-              <h3 style={{ margin: '0 0 8px 0' }}>{device.name}</h3>
-              <p style={{ margin: '0 0 4px 0', color: '#666' }}>
+          <div key={device.id} className="device-card">
+            <div className="device-info">
+              <h3>{device.name}</h3>
+              <p>
                 <strong>Type:</strong> {device.type}
               </p>
               {device.roomId && (
-                <p style={{ margin: '0 0 4px 0', color: '#666' }}>
+                <p>
                   <strong>Room:</strong> {device.roomId}
                 </p>
               )}
-              <p style={{ margin: 0, color: '#666' }}>
+              <p>
                 <strong>Status:</strong>
-                <span style={{
-                  marginLeft: 8,
-                  padding: '2px 8px',
-                  borderRadius: 12,
-                  fontSize: '0.8em',
-                  backgroundColor: device.status === 'ON' ? '#d4edda' : '#f8d7da',
-                  color: device.status === 'ON' ? '#155724' : '#721c24'
-                }}>
+                <span className={`device-status ${device.status === 'ON' ? 'on' : 'off'}`}>
                   {device.status || 'OFF'}
                 </span>
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="device-actions">
               <button
                 onClick={() => handleToggleDevice(device.id, device.status)}
-                style={{
-                  padding: '6px 12px',
-                  backgroundColor: device.status === 'ON' ? '#dc3545' : '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 4,
-                  cursor: 'pointer',
-                  fontSize: '0.9em'
-                }}
+                className={`btn btn-small ${device.status === 'ON' ? 'btn-danger' : 'btn-success'}`}
               >
                 Turn {device.status === 'ON' ? 'Off' : 'On'}
               </button>
               <button
                 onClick={() => handleDeleteDevice(device.id)}
-                style={{
-                  padding: '6px 12px',
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 4,
-                  cursor: 'pointer',
-                  fontSize: '0.9em'
-                }}
+                className="btn btn-small btn-danger"
               >
                 Delete
               </button>
