@@ -1,50 +1,62 @@
 import React from "react";
 import { AddDeviceForm } from "./modals/AddDeviceForm";
 
-export const DevicesHeader = ({ form, actions }) => {
-  const {
-    show, // boolean — showAddDeviceForm
-    deviceError, // deviceError string
-    fade, // fadeOutDevice
-  } = form;
-
+export const DevicesHeader = ({
+  showForm,
+  deviceError,
+  fadeError,
+  onOpenForm,
+  // Form props
+  rooms,
+  activeRoom,
+  deviceName,
+  deviceType,
+  selectedRoom,
+  deviceTypeError,
+  // Form actions
+  onDeviceNameChange,
+  onDeviceTypeChange,
+  onRoomSelect,
+  onSaveDevice,
+  onCancelForm,
+}) => {
   return (
     <div className="devices-header">
       <h2>My Devices</h2>
 
       {/* + Add Device Button */}
-      {!show && (
+      {!showForm && (
         <button
           data-testid="add-device-btn"
           className="add-device-btn"
-          onClick={actions.open}
+          onClick={onOpenForm}
         >
           + Add Device
         </button>
       )}
 
       {/* Add Device Form */}
-      {show && (
+      {showForm && (
         <AddDeviceForm
-          rooms={form.rooms}
-          activeRoom={form.activeRoom}
-          deviceName={form.name}
-          deviceType={form.type}
-          selectedRoom={form.selectedRoom}
-          deviceError={form.deviceError}
-          deviceTypeError={form.deviceTypeError}
-          fadeOutDevice={form.fade}
-          onDeviceNameChange={actions.changeName}
-          onDeviceTypeChange={actions.changeType}
-          onRoomSelect={actions.changeRoom}
-          onSave={actions.save}
-          onCancel={actions.cancel}
+          rooms={rooms}
+          activeRoom={activeRoom}
+          deviceName={deviceName}
+          deviceType={deviceType}
+          selectedRoom={selectedRoom}
+          deviceError={deviceError}
+          deviceTypeError={deviceTypeError}
+          fadeOutDevice={fadeError}
+          onDeviceNameChange={onDeviceNameChange}
+          onDeviceTypeChange={onDeviceTypeChange}
+          onRoomSelect={onRoomSelect}
+          onSave={onSaveDevice}
+          onCancel={onCancelForm}
         />
       )}
 
       {/* Device Error Toast */}
       {deviceError && (
-        <div className={`toast-device-error ${fade ? "fade-out" : ""}`}>
+        <div className={`toast-device-error ${fadeError ? "fade-out" : ""}`}>
           {deviceError}
         </div>
       )}

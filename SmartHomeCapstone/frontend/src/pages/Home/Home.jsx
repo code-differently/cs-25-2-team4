@@ -1,16 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Home.css";
-import { RoomsBar } from "./RoomsBar.jsx";
-import { DevicesList } from "./components/DevicesList.jsx";
-import { CameraModal } from "./components/modals/CameraModal.jsx";
-import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
 import { useDevices } from "./hooks/useDevices";
 import { useRooms } from "./hooks/useRooms";
-import { DevicesHeader } from "./components/DevicesHeader.jsx";
+import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
+import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
-  /* ==================== State ==================== */
+  /* ==================== Custom Hooks ==================== */
   const {
     rooms,
     roomError,
@@ -23,136 +20,27 @@ export const Home = () => {
     activateRoom,
     addRoom,
   } = useRooms();
-  const [selectedRoom, setSelectedRoom] = useState("");
 
   const { devices, addDevice, toggleDevice, deleteDevice } = useDevices();
 
-  const [showAddDeviceForm, setShowAddDeviceForm] = useState(false);
-  const [deviceName, setDeviceName] = useState("");
-  const [deviceError, setDeviceError] = useState("");
-  const [fadeOutDevice, setFadeOutDevice] = useState(false);
-  const [deviceType, setDeviceType] = useState("");
-  const [deviceTypeError, setDeviceTypeError] = useState("");
-
-  // === Camera Modal State ===
-  const [selectedDevice, setSelectedDevice] = useState(null);
-  const [modalType, setModalType] = useState(null);
-
-  const openCameraModal = (device) => {
-    setSelectedDevice(device);
-    setModalType("camera");
-  };
-
-  const closeModal = () => {
-    setSelectedDevice(null);
-    setModalType(null);
-  };
-
-  const requestDeleteDevice = (device) => {
-    setSelectedDevice(device);
-    setModalType("confirm-delete");
-  };
-
-  const confirmDeleteDevice = () => {
-    if (!selectedDevice) return;
-    deleteDevice(selectedDevice.name);
-    closeModal();
-  };
-
-  const returnToCameraModal = () => {
-    setModalType("camera");
-  };
-
-  /* === Device Handlers === */
-  const handleAddDeviceClick = () => {
-    const realRooms = rooms.filter((r) => r.name !== "All");
-
-    if (realRooms.length === 0) {
-      setDeviceError("Create a room first");
-      setFadeOutDevice(false);
-      setTimeout(() => setFadeOutDevice(true), 1500);
-      setTimeout(() => {
-        setDeviceError("");
-        setFadeOutDevice(false);
-      }, 2250);
-      return;
-    }
-
-    setShowAddDeviceForm(true);
-  };
-
-  const handleSaveDevice = () => {
-    const activeRoom = rooms.find((r) => r.active)?.name;
-
-    if (!deviceName.trim()) {
-      setDeviceError("Device name is required");
-      setFadeOutDevice(false);
-      setTimeout(() => setFadeOutDevice(true), 1500);
-      setTimeout(() => {
-        setDeviceError("");
-        setFadeOutDevice(false);
-      }, 2250);
-      return;
-    }
-
-    if (!deviceType) {
-      setDeviceTypeError("Device type is required");
-      setFadeOutDevice(false);
-      setTimeout(() => setFadeOutDevice(true), 1500);
-      setTimeout(() => {
-        setDeviceTypeError("");
-        setFadeOutDevice(false);
-      }, 2250);
-      return;
-    }
-
-    const realRooms = rooms.filter((r) => r.name !== "All");
-    const roomToAssign =
-      activeRoom === "All"
-        ? realRooms.length === 1
-          ? realRooms[0].name
-          : selectedRoom
-        : activeRoom;
-
-    if (!roomToAssign) return;
-
-    addDevice({
-      name: deviceName.trim(),
-      room: roomToAssign,
-      type: deviceType,
-      isOn: false,
-    });
-
-    setDeviceName("");
-    setSelectedRoom("");
-    setShowAddDeviceForm(false);
-    setDeviceError("");
-    setDeviceType("");
-
-    activateRoom(roomToAssign);
-  };
-
-  const handleToggle = (deviceNameToFlip) => {
-    toggleDevice(deviceNameToFlip);
-    setSelectedDevice((prev) => {
-      if (!prev || prev.name !== deviceNameToFlip) return prev;
-      return {
-        ...prev,
-        isOn: !prev.isOn,
-        status: !prev.isOn ? "Online" : "Offline",
-      };
-    });
-  };
-
-  /* === Derived Values === */
-  const activeRoom = rooms.find((r) => r.active)?.name;
+  const {
+    selectedDevice,
+    modalType,
+    openCameraModal,
+    closeModal,
+    requestDeleteDevice,
+    confirmDeleteDevice,
+    returnToCameraModal,
+    handleToggle,
+  } = useModalManager(toggleDevice, deleteDevice);
 
   /* ==================== Render ==================== */
   return (
     <div className="home">
-      {/* === Rooms Bar === */}
-      <RoomsBar
+      {/* Room and Device Management */}
+      <RoomDeviceCoordinator
         rooms={rooms}
+        devices={devices}
         showAddRoomForm={showAddRoomForm}
         newRoomName={newRoomName}
         roomError={roomError}
@@ -162,60 +50,22 @@ export const Home = () => {
         onNewRoomNameChange={setNewRoomName}
         onSaveRoom={addRoom}
         onCancelAddRoom={cancelAddRoomForm}
+        onAddDevice={addDevice}
+        onToggleDevice={handleToggle}
+        onCameraOpen={openCameraModal}
       />
 
-      {/* === Devices Section === */}
-      <section className="devices-section">
-        <DevicesHeader
-          form={{
-            show: showAddDeviceForm,
-            name: deviceName,
-            type: deviceType,
-            selectedRoom,
-            rooms,
-            activeRoom,
-            deviceError,
-            deviceTypeError,
-            fade: fadeOutDevice,
-          }}
-          actions={{
-            open: handleAddDeviceClick,
-            save: handleSaveDevice,
-            cancel: () => setShowAddDeviceForm(false),
-            changeName: setDeviceName,
-            changeType: setDeviceType,
-            changeRoom: setSelectedRoom,
-          }}
-        />
-
-        {/* === Devices List === */}
-        <DevicesList
-          devices={devices}
-          activeRoom={activeRoom}
-          onToggle={handleToggle}
-          onCameraOpen={openCameraModal}
-        />
-      </section>
-      {/* === CAMERA MODAL === */}
-      {modalType === "camera" && selectedDevice && (
-        <CameraModal
-          device={selectedDevice}
-          onClose={closeModal}
-          onToggle={handleToggle}
-          onRequestDelete={requestDeleteDevice}
-        />
-      )}
-
-      {/* === CONFIRM DELETE MODAL (overlay above camera modal) === */}
-      {modalType === "confirm-delete" && selectedDevice && (
-        <div className="confirm-overlay">
-          <ConfirmDeleteModal
-            deviceName={selectedDevice.name}
-            onConfirm={confirmDeleteDevice}
-            onCancel={returnToCameraModal}
-          />
-        </div>
-      )}
+      {/* Modal Management */}
+      <ModalManager
+        selectedDevice={selectedDevice}
+        modalType={modalType}
+        onClose={closeModal}
+        onToggleDevice={handleToggle}
+        onDeleteDevice={deleteDevice}
+        onRequestDelete={requestDeleteDevice}
+        onConfirmDelete={confirmDeleteDevice}
+        onReturnToCamera={returnToCameraModal}
+      />
     </div>
   );
 };
