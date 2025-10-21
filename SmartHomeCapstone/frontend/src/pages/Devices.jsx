@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { deviceService } from "../services/deviceService";
+import "./Device.css";
 
 export default function Devices() {
   const [data, setData] = useState(null);
@@ -9,17 +11,8 @@ export default function Devices() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_BASE}/devices`);
-      if (!res.ok) {
-        const msg =
-          res.status === 404 ? "No devices found."
-          : res.status === 401 ? "Please log in."
-          : res.status >= 500 ? "Server error. Try again shortly."
-          : "Failed to load devices.";
-        throw new Error(msg);
-      }
-      const json = await res.json();
-      setData(json);
+      const devices = await deviceService.getAllDevices();
+      setData(devices);
     } catch (e) {
       setError(e.message || "Network error. Check your connection.");
     } finally {
@@ -29,21 +22,102 @@ export default function Devices() {
 
   useEffect(() => { load(); }, []);
 
-  if (loading) return <div style={{padding:12}}>Loading…</div>;
+  if (loading) return <div className="device-loading">Loading…</div>;
   if (error) return (
-    <div style={{padding:12, border:'1px solid #f5c6cb', background:'#fdecea', borderRadius:8}}>
+    <div className="device-error">
       <strong>Unable to load devices</strong>
       <div>{error}</div>
-      <button onClick={load} style={{marginTop:8}}>Retry</button>
+      <button onClick={load}>Retry</button>
     </div>
   );
-  if (!data || data.length === 0) return <div style={{padding:12}}>No devices yet.</div>;
+  const handleToggleDevice = async (deviceId, currentStatus) => {
+    try {
+      if (currentStatus === 'ON') {
+        await deviceService.turnDeviceOff(deviceId);
+      } else {
+        await deviceService.turnDeviceOn(deviceId);
+      }
+      // Refresh the device list to show updated status
+      load();
+    } catch (error) {
+      setError(`Failed to toggle device: ${error.message}`);
+    }
+  };
+
+  const handleDeleteDevice = async (deviceId) => {
+    // eslint-disable-next-line no-restricted-globals
+    if (!confirm('Are you sure you want to delete this device?')) {
+      return;
+    }
+
+    try {
+      await deviceService.deleteDevice(deviceId);
+      load(); // Refresh the list
+    } catch (error) {
+      setError(`Failed to delete device: ${error.message}`);
+    }
+  };
+
+  if (!data || data.length === 0) return (
+    <div className="devices-container">
+      <div className="devices-header">
+        <h2>Devices</h2>
+        <a href="/device-add" className="btn btn-primary">Add Device</a>
+      </div>
+      <div className="devices-empty">No devices yet.</div>
+    </div>
+  );
 
   return (
-    <div style={{padding:12}}>
-      <h2>Devices</h2>
-      <ul>{data.map(d => <li key={d.id}>{d.name} — {d.category}</li>)}</ul>
-      <button onClick={load}>Refresh</button>
+    <div className="devices-container">
+      <div className="devices-header">
+        <h2>Devices</h2>
+        <div className="devices-header-actions">
+          <button onClick={load} className="btn btn-secondary">
+            Refresh
+          </button>
+          <a href="/device-add" className="btn btn-primary">Add Device</a>
+        </div>
+      </div>
+
+      <div className="devices-grid">
+        {data.map(device => (
+          <div key={device.id} className="device-card">
+            <div className="device-info">
+              <h3>{device.name}</h3>
+              <p>
+                <strong>Type:</strong> {device.type}
+              </p>
+              {device.roomId && (
+                <p>
+                  <strong>Room:</strong> {device.roomId}
+                </p>
+              )}
+              <p>
+                <strong>Status:</strong>
+                <span className={`device-status ${device.status === 'ON' ? 'on' : 'off'}`}>
+                  {device.status || 'OFF'}
+                </span>
+              </p>
+            </div>
+
+            <div className="device-actions">
+              <button
+                onClick={() => handleToggleDevice(device.id, device.status)}
+                className={`btn btn-small ${device.status === 'ON' ? 'btn-danger' : 'btn-success'}`}
+              >
+                Turn {device.status === 'ON' ? 'Off' : 'On'}
+              </button>
+              <button
+                onClick={() => handleDeleteDevice(device.id)}
+                className="btn btn-small btn-danger"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
