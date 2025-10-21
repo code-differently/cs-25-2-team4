@@ -6,9 +6,9 @@ import {
   Camera as CameraIcon,
   Trash,
 } from "lucide-react";
-import cameraGif from "../../assets/camera.gif";
 import { RoomsBar } from "./RoomsBar.jsx";
 import { DevicesList } from "./DevicesList.jsx";
+import { CameraModal } from "./CameraModal.jsx";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -364,58 +364,14 @@ export const Home = () => {
         />
       </section>
       {/* === CAMERA MODAL === */}
-      {modalType === "camera" &&
-        selectedDevice &&
-        selectedDevice.type === "Camera" && (
-          <div className="modal-backdrop" onClick={closeModal}>
-            <div
-              className="modal-card camera-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Dim everything when OFF */}
-              {!selectedDevice.isOn && (
-                <div className="modal-dim-overlay"></div>
-              )}
-
-              {/* ROW 1 — TOGGLE & DELETE */}
-              <div className="modal-row top-controls">
-                <label
-                  className="device-toggle"
-                  aria-label={`Toggle ${selectedDevice.name}`}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!selectedDevice.isOn}
-                    onChange={() => handleToggle(selectedDevice.name)}
-                  />
-                  <span className="slider"></span>
-                </label>
-
-                <button
-                  className="delete-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    requestDeleteDevice(selectedDevice);
-                  }}
-                >
-                  <Trash size={16} />
-                  <span>Delete</span>
-                </button>
-              </div>
-
-              {/* ROW 2 — TITLE */}
-              <h2 className="modal-title">{selectedDevice.name} — Camera</h2>
-
-              {/* CAMERA FEED */}
-              <div
-                className={`camera-feed ${selectedDevice.isOn ? "" : "off"}`}
-              >
-                <img src={cameraGif} alt="Camera feed" draggable="false" />
-              </div>
-            </div>
-          </div>
-        )}
+      {modalType === "camera" && selectedDevice && (
+        <CameraModal
+          device={selectedDevice}
+          onClose={closeModal}
+          onToggle={handleToggle}
+          onRequestDelete={requestDeleteDevice}
+        />
+      )}
 
       {/* === CONFIRM DELETE MODAL (overlay above camera modal) === */}
       {modalType === "confirm-delete" && selectedDevice && (

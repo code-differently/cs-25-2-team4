@@ -28,8 +28,6 @@ export const DevicesList = ({
             if (device.type === "Camera") onCameraOpen(device);
           }}
         >
-          {/* header section with icon & toggle */}
-
           <label
             className="device-toggle"
             aria-label={`Toggle ${device.name}`}

@@ -14,7 +14,6 @@ export const RoomsBar = ({
 }) => {
   return (
     <div className="rooms-bar" role="navigation" aria-label="rooms">
-      {/* Existing room buttons */}
       {rooms.map((room, index) => (
         <button
           key={index}
@@ -24,11 +23,8 @@ export const RoomsBar = ({
           {room.name}
         </button>
       ))}
-
-      {/* + Add button */}
       {!showAddRoomForm && <button onClick={onAddRoomClick}>+ Add</button>}
 
-      {/* Add-room form */}
       {showAddRoomForm && (
         <div className="add-room-form">
           <input
