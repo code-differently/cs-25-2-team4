@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import "./Home.css";
-import { Lightbulb, Thermometer, Camera as CameraIcon } from "lucide-react";
+import {
+  Lightbulb,
+  Thermometer,
+  Camera as CameraIcon,
+  Trash,
+} from "lucide-react";
 import cameraGif from "../../assets/camera.gif";
-import { Trash } from "lucide-react";
+import { RoomsBar } from "./RoomsBar.jsx";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -246,36 +251,18 @@ export const Home = () => {
       )}
 
       {/* === Rooms Bar === */}
-      <div className="rooms-bar" role="navigation" aria-label="rooms">
-        {rooms.map((room, index) => (
-          <button
-            key={index}
-            className={room.active ? "active" : ""}
-            onClick={() => handleRoomClick(room.name)}
-          >
-            {room.name}
-          </button>
-        ))}
-
-        {!showAddRoomForm && (
-          <button onClick={handleAddRoomClick}>+ Add</button>
-        )}
-
-        {showAddRoomForm && (
-          <div className="add-room-form">
-            <input
-              placeholder="Room Name"
-              value={newRoomName}
-              onChange={(e) => {
-                setNewRoomName(e.target.value);
-                setRoomError("");
-              }}
-            />
-            <button onClick={handleSaveRoom}>Save Room</button>
-            <button onClick={() => setShowAddRoomForm(false)}>Cancel</button>
-          </div>
-        )}
-      </div>
+      <RoomsBar
+        rooms={rooms}
+        showAddRoomForm={showAddRoomForm}
+        newRoomName={newRoomName}
+        roomError={roomError}
+        fadeOutRoom={fadeOutRoom}
+        onRoomClick={handleRoomClick}
+        onAddRoomClick={handleAddRoomClick}
+        onNewRoomNameChange={setNewRoomName}
+        onSaveRoom={handleSaveRoom}
+        onCancelAddRoom={() => setShowAddRoomForm(false)}
+      />
 
       {/* === Devices Section === */}
       <section className="devices-section">
@@ -480,26 +467,32 @@ export const Home = () => {
         )}
 
       {/* === CONFIRM DELETE MODAL (overlay above camera modal) === */}
-{modalType === "confirm-delete" && selectedDevice && (
-  <div className="confirm-overlay">
-    <div
-      className="confirm-modal-card"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <h3 className="confirm-title">Delete “{selectedDevice.name}”?</h3>
-      <p className="confirm-text">This action cannot be undone.</p>
+      {modalType === "confirm-delete" && selectedDevice && (
+        <div className="confirm-overlay">
+          <div
+            className="confirm-modal-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="confirm-title">Delete “{selectedDevice.name}”?</h3>
+            <p className="confirm-text">This action cannot be undone.</p>
 
-      <div className="confirm-actions">
-        <button onClick={confirmDeleteDevice} className="confirm-delete-btn">
-          Delete
-        </button>
-        <button onClick={returnToCameraModal} className="confirm-cancel-btn">
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="confirm-actions">
+              <button
+                onClick={confirmDeleteDevice}
+                className="confirm-delete-btn"
+              >
+                Delete
+              </button>
+              <button
+                onClick={returnToCameraModal}
+                className="confirm-cancel-btn"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
