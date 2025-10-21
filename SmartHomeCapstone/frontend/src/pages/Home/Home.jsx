@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import cameraGif from "../../assets/camera.gif";
 import { RoomsBar } from "./RoomsBar.jsx";
+import { DevicesList } from "./DevicesList.jsx";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -355,62 +356,12 @@ export const Home = () => {
         </div>
 
         {/* === Devices List === */}
-        <div className="devices-list">
-          {activeRoom !== "All" && filteredDevices.length === 0 ? (
-            <p className="empty-devices-msg">No devices in this room yet</p>
-          ) : (
-            <div className="devices-grid">
-              {/* --- Device Cards Grid --- */}
-              {filteredDevices.map((device, index) => (
-                <div
-                  key={index}
-                  data-testid="device-card"
-                  className={`device-card ${device.isOn ? "is-on" : "is-off"} ${
-                    device.type === "Camera" ? "clickable" : ""
-                  }`}
-                  onClick={() => {
-                    if (device.type === "Camera") openCameraModal(device);
-                  }}
-                >
-                  <div className="device-card-header">
-                    <div className="device-head-left">
-                      <span className="icon-box">
-                        <DeviceIcon type={device.type} />
-                      </span>
-                    </div>
-
-                    <label
-                      className="device-toggle"
-                      aria-label={`Toggle ${device.name}`}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={!!device.isOn}
-                        onChange={() => handleToggle(device.name)}
-                      />
-                      <span className="slider"></span>
-                    </label>
-                  </div>
-
-                  <span className={`device-title ${device.isOn ? "" : "dim"}`}>
-                    {device.name}
-                  </span>
-
-                  {device.status && (
-                    <span
-                      className={`device-status-text ${
-                        device.isOn ? "" : "status-dim"
-                      }`}
-                    >
-                      {device.status}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <DevicesList
+          devices={devices}
+          activeRoom={activeRoom}
+          onToggle={handleToggle}
+          onCameraOpen={openCameraModal}
+        />
       </section>
       {/* === CAMERA MODAL === */}
       {modalType === "camera" &&
