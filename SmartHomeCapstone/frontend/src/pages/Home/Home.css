@@ -341,3 +341,111 @@ body.dark-mode .device-card.is-off {
 .device-status-text.status-dim {
   opacity: 0.55;
 }
+
+/* Modal Backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+.modal-backdrop.no-close { pointer-events: none; }
+.modal-backdrop.no-close .modal-card { pointer-events: auto; }
+
+/* Modal Container styled LIKE device cards */
+/* Positioning and style like device card */
+.modal-card.camera-modal {
+  position: relative;
+  width: 450px;
+  min-height: 480px;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 6px 20px -8px rgba(0,0,0,0.15);
+  color: #fff;
+  background: #006EFF; /* ON state blue */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Dim overlay over entire modal */
+.modal-dim-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  pointer-events: none;
+  border-radius: 16px;
+}
+
+.modal-row.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  text-align: center;
+  margin: 0;
+}
+
+.camera-feed {
+  position: relative;      /* required so overlay anchors to it */
+  border-radius: 12px;
+  overflow: hidden;
+  height: 260px;
+  margin: 12px 0;
+}
+
+.camera-feed.off::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0.95;           /* almost full black */
+  pointer-events: none;
+}
+
+
+.camera-feed img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Delete button */
+.delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #3a3a3a;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.delete-btn:hover {
+  background: #5a5a5a;
+}
+
+/* Confirm Modal actions */
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+.confirm-actions .danger {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.confirm-actions .danger:hover {
+  background: #666;
+}

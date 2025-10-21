@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Home.css";
 import { Lightbulb, Thermometer, Camera as CameraIcon } from "lucide-react";
 import cameraGif from "../../assets/camera.gif";
+import { Trash } from "lucide-react";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -46,8 +47,8 @@ export const Home = () => {
     closeModal();
   };
 
-  const cancelDelete = () => {
-    closeModal();
+  const returnToCameraModal = () => {
+    setModalType("camera");
   };
 
   /* === Room Handlers === */
@@ -189,6 +190,17 @@ export const Home = () => {
         };
       }),
     );
+
+    // keep modal's selected device in sync
+    setSelectedDevice((prev) => {
+      if (!prev || prev.name !== deviceNameToFlip) return prev;
+      const nextOn = !prev.isOn;
+      return {
+        ...prev,
+        isOn: nextOn,
+        status: nextOn ? statusByType[prev.type] : offStatusByType[prev.type],
+      };
+    });
   };
 
   /* === Derived Values === */
@@ -383,7 +395,7 @@ export const Home = () => {
                     <label
                       className="device-toggle"
                       aria-label={`Toggle ${device.name}`}
-                      onClick={(e) => e.stopPropagation()} 
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <input
                         type="checkbox"
@@ -411,61 +423,74 @@ export const Home = () => {
               ))}
             </div>
           )}
-          {/* === Camera Modal === */}
-          {modalType === "camera" &&
-            selectedDevice &&
-            selectedDevice.type === "Camera" && (
-              <div className="modal-backdrop" onClick={closeModal}>
-                <div
-                  className="modal-card"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="modal-header">
-                    <h2>{selectedDevice.name} — Camera Feed</h2>
-                    <button onClick={closeModal}>✕</button>
-                  </div>
-
-                  <div className="modal-body">
-                    <div
-                      className={`camera-feed ${selectedDevice.isOn ? "on" : "off"}`}
-                    >
-                      <img src={cameraGif} alt="camera feed" />
-                    </div>
-
-                    <button
-                      onClick={() => handleToggle(selectedDevice.name)}
-                      className="toggle"
-                    >
-                      {selectedDevice.isOn ? "Turn Off" : "Turn On"}
-                    </button>
-
-                    <button
-                      className="delete-btn"
-                      onClick={() => requestDeleteDevice(selectedDevice)}
-                    >
-                      Delete Device
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          {/* === Confirm Delete === */}
-          {modalType === "confirm-delete" && selectedDevice && (
-            <div className="modal-backdrop" onClick={cancelDelete}>
-              <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-                <h3>Delete "{selectedDevice.name}"?</h3>
-                <p>This action cannot be undone.</p>
-                <div className="confirm-actions">
-                  <button onClick={confirmDeleteDevice} className="danger">
-                    Delete
-                  </button>
-                  <button onClick={cancelDelete}>Cancel</button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </section>
+      {/* === CAMERA MODAL === */}
+{modalType === "camera" && selectedDevice && selectedDevice.type === "Camera" && (
+  <div className="modal-backdrop" onClick={closeModal}>
+    <div className="modal-card camera-modal" onClick={(e) => e.stopPropagation()}>
+      
+      {/* Dim everything when OFF */}
+      {!selectedDevice.isOn && <div className="modal-dim-overlay"></div>}
+
+      {/* ROW 1 — TOGGLE & DELETE */}
+      <div className="modal-row top-controls">
+        <label
+          className="device-toggle"
+          aria-label={`Toggle ${selectedDevice.name}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <input
+            type="checkbox"
+            checked={!!selectedDevice.isOn}
+            onChange={() => handleToggle(selectedDevice.name)}
+          />
+          <span className="slider"></span>
+        </label>
+
+        <button
+          className="delete-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            requestDeleteDevice(selectedDevice);
+          }}
+        >
+          <Trash size={16} />
+          <span>Delete</span>
+        </button>
+      </div>
+
+      {/* ROW 2 — TITLE */}
+      <h2 className="modal-title">{selectedDevice.name} — Camera</h2>
+
+      {/* CAMERA FEED */}
+      <div className={`camera-feed ${selectedDevice.isOn ? "" : "off"}`}>
+        <img src={cameraGif} alt="Camera feed" draggable="false" />
+      </div>
+
+    </div>
+  </div>
+)}
+
+
+{/* === CONFIRM DELETE MODAL === */}
+{modalType === "confirm-delete" && selectedDevice && (
+  <div className="modal-backdrop no-close">
+    <div className="modal-card confirm-modal" onClick={(e) => e.stopPropagation()}>
+      <h3>Delete “{selectedDevice.name}”?</h3>
+      <p>This action cannot be undone.</p>
+      <div className="confirm-actions">
+        <button onClick={confirmDeleteDevice} className="danger">
+          Delete
+        </button>
+        <button onClick={returnToCameraModal}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
