@@ -204,8 +204,8 @@ body:not(.dark-mode) {
 }
 
 .toast-room-error {
-    top: -32px;
-    left: 70px;
+    top: -10px;
+    left: 150px;
     z-index: 20;
 }
 

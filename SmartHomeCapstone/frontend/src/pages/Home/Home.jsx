@@ -36,7 +36,7 @@ export const Home = () => {
 
   // === Camera Modal State ===
   const [selectedDevice, setSelectedDevice] = useState(null);
-  const [modalType, setModalType] = useState(null); // "camera" | "confirm-delete" | null
+  const [modalType, setModalType] = useState(null);
 
   const openCameraModal = (device) => {
     setSelectedDevice(device);
@@ -150,12 +150,6 @@ export const Home = () => {
   /* ==================== Render ==================== */
   return (
     <div className="home">
-      {/* === Room Error Toast === */}
-      {roomError && (
-        <div className={`toast-room-error ${fadeOutRoom ? "fade-out" : ""}`}>
-          {roomError}
-        </div>
-      )}
 
       {/* === Rooms Bar === */}
       <RoomsBar
