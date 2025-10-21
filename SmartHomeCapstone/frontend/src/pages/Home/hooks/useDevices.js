@@ -3,7 +3,7 @@ import { useState } from "react";
 export function useDevices() {
   const [devices, setDevices] = useState([]);
 
-  // status maps now live inside the hook
+  // status maps live inside the hook
   const statusByType = {
     Light: "On",
     Thermostat: "Set to 72°F",

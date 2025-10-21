@@ -16,13 +16,8 @@ export const Home = () => {
   const [roomError, setRoomError] = useState("");
   const [fadeOutRoom, setFadeOutRoom] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState("");
-  
-  const {
-  devices,
-  addDevice,
-  toggleDevice,
-  deleteDevice,
-} = useDevices();
+
+  const { devices, addDevice, toggleDevice, deleteDevice } = useDevices();
 
   const [showAddDeviceForm, setShowAddDeviceForm] = useState(false);
   const [deviceName, setDeviceName] = useState("");
@@ -51,10 +46,10 @@ export const Home = () => {
   };
 
   const confirmDeleteDevice = () => {
-  if (!selectedDevice) return;
-   deleteDevice(selectedDevice.name);
-   closeModal();
- };
+    if (!selectedDevice) return;
+    deleteDevice(selectedDevice.name);
+    closeModal();
+  };
 
   const returnToCameraModal = () => {
     setModalType("camera");
@@ -149,7 +144,6 @@ export const Home = () => {
       isOn: false,
     });
 
-
     setDeviceName("");
     setSelectedRoom("");
     setShowAddDeviceForm(false);
@@ -167,17 +161,16 @@ export const Home = () => {
   };
 
   const handleToggle = (deviceNameToFlip) => {
-  toggleDevice(deviceNameToFlip);
-  setSelectedDevice((prev) => {
-    if (!prev || prev.name !== deviceNameToFlip) return prev;
-    return {
-      ...prev,
-      isOn: !prev.isOn,
-      status: !prev.isOn ? "Online" : "Offline",
-    };
-  });
-};
-
+    toggleDevice(deviceNameToFlip);
+    setSelectedDevice((prev) => {
+      if (!prev || prev.name !== deviceNameToFlip) return prev;
+      return {
+        ...prev,
+        isOn: !prev.isOn,
+        status: !prev.isOn ? "Online" : "Offline",
+      };
+    });
+  };
 
   /* === Derived Values === */
   const activeRoom = rooms.find((r) => r.active)?.name;
