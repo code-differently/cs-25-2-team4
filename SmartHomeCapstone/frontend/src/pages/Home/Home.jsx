@@ -383,6 +383,7 @@ export const Home = () => {
                     <label
                       className="device-toggle"
                       aria-label={`Toggle ${device.name}`}
+                      onClick={(e) => e.stopPropagation()} 
                     >
                       <input
                         type="checkbox"
