@@ -3,6 +3,7 @@ import "./Home.css";
 import { RoomsBar } from "./RoomsBar.jsx";
 import { DevicesList } from "./DevicesList.jsx";
 import { CameraModal } from "./CameraModal.jsx";
+import { ConfirmDeleteModal } from "./ConfirmDeleteModal.jsx";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -341,28 +342,11 @@ export const Home = () => {
       {/* === CONFIRM DELETE MODAL (overlay above camera modal) === */}
       {modalType === "confirm-delete" && selectedDevice && (
         <div className="confirm-overlay">
-          <div
-            className="confirm-modal-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="confirm-title">Delete “{selectedDevice.name}”?</h3>
-            <p className="confirm-text">This action cannot be undone.</p>
-
-            <div className="confirm-actions">
-              <button
-                onClick={confirmDeleteDevice}
-                className="confirm-delete-btn"
-              >
-                Delete
-              </button>
-              <button
-                onClick={returnToCameraModal}
-                className="confirm-cancel-btn"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+          <ConfirmDeleteModal
+            deviceName={selectedDevice.name}
+            onConfirm={confirmDeleteDevice}
+            onCancel={returnToCameraModal}
+          />
         </div>
       )}
     </div>
