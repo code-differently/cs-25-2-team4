@@ -426,71 +426,80 @@ export const Home = () => {
         </div>
       </section>
       {/* === CAMERA MODAL === */}
-{modalType === "camera" && selectedDevice && selectedDevice.type === "Camera" && (
-  <div className="modal-backdrop" onClick={closeModal}>
-    <div className="modal-card camera-modal" onClick={(e) => e.stopPropagation()}>
-      
-      {/* Dim everything when OFF */}
-      {!selectedDevice.isOn && <div className="modal-dim-overlay"></div>}
+      {modalType === "camera" &&
+        selectedDevice &&
+        selectedDevice.type === "Camera" && (
+          <div className="modal-backdrop" onClick={closeModal}>
+            <div
+              className="modal-card camera-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Dim everything when OFF */}
+              {!selectedDevice.isOn && (
+                <div className="modal-dim-overlay"></div>
+              )}
 
-      {/* ROW 1 — TOGGLE & DELETE */}
-      <div className="modal-row top-controls">
-        <label
-          className="device-toggle"
-          aria-label={`Toggle ${selectedDevice.name}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <input
-            type="checkbox"
-            checked={!!selectedDevice.isOn}
-            onChange={() => handleToggle(selectedDevice.name)}
-          />
-          <span className="slider"></span>
-        </label>
+              {/* ROW 1 — TOGGLE & DELETE */}
+              <div className="modal-row top-controls">
+                <label
+                  className="device-toggle"
+                  aria-label={`Toggle ${selectedDevice.name}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={!!selectedDevice.isOn}
+                    onChange={() => handleToggle(selectedDevice.name)}
+                  />
+                  <span className="slider"></span>
+                </label>
 
-        <button
-          className="delete-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            requestDeleteDevice(selectedDevice);
-          }}
-        >
-          <Trash size={16} />
-          <span>Delete</span>
-        </button>
-      </div>
+                <button
+                  className="delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    requestDeleteDevice(selectedDevice);
+                  }}
+                >
+                  <Trash size={16} />
+                  <span>Delete</span>
+                </button>
+              </div>
 
-      {/* ROW 2 — TITLE */}
-      <h2 className="modal-title">{selectedDevice.name} — Camera</h2>
+              {/* ROW 2 — TITLE */}
+              <h2 className="modal-title">{selectedDevice.name} — Camera</h2>
 
-      {/* CAMERA FEED */}
-      <div className={`camera-feed ${selectedDevice.isOn ? "" : "off"}`}>
-        <img src={cameraGif} alt="Camera feed" draggable="false" />
-      </div>
+              {/* CAMERA FEED */}
+              <div
+                className={`camera-feed ${selectedDevice.isOn ? "" : "off"}`}
+              >
+                <img src={cameraGif} alt="Camera feed" draggable="false" />
+              </div>
+            </div>
+          </div>
+        )}
 
-    </div>
-  </div>
-)}
-
-
-{/* === CONFIRM DELETE MODAL === */}
+      {/* === CONFIRM DELETE MODAL (overlay above camera modal) === */}
 {modalType === "confirm-delete" && selectedDevice && (
-  <div className="modal-backdrop no-close">
-    <div className="modal-card confirm-modal" onClick={(e) => e.stopPropagation()}>
-      <h3>Delete “{selectedDevice.name}”?</h3>
-      <p>This action cannot be undone.</p>
+  <div className="confirm-overlay">
+    <div
+      className="confirm-modal-card"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3 className="confirm-title">Delete “{selectedDevice.name}”?</h3>
+      <p className="confirm-text">This action cannot be undone.</p>
+
       <div className="confirm-actions">
-        <button onClick={confirmDeleteDevice} className="danger">
+        <button onClick={confirmDeleteDevice} className="confirm-delete-btn">
           Delete
         </button>
-        <button onClick={returnToCameraModal}>
+        <button onClick={returnToCameraModal} className="confirm-cancel-btn">
           Cancel
         </button>
       </div>
     </div>
   </div>
 )}
-
     </div>
   );
 };
