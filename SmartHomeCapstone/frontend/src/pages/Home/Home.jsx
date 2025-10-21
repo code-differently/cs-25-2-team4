@@ -5,6 +5,7 @@ import { DevicesList } from "./DevicesList.jsx";
 import { CameraModal } from "./CameraModal.jsx";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal.jsx";
 import { AddDeviceForm } from "./AddDeviceForm.jsx";
+import { useDevices } from "./hooks/useDevices";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -15,10 +16,16 @@ export const Home = () => {
   const [roomError, setRoomError] = useState("");
   const [fadeOutRoom, setFadeOutRoom] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState("");
+  
+  const {
+  devices,
+  addDevice,
+  toggleDevice,
+  deleteDevice,
+} = useDevices();
 
   const [showAddDeviceForm, setShowAddDeviceForm] = useState(false);
   const [deviceName, setDeviceName] = useState("");
-  const [devices, setDevices] = useState([]);
   const [deviceError, setDeviceError] = useState("");
   const [fadeOutDevice, setFadeOutDevice] = useState(false);
   const [deviceType, setDeviceType] = useState("");
@@ -44,10 +51,10 @@ export const Home = () => {
   };
 
   const confirmDeleteDevice = () => {
-    if (!selectedDevice) return;
-    setDevices((prev) => prev.filter((d) => d.name !== selectedDevice.name));
-    closeModal();
-  };
+  if (!selectedDevice) return;
+   deleteDevice(selectedDevice.name);
+   closeModal();
+ };
 
   const returnToCameraModal = () => {
     setModalType("camera");
@@ -135,22 +142,13 @@ export const Home = () => {
 
     if (!roomToAssign) return;
 
-    const offStatusByType = {
-      Light: "Off",
-      Thermostat: "Idle",
-      Camera: "Offline",
-    };
+    addDevice({
+      name: deviceName.trim(),
+      room: roomToAssign,
+      type: deviceType,
+      isOn: false,
+    });
 
-    setDevices([
-      ...devices,
-      {
-        name: deviceName.trim(),
-        room: roomToAssign,
-        type: deviceType,
-        status: offStatusByType[deviceType],
-        isOn: false,
-      },
-    ]);
 
     setDeviceName("");
     setSelectedRoom("");
@@ -169,41 +167,17 @@ export const Home = () => {
   };
 
   const handleToggle = (deviceNameToFlip) => {
-    const statusByType = {
-      Light: "On",
-      Thermostat: "Set to 72°F",
-      Camera: "Online",
+  toggleDevice(deviceNameToFlip);
+  setSelectedDevice((prev) => {
+    if (!prev || prev.name !== deviceNameToFlip) return prev;
+    return {
+      ...prev,
+      isOn: !prev.isOn,
+      status: !prev.isOn ? "Online" : "Offline",
     };
+  });
+};
 
-    const offStatusByType = {
-      Light: "Off",
-      Thermostat: "Idle",
-      Camera: "Offline",
-    };
-
-    setDevices((prev) =>
-      prev.map((d) => {
-        if (d.name !== deviceNameToFlip) return d;
-        const nextOn = !d.isOn;
-        return {
-          ...d,
-          isOn: nextOn,
-          status: nextOn ? statusByType[d.type] : offStatusByType[d.type],
-        };
-      }),
-    );
-
-    // keep modal's selected device in sync
-    setSelectedDevice((prev) => {
-      if (!prev || prev.name !== deviceNameToFlip) return prev;
-      const nextOn = !prev.isOn;
-      return {
-        ...prev,
-        isOn: nextOn,
-        status: nextOn ? statusByType[prev.type] : offStatusByType[prev.type],
-      };
-    });
-  };
 
   /* === Derived Values === */
   const activeRoom = rooms.find((r) => r.active)?.name;
