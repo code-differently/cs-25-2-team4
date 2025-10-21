@@ -1,8 +1,9 @@
+/* ==================== Header Layout ==================== */
 .header {
   position: fixed;
   top: 0;
   left: 0;
-  width: 95%;
+  width: 100%;
   z-index: 1000;
   background-color: #202020;
   color: #fff;
@@ -20,7 +21,7 @@ main {
   justify-content: space-between;
 }
 
-/* === Left Section === */
+/* ==================== Header Left (Title) ==================== */
 .header-left .header-title {
   font-size: 1.4rem;
   font-weight: 700;
@@ -32,7 +33,7 @@ h1.header-title a {
     text-decoration: none;
 }
 
-/* === Center (Search Bar) === */
+/* ==================== Header Center (Search) ==================== */
 .header-center .header-search {
   position: relative;
 }
@@ -54,14 +55,14 @@ h1.header-title a {
   color: #fff;
 }
 
-/* === Right Section (Toggle + Profile) === */
+/* ==================== Header Right (Toggle + Profile) ==================== */
 .header-right {
   display: flex;
   align-items: center;
   gap: 25px;
 }
 
-/* === Toggle Switch === */
+/* === Dark Mode Toggle === */
 .toggle-switch {
   position: relative;
   width: 54px;

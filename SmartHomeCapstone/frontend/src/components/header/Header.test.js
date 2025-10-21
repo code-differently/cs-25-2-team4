@@ -1,100 +1,110 @@
-import React from 'react';  
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Header } from './Header';
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Header } from "./Header";
 
-describe('Header', () => {
-  it('renders correctly', () => {
+describe("Header", () => {
+  it("renders correctly", () => {
     // Act
     render(<Header />);
-    
-    expect(screen.getByText('SmartHome')).toBeInTheDocument();
-    
-    expect(screen.getByPlaceholderText('Search type of keywords')).toBeInTheDocument();
-    
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    
-    expect(screen.getByRole('checkbox')).toBeInTheDocument();
-    
-    expect(screen.getByAltText('Profile')).toBeInTheDocument();
+
+    // Assert
+    expect(screen.getByText("SmartHome")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search type of keywords"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByRole("checkbox")).toBeInTheDocument();
+    expect(screen.getByAltText("Profile")).toBeInTheDocument();
   });
 
-  it('toggles dropdown when profile section is clicked', () => {
+  it("toggles dropdown when profile section is clicked", () => {
     // Act
     render(<Header />);
-    
-  // Use a more semantic approach - look for a clickable element
-    const profileDropdown = screen.getByText('John Doe');
-    
-    expect(screen.queryByText('Profile')).not.toBeInTheDocument();
-    
-    // Click to open dropdown
+
+    // Use a more semantic approach - look for a clickable element
+    const profileDropdown = screen.getByText("John Doe");
+
+    // Assert
+    expect(screen.queryByText("Profile")).not.toBeInTheDocument();
+
+    // Act
     fireEvent.click(profileDropdown);
-    expect(screen.getByText('Profile')).toBeInTheDocument();
-    expect(screen.getByText('About')).toBeInTheDocument();
-    expect(screen.getByText('Logout')).toBeInTheDocument();
+
+    // Assert
+    expect(screen.getByText("Profile")).toBeInTheDocument();
+    expect(screen.getByText("About")).toBeInTheDocument();
+    expect(screen.getByText("Logout")).toBeInTheDocument();
   });
 
-  it('toggles dark mode when toggle switch is clicked', () => {
+  it("toggles dark mode when toggle switch is clicked", () => {
     // Act
     render(<Header />);
-    
-    const toggleSwitch = screen.getByRole('checkbox');
-    
+
+    const toggleSwitch = screen.getByRole("checkbox");
+
+    // Assert
     expect(toggleSwitch).not.toBeChecked();
-    
-    // Click to toggle
+
+    // Act
     fireEvent.click(toggleSwitch);
+
+    // Assert
     expect(toggleSwitch).toBeChecked();
   });
 
-  it('closes dropdown when profile section is clicked again', () => {
+  it("closes dropdown when profile section is clicked again", () => {
     // Act
     render(<Header />);
 
-    const profileDropdown = screen.getByText('John Doe');
+    const profileDropdown = screen.getByText("John Doe");
 
-    // Open dropdown
+    // Act
     fireEvent.click(profileDropdown);
-    expect(screen.getByText('Profile')).toBeInTheDocument();
-    
-    // Click again to close dropdown
+
+    // Assert
+    expect(screen.getByText("Profile")).toBeInTheDocument();
+
+    // Act
     fireEvent.click(profileDropdown);
-    expect(screen.queryByText('Profile')).not.toBeInTheDocument();
+
+    // Assert
+    expect(screen.queryByText("Profile")).not.toBeInTheDocument();
   });
 
-  it('changes icon when dark mode is toggled', () => {
+  it("changes icon when dark mode is toggled", () => {
     // Act
     render(<Header />);
 
-    expect(screen.getByText('🌙')).toBeInTheDocument();
-    expect(screen.queryByText('☀️')).not.toBeInTheDocument();
+    // Assert
+    expect(screen.getByText("🌙")).toBeInTheDocument();
+    expect(screen.queryByText("☀️")).not.toBeInTheDocument();
 
-    // Toggle dark mode
-    const toggleSwitch = screen.getByRole('checkbox');
+    // Act + Toggle dark mode
+    const toggleSwitch = screen.getByRole("checkbox");
     fireEvent.click(toggleSwitch);
 
-    // After toggling, the sun icon should be visible
-    expect(screen.getByText('☀️')).toBeInTheDocument();
-    expect(screen.queryByText('🌙')).not.toBeInTheDocument();
+    // Assert — icon updated after toggle
+    expect(screen.getByText("☀️")).toBeInTheDocument();
+    expect(screen.queryByText("🌙")).not.toBeInTheDocument();
   });
 
-  it('adds and removes dark-mode class on body when toggle is clicked', () => {
+  it("adds and removes dark-mode class on body when toggle is clicked", () => {
     // Act
     render(<Header />);
 
-    // By default dark mode should be ON (because !isDarkMode = true)
-    expect(document.body).toHaveClass('dark-mode');
+    // Assert — By default dark mode should be ON (because !isDarkMode = true)
+    expect(document.body).toHaveClass("dark-mode");
 
-    // Click to toggle to light mode
-    fireEvent.click(screen.getByRole('checkbox'));
+    // Act - Click to toggle to light mode
+    fireEvent.click(screen.getByRole("checkbox"));
 
-    // Now dark-mode should be removed
-    expect(document.body).not.toHaveClass('dark-mode');
+    // Assert — Now dark-mode should be removed
+    expect(document.body).not.toHaveClass("dark-mode");
 
-    // Click again to toggle back
-    fireEvent.click(screen.getByRole('checkbox'));
+    // Act - Click again to toggle back
+    fireEvent.click(screen.getByRole("checkbox"));
 
-    // dark-mode should be applied again
-    expect(document.body).toHaveClass('dark-mode');
+    // Assert — dark-mode should be applied again
+    expect(document.body).toHaveClass("dark-mode");
   });
 });

@@ -1,6 +1,6 @@
 import './App.css';
 import { Header } from './components/header/Header';
-import { Routes, Route, Outlet, BrowserRouter } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Devices from "./pages/Devices";
@@ -21,7 +21,6 @@ function Layout(){
 
 export default function App(){
   return(
-    <BrowserRouter>
       <Routes>
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
@@ -30,9 +29,8 @@ export default function App(){
             <Route path="/devices" element={<Devices/>}/>
             <Route path="/devices/add" element={<DeviceAdd/>}/>
             <Route path="/devices/:deviceId/remove" element={<DeviceRemove/>}/>
-      </Route>
+          </Route>
       <Route path="*" element={<NotFound/>}/>
     </Routes>
-    </BrowserRouter>
   );
 }

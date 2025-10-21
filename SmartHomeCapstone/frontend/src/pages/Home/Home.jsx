@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import "./Home.css";
 import { Lightbulb, Thermometer, Camera as CameraIcon } from "lucide-react";
 
+/* ==================== Home Component ==================== */
 export const Home = () => {
+  /* ==================== State ==================== */
   const [rooms, setRooms] = useState([{ name: "All", active: true }]);
   const [showAddRoomForm, setShowAddRoomForm] = useState(false);
   const [newRoomName, setNewRoomName] = useState("");
@@ -18,6 +20,7 @@ export const Home = () => {
   const [deviceType, setDeviceType] = useState("");
   const [deviceTypeError, setDeviceTypeError] = useState("");
 
+  /* === Room Handlers === */
   const handleAddRoomClick = () => setShowAddRoomForm(true);
 
   const handleSaveRoom = () => {
@@ -46,6 +49,7 @@ export const Home = () => {
     setRooms(rooms.map((r) => ({ ...r, active: r.name === roomName })));
   };
 
+  /* === Device Handlers === */
   const handleAddDeviceClick = () => {
     const realRooms = rooms.filter((r) => r.name !== "All");
 
@@ -98,10 +102,10 @@ export const Home = () => {
 
     if (!roomToAssign) return;
 
-    const statusByType = {
-      Light: "On",
-      Thermostat: "Set to 72°F",
-      Camera: "Online",
+    const offStatusByType = {
+      Light: "Off",
+      Thermostat: "Idle",
+      Camera: "Offline",
     };
 
     setDevices([
@@ -110,8 +114,8 @@ export const Home = () => {
         name: deviceName.trim(),
         room: roomToAssign,
         type: deviceType,
-        status: statusByType[deviceType],
-        isOn: true,
+        status: offStatusByType[deviceType],
+        isOn: false,
       },
     ]);
 
@@ -140,7 +144,7 @@ export const Home = () => {
 
     const offStatusByType = {
       Light: "Off",
-      Thermostat: "Standby",
+      Thermostat: "Idle",
       Camera: "Offline",
     };
 
@@ -157,6 +161,7 @@ export const Home = () => {
     );
   };
 
+  /* === Derived Values === */
   const activeRoom = rooms.find((r) => r.active)?.name;
   const filteredDevices =
     activeRoom === "All"
@@ -188,13 +193,17 @@ export const Home = () => {
     }
   };
 
+  /* ==================== Render ==================== */
   return (
     <div className="home">
+      {/* === Room Error Toast === */}
       {roomError && (
         <div className={`toast-room-error ${fadeOutRoom ? "fade-out" : ""}`}>
           {roomError}
         </div>
       )}
+
+      {/* === Rooms Bar === */}
       <div className="rooms-bar" role="navigation" aria-label="rooms">
         {rooms.map((room, index) => (
           <button
@@ -226,8 +235,10 @@ export const Home = () => {
         )}
       </div>
 
+      {/* === Devices Section === */}
       <section className="devices-section">
         <div className="devices-header">
+        {/* --- Devices Header & Add Button --- */}
           <h2>My Devices</h2>
 
           {!showAddDeviceForm && (
@@ -242,6 +253,7 @@ export const Home = () => {
 
           {showAddDeviceForm && (
             <div className="add-device-form">
+            {/* --- Add Device Form --- */}
               <input
                 placeholder="Device Name"
                 value={deviceName}
@@ -303,6 +315,7 @@ export const Home = () => {
             </div>
           )}
 
+          {/* --- Device Error Toast --- */}
           {deviceError && (
             <div
               className={`toast-device-error ${fadeOutDevice ? "fade-out" : ""}`}
@@ -312,11 +325,13 @@ export const Home = () => {
           )}
         </div>
 
+        {/* === Devices List === */}
         <div className="devices-list">
           {activeRoom !== "All" && filteredDevices.length === 0 ? (
             <p className="empty-devices-msg">No devices in this room yet</p>
           ) : (
             <div className="devices-grid">
+            {/* --- Device Cards Grid --- */}
               {filteredDevices.map((device, index) => (
                 <div
                   key={index}
