@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/devices")
-@CrossOrigin(origins = "*") // Allow frontend to access the API
 public class DeviceController {
 
         private final DeviceService deviceService;
