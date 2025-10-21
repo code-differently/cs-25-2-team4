@@ -44,6 +44,7 @@ export default function Devices() {
   };
 
   const handleDeleteDevice = async (deviceId) => {
+    // eslint-disable-next-line no-restricted-globals
     if (!confirm('Are you sure you want to delete this device?')) {
       return;
     }

@@ -28,6 +28,7 @@ export default function DeviceRemove() {
     }, [deviceId]);
 
     const handleDelete = async () => {
+        // eslint-disable-next-line no-restricted-globals
         if (!confirm(`Are you sure you want to delete "${device?.name}"? This action cannot be undone.`)) {
             return;
         }
