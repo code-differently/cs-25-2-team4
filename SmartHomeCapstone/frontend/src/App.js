@@ -1,17 +1,39 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Devices from "./pages/Devices";
-import NotFound from "./pages/NotFound";
+import { Routes, Route, NavLink, Outlet, Navigate } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Devices from "./pages/Devices.jsx";
+import DeviceAdd from "./pages/DeviceAdd.jsx";
+import DeviceRemove from "./pages/DeviceRemove.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import "./Layout.css";
 
-export default function App() {
+function Layout(){
+  return (
+    <div className="container">
+      <aside className="sidebar">
+        <h2 className="brand">SmartHome</h2>
+        <nav className="nav">
+          <NavLink to="/devices">Devices</NavLink>
+          <NavLink to="/devices/add">Add Device</NavLink>
+        </nav>
+      </aside>
+      <main className="main"><Outlet /></main>
+    </div>
+  );
+}
+
+export default function App(){
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/devices" element={<Devices />} />
-      <Route path="*" element={<NotFound />} />
+      <Route path="/login" element={<Login/>}/>
+      <Route path="/register" element={<Register/>}/>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Navigate to="/login" replace/>}/>
+        <Route path="/devices" element={<Devices/>}/>
+        <Route path="/devices/add" element={<DeviceAdd/>}/>
+        <Route path="/devices/:deviceId/remove" element={<DeviceRemove/>}/>
+      </Route>
+      <Route path="*" element={<NotFound/>}/>
     </Routes>
   );
 }
