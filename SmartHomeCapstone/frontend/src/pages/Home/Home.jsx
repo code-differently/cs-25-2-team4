@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Home.css";
 import { Lightbulb, Thermometer, Camera as CameraIcon } from "lucide-react";
+import cameraGif from "../../assets/camera.gif";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -427,7 +428,7 @@ export const Home = () => {
                     <div
                       className={`camera-feed ${selectedDevice.isOn ? "on" : "off"}`}
                     >
-                      <img src="/assets/camera.gif" alt="camera feed" />
+                      <img src={cameraGif} alt="camera feed" />
                     </div>
 
                     <button
