@@ -65,13 +65,6 @@ export const AddDeviceForm = ({
       </button>
       <button onClick={onCancel}>Cancel</button>
 
-      {deviceError && (
-        <div
-          className={`toast-device-error ${fadeOutDevice ? "fade-out" : ""}`}
-        >
-          {deviceError}
-        </div>
-      )}
     </div>
   );
 };
