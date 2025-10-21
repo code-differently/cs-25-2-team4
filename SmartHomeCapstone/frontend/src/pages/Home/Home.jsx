@@ -20,6 +20,35 @@ export const Home = () => {
   const [deviceType, setDeviceType] = useState("");
   const [deviceTypeError, setDeviceTypeError] = useState("");
 
+  // === Camera Modal State ===
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [modalType, setModalType] = useState(null); // "camera" | "confirm-delete" | null
+
+  const openCameraModal = (device) => {
+    setSelectedDevice(device);
+    setModalType("camera");
+  };
+
+  const closeModal = () => {
+    setSelectedDevice(null);
+    setModalType(null);
+  };
+
+  const requestDeleteDevice = (device) => {
+    setSelectedDevice(device);
+    setModalType("confirm-delete");
+  };
+
+  const confirmDeleteDevice = () => {
+    if (!selectedDevice) return;
+    setDevices((prev) => prev.filter((d) => d.name !== selectedDevice.name));
+    closeModal();
+  };
+
+  const cancelDelete = () => {
+    closeModal();
+  };
+
   /* === Room Handlers === */
   const handleAddRoomClick = () => setShowAddRoomForm(true);
 
@@ -238,7 +267,7 @@ export const Home = () => {
       {/* === Devices Section === */}
       <section className="devices-section">
         <div className="devices-header">
-        {/* --- Devices Header & Add Button --- */}
+          {/* --- Devices Header & Add Button --- */}
           <h2>My Devices</h2>
 
           {!showAddDeviceForm && (
@@ -253,7 +282,7 @@ export const Home = () => {
 
           {showAddDeviceForm && (
             <div className="add-device-form">
-            {/* --- Add Device Form --- */}
+              {/* --- Add Device Form --- */}
               <input
                 placeholder="Device Name"
                 value={deviceName}
@@ -331,12 +360,17 @@ export const Home = () => {
             <p className="empty-devices-msg">No devices in this room yet</p>
           ) : (
             <div className="devices-grid">
-            {/* --- Device Cards Grid --- */}
+              {/* --- Device Cards Grid --- */}
               {filteredDevices.map((device, index) => (
                 <div
                   key={index}
                   data-testid="device-card"
-                  className={`device-card ${device.isOn ? "is-on" : "is-off"}`}
+                  className={`device-card ${device.isOn ? "is-on" : "is-off"} ${
+                    device.type === "Camera" ? "clickable" : ""
+                  }`}
+                  onClick={() => {
+                    if (device.type === "Camera") openCameraModal(device);
+                  }}
                 >
                   <div className="device-card-header">
                     <div className="device-head-left">
@@ -373,6 +407,59 @@ export const Home = () => {
                   )}
                 </div>
               ))}
+            </div>
+          )}
+          {/* === Camera Modal === */}
+          {modalType === "camera" &&
+            selectedDevice &&
+            selectedDevice.type === "Camera" && (
+              <div className="modal-backdrop" onClick={closeModal}>
+                <div
+                  className="modal-card"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="modal-header">
+                    <h2>{selectedDevice.name} — Camera Feed</h2>
+                    <button onClick={closeModal}>✕</button>
+                  </div>
+
+                  <div className="modal-body">
+                    <div
+                      className={`camera-feed ${selectedDevice.isOn ? "on" : "off"}`}
+                    >
+                      <img src="/assets/camera.gif" alt="camera feed" />
+                    </div>
+
+                    <button
+                      onClick={() => handleToggle(selectedDevice.name)}
+                      className="toggle"
+                    >
+                      {selectedDevice.isOn ? "Turn Off" : "Turn On"}
+                    </button>
+
+                    <button
+                      className="delete-btn"
+                      onClick={() => requestDeleteDevice(selectedDevice)}
+                    >
+                      Delete Device
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          {/* === Confirm Delete === */}
+          {modalType === "confirm-delete" && selectedDevice && (
+            <div className="modal-backdrop" onClick={cancelDelete}>
+              <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+                <h3>Delete "{selectedDevice.name}"?</h3>
+                <p>This action cannot be undone.</p>
+                <div className="confirm-actions">
+                  <button onClick={confirmDeleteDevice} className="danger">
+                    Delete
+                  </button>
+                  <button onClick={cancelDelete}>Cancel</button>
+                </div>
+              </div>
             </div>
           )}
         </div>
