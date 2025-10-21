@@ -1,11 +1,5 @@
 import React, { useState } from "react";
 import "./Home.css";
-import {
-  Lightbulb,
-  Thermometer,
-  Camera as CameraIcon,
-  Trash,
-} from "lucide-react";
 import { RoomsBar } from "./RoomsBar.jsx";
 import { DevicesList } from "./DevicesList.jsx";
 import { CameraModal } from "./CameraModal.jsx";
@@ -211,35 +205,6 @@ export const Home = () => {
 
   /* === Derived Values === */
   const activeRoom = rooms.find((r) => r.active)?.name;
-  const filteredDevices =
-    activeRoom === "All"
-      ? devices
-      : devices.filter((d) => d.room === activeRoom);
-
-  const DeviceIcon = ({ type }) => {
-    switch (type) {
-      case "Light":
-        return (
-          <span role="img" aria-label="Light icon">
-            <Lightbulb size={18} />
-          </span>
-        );
-      case "Thermostat":
-        return (
-          <span role="img" aria-label="Thermostat icon">
-            <Thermometer size={18} />
-          </span>
-        );
-      case "Camera":
-        return (
-          <span role="img" aria-label="Camera icon">
-            <CameraIcon size={18} />
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
 
   /* ==================== Render ==================== */
   return (

@@ -1,4 +1,5 @@
 import React from "react";
+import { DeviceIcon } from "./DeviceIcon";
 
 export const DevicesList = ({
   devices,
@@ -28,23 +29,34 @@ export const DevicesList = ({
             if (device.type === "Camera") onCameraOpen(device);
           }}
         >
-          <label
-            className="device-toggle"
-            aria-label={`Toggle ${device.name}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <input
-              type="checkbox"
-              checked={!!device.isOn}
-              onChange={() => onToggle(device.name)}
-            />
-            <span className="slider"></span>
-          </label>
+          {/* === HEADER (icon + toggle) === */}
+          <div className="device-card-header">
+            <div className="device-head-left">
+              <span className="icon-box">
+                <DeviceIcon type={device.type} />
+              </span>
+            </div>
 
+            <label
+              className="device-toggle"
+              aria-label={`Toggle ${device.name}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <input
+                type="checkbox"
+                checked={!!device.isOn}
+                onChange={() => onToggle(device.name)}
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+
+          {/* === NAME === */}
           <span className={`device-title ${device.isOn ? "" : "dim"}`}>
             {device.name}
           </span>
 
+          {/* === STATUS TEXT === */}
           {device.status && (
             <span
               className={`device-status-text ${
