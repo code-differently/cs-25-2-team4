@@ -47,6 +47,33 @@ body:not(.dark-mode) {
   margin: 0 auto;
 }
 
+/* ====================  Add Room Section (Above Rooms Bar) ==================== */
+.add-room-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0 40px 12px;
+  max-width: var(--page-max);
+  padding: 0 6px;
+}
+
+.add-room-section > button {
+  background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
+  color: #111;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.add-room-section > button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
 /* ====================  Rooms Bar ==================== */
 .rooms-bar {
   display: flex;
@@ -57,6 +84,69 @@ body:not(.dark-mode) {
   max-width: var(--page-max);
   overflow-x: auto;
   scrollbar-width: thin;
+  scroll-behavior: smooth;
+  flex-wrap: nowrap;
+  padding-bottom: 10px;
+  margin-bottom: 24px;
+}
+
+/* Improve scrollbar styling */
+.rooms-bar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.rooms-bar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rooms-bar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.rooms-bar::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* ====================  Add Room Form ==================== */
+.add-room-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.add-room-form input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--fg);
+  font-size: 0.9rem;
+  width: 180px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.add-room-form input:focus {
+  outline: none;
+  background: var(--surface-elev);
+  border-color: var(--muted);
+}
+
+.add-room-form button {
+  background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
+  color: #111;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+
+.add-room-form button:hover {
+  transform: scale(1.05);
 }
 
 .rooms-bar button {
@@ -69,6 +159,8 @@ body:not(.dark-mode) {
   transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   font-size: 1rem;                   
   white-space: nowrap;
+  flex-shrink: 0;
+  min-width: fit-content;
 }
 
 .rooms-bar button:hover,
@@ -131,14 +223,12 @@ body:not(.dark-mode) {
   opacity: 0.9;
 }
 
-.add-room-form,
 .add-device-form {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.add-room-form input,
 .add-device-form input {
   background-color: #1e1e1e;
   border: none;
@@ -149,14 +239,12 @@ body:not(.dark-mode) {
   width: 180px;
 }
 
-.add-room-form input:focus,
 .add-device-form input:focus {
   outline: none;
   background-color: #2a2a2a;
   color: white;
 }
 
-.add-room-form button,
 .add-device-form button {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
   color: #111;
@@ -169,10 +257,10 @@ body:not(.dark-mode) {
   transition: transform 0.2s ease;
 }
 
-.add-room-form button:hover,
 .add-device-form button:hover {
   transform: scale(1.05);
 }
+
 
 /* ====================  Toast Messages ==================== */
 .toast-room-error, .toast-device-error, .toast-block-error {
@@ -204,14 +292,14 @@ body:not(.dark-mode) {
 }
 
 .toast-room-error {
-    top: -10px;
-    left: 150px;
+    top: -40px;
+    left: 110px;
     z-index: 20;
 }
 
 .toast-device-error {
-    right: 170px;
-    top: -32px;  
+    right: 200px;
+    top: -20px;  
 }
 
 .toast-block-error {
