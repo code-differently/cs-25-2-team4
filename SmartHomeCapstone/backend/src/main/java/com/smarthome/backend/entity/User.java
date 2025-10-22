@@ -12,14 +12,20 @@ import java.util.Set;
 public class User {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "user_id")
-        private Long userId;
-
-        @Column(name = "username", nullable = false, unique = true, length = 100)
+        @Column(name = "username", nullable = false, length = 100)
         @NotBlank(message = "Username cannot be blank")
         @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters")
         private String username;
+
+        @Column(name = "first_name", nullable = false, length = 100)
+        @NotBlank(message = "First name cannot be blank")
+        @Size(max = 100, message = "First name must be at most 100 characters")
+        private String firstName;
+
+        @Column(name = "last_name", nullable = false, length = 100)
+        @NotBlank(message = "Last name cannot be blank")
+        @Size(max = 100, message = "Last name must be at most 100 characters")
+        private String lastName;
 
         @Column(name = "email", nullable = false, unique = true, length = 255)
         @NotBlank(message = "Email cannot be blank")
@@ -44,15 +50,17 @@ public class User {
         // Constructors
         public User() {}
 
-        public User(String username, String email, String passwordHash) {
+        public User(String username, String firstName, String lastName, String email, String passwordHash) {
                 this.username = username;
+                this.firstName = firstName;
+                this.lastName = lastName;
                 this.email = email;
                 this.passwordHash = passwordHash;
         }
 
         // Getters and Setters
-        public Long getUserId() {
-                return userId;
+        public String getUserId() {
+                return username;
         }
 
         public String getUsername() {
@@ -61,6 +69,22 @@ public class User {
 
         public void setUsername(String username) {
                 this.username = username;
+        }
+
+        public String getFirstName() {
+                return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+                this.firstName = firstName;
+        }
+
+        public String getLastName() {
+                return lastName;
+        }
+
+        public void setLastName(String lastName) {
+                this.lastName = lastName;
         }
 
         public String getEmail() {
@@ -130,10 +154,14 @@ public class User {
         @Override
         public String toString() {
                 return "User{"
-                                + "userId="
-                                + userId
-                                + ", username='"
+                                + "username='"
                                 + username
+                                + '\''
+                                + ", firstName='"
+                                + firstName
+                                + '\''
+                                + ", lastName='"
+                                + lastName
                                 + '\''
                                 + ", email='"
                                 + email
@@ -146,13 +174,14 @@ public class User {
                 if (this == o) return true;
                 if (o == null || getClass() != o.getClass()) return false;
                 User user = (User) o;
-                return Objects.equals(userId, user.userId)
-                                && Objects.equals(username, user.username)
+                return Objects.equals(username, user.username)
+                                && Objects.equals(firstName, user.firstName)
+                                && Objects.equals(lastName, user.lastName)
                                 && Objects.equals(email, user.email);
         }
 
         @Override
         public int hashCode() {
-                return Objects.hash(userId, username, email);
+                return Objects.hash(username, firstName, lastName, email);
         }
 }

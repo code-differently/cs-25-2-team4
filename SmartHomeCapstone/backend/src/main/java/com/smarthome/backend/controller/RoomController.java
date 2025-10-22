@@ -50,20 +50,20 @@ public class RoomController {
 
         /**
          * Get all rooms or search rooms GET /api/rooms - Get all rooms GET /api/rooms?homeId={homeId} -
-         * Get rooms for a specific home GET /api/rooms?userId={userId} - Get rooms for a specific user
+         * Get rooms for a specific home GET /api/rooms?username={username} - Get rooms for a specific user
          * (via access) GET /api/rooms?search={name} - Search rooms by name
          */
         @GetMapping
         public ResponseEntity<List<RoomResponse>> getRooms(
                         @RequestParam(required = false) Long homeId,
-                        @RequestParam(required = false) Long userId,
+                        @RequestParam(required = false) String username,
                         @RequestParam(required = false) String search) {
                 List<Room> rooms;
 
                 if (homeId != null) {
                         rooms = roomService.getRoomsByHomeId(homeId);
-                } else if (userId != null) {
-                        rooms = roomService.getRoomsByUserId(userId);
+                } else if (username != null) {
+                        rooms = roomService.getRoomsByUsername(username);
                 } else if (search != null && !search.trim().isEmpty()) {
                         rooms = roomService.searchRoomsByName(search);
                 } else {

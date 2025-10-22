@@ -19,6 +19,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
         long countByHome_HomeId(Long homeId);
 
         // Find rooms that a user has access to
-        @Query("SELECT r FROM Room r JOIN r.roomAccesses ra WHERE ra.user.userId = :userId")
-        List<Room> findRoomsByUserId(@Param("userId") Long userId);
+        @Query("SELECT r FROM Room r JOIN r.roomAccesses ra WHERE ra.user.username = :username")
+        List<Room> findRoomsByUsername(@Param("username") String username);
 }

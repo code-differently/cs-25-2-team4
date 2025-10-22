@@ -9,7 +9,7 @@ import java.util.Objects;
 @Entity
 @Table(
                 name = "RoomAccess",
-                uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "room_id"})})
+                uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "room_id"})})
 public class RoomAccess {
 
         @Id
@@ -18,7 +18,7 @@ public class RoomAccess {
         private Long accessId;
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id", nullable = false)
+        @JoinColumn(name = "username", nullable = false)
         @NotNull(message = "User cannot be null")
         @JsonIgnore
         private User user;
@@ -83,8 +83,8 @@ public class RoomAccess {
                 return "RoomAccess{"
                                 + "accessId="
                                 + accessId
-                                + ", userId="
-                                + (user != null ? user.getUserId() : null)
+                                + ", username="
+                                + (user != null ? user.getUsername() : null)
                                 + ", roomId="
                                 + (room != null ? room.getRoomId() : null)
                                 + ", permission="
@@ -99,8 +99,8 @@ public class RoomAccess {
                 RoomAccess that = (RoomAccess) o;
                 return Objects.equals(accessId, that.accessId)
                                 && Objects.equals(
-                                                user != null ? user.getUserId() : null,
-                                                that.user != null ? that.user.getUserId() : null)
+                                                user != null ? user.getUsername() : null,
+                                                that.user != null ? that.user.getUsername() : null)
                                 && Objects.equals(
                                                 room != null ? room.getRoomId() : null,
                                                 that.room != null ? that.room.getRoomId() : null)
@@ -111,7 +111,7 @@ public class RoomAccess {
         public int hashCode() {
                 return Objects.hash(
                                 accessId,
-                                user != null ? user.getUserId() : null,
+                                user != null ? user.getUsername() : null,
                                 room != null ? room.getRoomId() : null,
                                 permission);
         }

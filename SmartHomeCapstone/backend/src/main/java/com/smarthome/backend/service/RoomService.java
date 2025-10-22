@@ -58,8 +58,8 @@ public class RoomService {
         }
 
         /** Get rooms for a specific user */
-        public List<Room> getRoomsByUserId(Long userId) {
-                return roomRepository.findRoomsByUserId(userId);
+        public List<Room> getRoomsByUsername(String username) {
+                return roomRepository.findRoomsByUsername(username);
         }
 
         /** Search rooms by name */
