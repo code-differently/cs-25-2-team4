@@ -1,4 +1,5 @@
 import React from "react";
+import { X } from "lucide-react";
 
 export const RoomsBar = ({
   rooms,
@@ -11,18 +12,42 @@ export const RoomsBar = ({
   onNewRoomNameChange,
   onSaveRoom,
   onCancelAddRoom,
+  onDeleteRoom,
 }) => {
+  const [hoveredRoom, setHoveredRoom] = React.useState(null);
   return (
     <div className="rooms-bar" role="navigation" aria-label="rooms">
-      {rooms.map((room, index) => (
-        <button
-          key={index}
-          className={room.active ? "active" : ""}
-          onClick={() => onRoomClick(room.name)}
-        >
-          {room.name}
-        </button>
-      ))}
+      {rooms.map((room, index) => {
+        const isAll = room.name === "All";
+        return (
+          <button
+            key={index}
+            className={room.active ? "active" : ""}
+            onClick={() => onRoomClick(room.name)}
+            type="button"
+            onMouseEnter={() => setHoveredRoom(room.name)}
+            onMouseLeave={() => setHoveredRoom(null)}
+          >
+            <span className="room-label">{room.name}</span>
+
+            {!isAll && hoveredRoom === room.name && (
+              <span
+                className="room-delete-icon"
+                role="button"
+                aria-label={`Delete ${room.name}`}
+                title={`Delete ${room.name}`}
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  onDeleteRoom?.(room.name);
+                }}
+              >
+                <X size={16} />
+              </span>
+            )}
+          </button>
+        );
+      })}
+
       {!showAddRoomForm && <button onClick={onAddRoomClick}>+ Add</button>}
 
       {showAddRoomForm && (

@@ -19,6 +19,7 @@ export const Home = () => {
     setNewRoomName,
     activateRoom,
     addRoom,
+    deleteRoom,
   } = useRooms();
 
   const { devices, addDevice, toggleDevice, deleteDevice } = useDevices();
@@ -53,6 +54,7 @@ export const Home = () => {
         onAddDevice={addDevice}
         onToggleDevice={handleToggle}
         onCameraOpen={openCameraModal}
+        onDeleteRoom={deleteRoom}
       />
 
       {/* Modal Management */}
