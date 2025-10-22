@@ -12,8 +12,8 @@ export const ModalManager = ({
   onConfirmDelete,
   onReturnToCamera,
 }) => {
-  const handleToggle = (deviceNameToFlip) => {
-    onToggleDevice(deviceNameToFlip);
+  const handleToggle = (deviceIdToFlip, currentIsOn) => {
+    onToggleDevice(deviceIdToFlip, currentIsOn);
   };
 
   return (
@@ -32,7 +32,7 @@ export const ModalManager = ({
       {modalType === "confirm-delete" && selectedDevice && (
         <div className="confirm-overlay">
           <ConfirmDeleteModal
-            deviceName={selectedDevice.name}
+            deviceName={selectedDevice.deviceName}
             onConfirm={onConfirmDelete}
             onCancel={onReturnToCamera}
           />
@@ -57,14 +57,9 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     setModalType(null);
   };
 
-  const requestDeleteDevice = (device) => {
-    setSelectedDevice(device);
-    setModalType("confirm-delete");
-  };
-
   const confirmDeleteDevice = () => {
     if (!selectedDevice) return;
-    onDeleteDevice(selectedDevice.name);
+    onDeleteDevice(selectedDevice.deviceId);
     closeModal();
   };
 
@@ -72,14 +67,14 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     setModalType("camera");
   };
 
-  const handleToggle = (deviceNameToFlip) => {
-    onToggleDevice(deviceNameToFlip);
+  const handleToggle = (deviceIdToFlip, currentIsOn) => {
+    onToggleDevice(deviceIdToFlip, currentIsOn);
     setSelectedDevice((prev) => {
-      if (!prev || prev.name !== deviceNameToFlip) return prev;
+      if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
       return {
         ...prev,
-        isOn: !prev.isOn,
-        status: !prev.isOn ? "Online" : "Offline",
+        isOn: !currentIsOn,
+        status: !currentIsOn ? "Online" : "Offline",
       };
     });
   };
@@ -89,19 +84,13 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     setModalType("confirm-delete");
   };
 
-  const handleConfirmDelete = () => {
-    if (!selectedDevice) return;
-    onDeleteDevice(selectedDevice.name);
-    closeModal();
-  };
-
   return {
     selectedDevice,
     modalType,
     openCameraModal,
     closeModal,
     requestDeleteDevice: handleRequestDelete,
-    confirmDeleteDevice: handleConfirmDelete,
+    confirmDeleteDevice,
     returnToCameraModal,
     handleToggle,
   };

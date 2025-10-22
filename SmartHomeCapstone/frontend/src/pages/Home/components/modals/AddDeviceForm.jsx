@@ -32,9 +32,9 @@ export const AddDeviceForm = ({
         onChange={(e) => onDeviceTypeChange(e.target.value)}
       >
         <option value="">-- Select Type --</option>
-        <option value="Light">Light</option>
-        <option value="Thermostat">Thermostat</option>
-        <option value="Camera">Camera</option>
+        <option value="LIGHT">Light</option>
+        <option value="THERMOSTAT">Thermostat</option>
+        <option value="CAMERA">Security Camera</option>
       </select>
 
       {deviceTypeError && (

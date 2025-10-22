@@ -23,7 +23,7 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
             <input
               type="checkbox"
               checked={!!device.isOn}
-              onChange={() => onToggle(device.name)}
+              onChange={() => onToggle(device.deviceId, device.isOn)}
             />
             <span className="slider"></span>
           </label>
