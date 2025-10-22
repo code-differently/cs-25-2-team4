@@ -52,8 +52,8 @@ body:not(.dark-mode) {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin: 0 40px 12px;
-  max-width: var(--page-max);
+  margin: 0 auto 12px;
+  max-width: 900px;
   padding: 0 6px;
 }
 
@@ -136,7 +136,7 @@ body:not(.dark-mode) {
 .add-room-form button {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
   color: #111;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border: none;
   border-radius: 10px;
   cursor: pointer;
