@@ -73,7 +73,7 @@ public class Thermostat extends Device {
         @Override
         public void turnOff() {
                 super.turnOff();
-                setMode(ThermostatMode.OFF);
+                this.mode = ThermostatMode.OFF;
         }
 
         // Getters and setters
