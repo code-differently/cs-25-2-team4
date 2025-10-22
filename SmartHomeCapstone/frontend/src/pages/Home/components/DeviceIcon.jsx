@@ -19,6 +19,8 @@ export const DeviceIcon = ({ type }) => {
       );
     case "CAMERA":
     case "Camera":
+    case "SECURITYCAMERA":
+    case "SecurityCamera":
       return (
         <span role="img" aria-label="Camera icon">
           <CameraIcon size={18} />

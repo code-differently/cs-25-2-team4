@@ -27,10 +27,10 @@ export const DevicesList = ({
           key={device.deviceId || index}
           data-testid="device-card"
           className={`device-card ${device.isOn ? "is-on" : "is-off"} ${
-            device.deviceType === "CAMERA" ? "clickable" : ""
+            device.deviceType === "CAMERA" || device.deviceType === "SECURITYCAMERA" ? "clickable" : ""
           }`}
           onClick={() => {
-            if (device.deviceType === "CAMERA") onCameraOpen(device);
+            if (device.deviceType === "CAMERA" || device.deviceType === "SECURITYCAMERA") onCameraOpen(device);
           }}
         >
           {/* === HEADER (icon + toggle) === */}
@@ -43,7 +43,7 @@ export const DevicesList = ({
 
             <label
               className="device-toggle"
-              aria-label={`Toggle ${device.name}`}
+              aria-label={`Toggle ${device.deviceName}`}
               onClick={(e) => e.stopPropagation()}
             >
               <input
