@@ -32,7 +32,8 @@ export const ModalManager = ({
       {modalType === "confirm-delete" && selectedDevice && (
         <div className="confirm-overlay">
           <ConfirmDeleteModal
-            deviceName={selectedDevice.name}
+            type="device"
+            targetName={selectedDevice.name}
             onConfirm={onConfirmDelete}
             onCancel={onReturnToCamera}
           />

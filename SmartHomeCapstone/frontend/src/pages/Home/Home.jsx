@@ -1,9 +1,11 @@
 import React from "react";
 import "./Home.css";
+import { useState } from "react";
 import { useDevices } from "./hooks/useDevices";
 import { useRooms } from "./hooks/useRooms";
 import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
 import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
+import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
 
 /* ==================== Home Component ==================== */
 export const Home = () => {
@@ -35,6 +37,24 @@ export const Home = () => {
     handleToggle,
   } = useModalManager(toggleDevice, deleteDevice);
 
+  const [roomToDelete, setRoomToDelete] = useState(null);
+
+  const handleRequestDeleteRoom = (roomName) => {
+    closeModal(); // close camera modal if open
+    setRoomToDelete(roomName); // show confirm modal
+  };
+
+  const handleConfirmDeleteRoom = () => {
+    deleteRoom(roomToDelete); // remove room
+    deleteDevice((d) => d.room === roomToDelete); // remove its devices
+    activateRoom("All"); // make All active
+    setRoomToDelete(null); // close modal
+  };
+
+  const handleCancelDeleteRoom = () => {
+    setRoomToDelete(null);
+  };
+
   /* ==================== Render ==================== */
   return (
     <div className="home">
@@ -54,7 +74,7 @@ export const Home = () => {
         onAddDevice={addDevice}
         onToggleDevice={handleToggle}
         onCameraOpen={openCameraModal}
-        onDeleteRoom={deleteRoom}
+        onDeleteRoom={handleRequestDeleteRoom}
       />
 
       {/* Modal Management */}
@@ -68,6 +88,17 @@ export const Home = () => {
         onConfirmDelete={confirmDeleteDevice}
         onReturnToCamera={returnToCameraModal}
       />
+
+      {roomToDelete && (
+        <div className="confirm-overlay">
+          <ConfirmDeleteModal
+            type="room"
+            targetName={roomToDelete}
+            onConfirm={handleConfirmDeleteRoom}
+            onCancel={handleCancelDeleteRoom}
+          />
+        </div>
+      )}
     </div>
   );
 };
