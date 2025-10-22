@@ -1,5 +1,5 @@
 import React from "react";
-import { RoomsBar } from "../RoomsBar.jsx";
+import { RoomsBar } from "./RoomsBar.jsx";
 import { DeviceManagement } from "./DeviceManagement.jsx";
 
 export const RoomDeviceCoordinator = ({
