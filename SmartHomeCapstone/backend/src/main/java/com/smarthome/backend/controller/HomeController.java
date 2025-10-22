@@ -49,7 +49,7 @@ public class HomeController {
         }
 
         /**
-         * Get all homes or search homes GET /api/homes - Get all homes GET /api/homes?clerkId={clerkId} -
+         * Get all homes or search homes GET /api/homes - Get all homes GET /api/homes?clerkId={clerkId}
          * Get homes for a specific user GET /api/homes?search={name} - Search homes by name GET
          * /api/homes?address={address} - Search homes by address
          */
