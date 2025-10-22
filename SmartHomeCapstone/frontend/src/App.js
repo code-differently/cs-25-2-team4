@@ -1,7 +1,7 @@
 import { Header } from './components/header/Header';
 import { Routes, Route, Outlet } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Login from "./pages/Login/Login.jsx";
+import Register from "./pages/Register/Register.jsx";
 import Devices from "./pages/Devices";
 import DeviceAdd from "./pages/DeviceAdd";
 import DeviceRemove from "./pages/DeviceRemove";
@@ -24,9 +24,6 @@ export default function App(){
           <Route path="/register" element={<Register/>}/>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />}/>
-            <Route path="/devices" element={<Devices/>}/>
-            <Route path="/devices/add" element={<DeviceAdd/>}/>
-            <Route path="/devices/:deviceId/remove" element={<DeviceRemove/>}/>
           </Route>
       <Route path="*" element={<NotFound/>}/>
     </Routes>
