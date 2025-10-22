@@ -42,8 +42,8 @@ public class HomeService {
         }
 
         // Get homes for a specific user
-        public List<Home> getHomesByUsername(String username) {
-                return homeRepository.findHomesByUsername(username);
+        public List<Home> getHomesByClerkId(String clerkId) {
+                return homeRepository.findHomesByClerkId(clerkId);
         }
 
         // Search homes by name

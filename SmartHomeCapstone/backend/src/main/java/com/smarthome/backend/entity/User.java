@@ -12,7 +12,12 @@ import java.util.Set;
 public class User {
 
         @Id
-        @Column(name = "username", nullable = false, length = 100)
+        @Column(name = "clerk_id", nullable = false, length = 100)
+        @NotBlank(message = "Clerk ID cannot be blank")
+        @Size(max = 100, message = "Clerk ID must be at most 100 characters")
+        private String clerkId;
+
+        @Column(name = "username", nullable = false, unique = true, length = 100)
         @NotBlank(message = "Username cannot be blank")
         @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters")
         private String username;
@@ -33,11 +38,6 @@ public class User {
         @Size(max = 255)
         private String email;
 
-        @Column(name = "password_hash", nullable = false, length = 255)
-        @NotBlank(message = "Password cannot be blank")
-        @Size(max = 255)
-        private String passwordHash;
-
         // Relationships
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         @JsonIgnore
@@ -50,17 +50,25 @@ public class User {
         // Constructors
         public User() {}
 
-        public User(String username, String firstName, String lastName, String email, String passwordHash) {
+        public User(String clerkId, String username, String firstName, String lastName, String email) {
+                this.clerkId = clerkId;
                 this.username = username;
                 this.firstName = firstName;
                 this.lastName = lastName;
                 this.email = email;
-                this.passwordHash = passwordHash;
         }
 
         // Getters and Setters
+        public String getClerkId() {
+                return clerkId;
+        }
+
+        public void setClerkId(String clerkId) {
+                this.clerkId = clerkId;
+        }
+
         public String getUserId() {
-                return username;
+                return clerkId;
         }
 
         public String getUsername() {
@@ -93,14 +101,6 @@ public class User {
 
         public void setEmail(String email) {
                 this.email = email;
-        }
-
-        public String getPasswordHash() {
-                return passwordHash;
-        }
-
-        public void setPasswordHash(String passwordHash) {
-                this.passwordHash = passwordHash;
         }
 
         public Set<HomeMembership> getHomeMemberships() {
@@ -154,7 +154,10 @@ public class User {
         @Override
         public String toString() {
                 return "User{"
-                                + "username='"
+                                + "clerkId='"
+                                + clerkId
+                                + '\''
+                                + ", username='"
                                 + username
                                 + '\''
                                 + ", firstName='"
@@ -174,7 +177,8 @@ public class User {
                 if (this == o) return true;
                 if (o == null || getClass() != o.getClass()) return false;
                 User user = (User) o;
-                return Objects.equals(username, user.username)
+                return Objects.equals(clerkId, user.clerkId)
+                                && Objects.equals(username, user.username)
                                 && Objects.equals(firstName, user.firstName)
                                 && Objects.equals(lastName, user.lastName)
                                 && Objects.equals(email, user.email);
@@ -182,6 +186,6 @@ public class User {
 
         @Override
         public int hashCode() {
-                return Objects.hash(username, firstName, lastName, email);
+                return Objects.hash(clerkId, username, firstName, lastName, email);
         }
 }

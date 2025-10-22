@@ -49,19 +49,19 @@ public class HomeController {
         }
 
         /**
-         * Get all homes or search homes GET /api/homes - Get all homes GET /api/homes?username={username} -
+         * Get all homes or search homes GET /api/homes - Get all homes GET /api/homes?clerkId={clerkId} -
          * Get homes for a specific user GET /api/homes?search={name} - Search homes by name GET
          * /api/homes?address={address} - Search homes by address
          */
         @GetMapping
         public ResponseEntity<List<HomeResponse>> getHomes(
-                        @RequestParam(required = false) String username,
+                        @RequestParam(required = false) String clerkId,
                         @RequestParam(required = false) String search,
                         @RequestParam(required = false) String address) {
                 List<Home> homes;
 
-                if (username != null) {
-                        homes = homeService.getHomesByUsername(username);
+                if (clerkId != null) {
+                        homes = homeService.getHomesByClerkId(clerkId);
                 } else if (search != null && !search.trim().isEmpty()) {
                         homes = homeService.searchHomesByName(search);
                 } else if (address != null && !address.trim().isEmpty()) {
