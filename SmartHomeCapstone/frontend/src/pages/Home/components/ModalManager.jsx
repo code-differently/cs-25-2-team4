@@ -32,7 +32,7 @@ export const ModalManager = ({
       {modalType === "confirm-delete" && selectedDevice && (
         <div className="confirm-overlay">
           <ConfirmDeleteModal
-            deviceName={selectedDevice.name}
+            deviceName={selectedDevice.deviceName}
             onConfirm={onConfirmDelete}
             onCancel={onReturnToCamera}
           />
@@ -64,7 +64,7 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
 
   const confirmDeleteDevice = () => {
     if (!selectedDevice) return;
-    onDeleteDevice(selectedDevice.name);
+    onDeleteDevice(selectedDevice.deviceId);
     closeModal();
   };
 
@@ -89,19 +89,13 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     setModalType("confirm-delete");
   };
 
-  const handleConfirmDelete = () => {
-    if (!selectedDevice) return;
-    onDeleteDevice(selectedDevice.name);
-    closeModal();
-  };
-
   return {
     selectedDevice,
     modalType,
     openCameraModal,
     closeModal,
     requestDeleteDevice: handleRequestDelete,
-    confirmDeleteDevice: handleConfirmDelete,
+    confirmDeleteDevice,
     returnToCameraModal,
     handleToggle,
   };
