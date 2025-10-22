@@ -205,7 +205,7 @@ body:not(.dark-mode) {
   text-align: center;
 }
 
-/* ====================  Add Forms & Buttons ==================== */
+/* ====================  Device Add Forms & Buttons ==================== */
 .add-device-btn {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
   color: #111;
