@@ -68,11 +68,13 @@ export const DeviceManagement = ({
 
     try {
       // Create device
-      await onAddDevice({
+      const deviceData = {
         deviceName: deviceName.trim(),
         deviceType: deviceType,
         roomId: roomToAssign.id, // Use room ID for backend
-      });
+      };
+      
+      await onAddDevice(deviceData);
 
       // Reset form
       setDeviceName("");

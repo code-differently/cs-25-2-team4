@@ -18,7 +18,7 @@ public class Thermostat extends Device {
         @Column(name = "target_temp")
         @DecimalMin(value = "50.0")
         @DecimalMax(value = "100.0")
-        private Double targetTemp = 20.0; // Default 20°F
+        private Double targetTemp = 70.0; // Default 70°F
 
         @Enumerated(EnumType.STRING)
         @Column(name = "thermostat_mode", length = 20)
