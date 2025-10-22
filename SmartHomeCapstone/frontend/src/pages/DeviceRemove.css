@@ -1,0 +1,72 @@
+.device-remove-container {
+    padding: 12px;
+}
+
+.device-remove-container h1 {
+    margin-bottom: 16px;
+}
+
+.device-remove-loading {
+    padding: 12px;
+}
+
+.device-remove-error {
+    padding: 8px;
+    border: 1px solid #f5c6cb;
+    background: #fdecea;
+    border-radius: 4px;
+    color: #721c24;
+    margin-bottom: 12px;
+}
+
+.device-details {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    background-color: #f8f9fa;
+}
+
+.device-details h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.device-details p {
+    margin: 4px 0;
+}
+
+.device-remove-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1em;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 1;
+}
