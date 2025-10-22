@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import "./Home.css";
 import { useDevices } from "../../hooks/useDevices";
 import { useRooms } from "../../hooks/useRooms";
 import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
 import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
+import { Header } from "../../components/header/Header.jsx";
 
 /* ==================== Home Component ==================== */
 const Home = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   /* ==================== Custom Hooks ==================== */
   const {
     rooms,
@@ -36,10 +39,31 @@ const Home = () => {
     handleToggle,
   } = useModalManager(toggleDevice, deleteDevice);
 
+  /* ==================== Filter Devices by Search Term ==================== */
+  const filteredDevices = useMemo(() => {
+    // Ensure devices array exists
+    if (!devices || !Array.isArray(devices)) {
+      return [];
+    }
+    
+    if (!searchTerm.trim()) {
+      return devices;
+    }
+    
+    return devices.filter(device => {
+      // Check if device and device.deviceName exist and are strings
+      if (!device || typeof device.deviceName !== 'string') {
+        return false;
+      }
+      return device.deviceName.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+  }, [devices, searchTerm]);
+
   /* ==================== Render ==================== */
   if (loading || roomsLoading) {
     return (
       <div className="home">
+        <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <div className="loading">Loading...</div>
       </div>
     );
@@ -48,6 +72,7 @@ const Home = () => {
   if (error || roomsError) {
     return (
       <div className="home">
+        <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <div className="error">Error loading data: {error || roomsError}</div>
       </div>
     );
@@ -55,10 +80,12 @@ const Home = () => {
 
   return (
     <div className="home">
+      <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      
       {/* Room and Device Management */}
       <RoomDeviceCoordinator
         rooms={rooms}
-        devices={devices}
+        devices={filteredDevices}
         showAddRoomForm={showAddRoomForm}
         newRoomName={newRoomName}
         roomError={roomError}
