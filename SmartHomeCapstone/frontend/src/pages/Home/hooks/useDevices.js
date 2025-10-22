@@ -50,5 +50,6 @@ export function useDevices() {
     addDevice,
     toggleDevice,
     deleteDevice,
+    setDevices,
   };
 }

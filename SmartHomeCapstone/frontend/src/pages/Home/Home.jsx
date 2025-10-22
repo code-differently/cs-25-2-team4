@@ -21,10 +21,11 @@ export const Home = () => {
     setNewRoomName,
     activateRoom,
     addRoom,
-    deleteRoom,
+    setRooms,
   } = useRooms();
 
-  const { devices, addDevice, toggleDevice, deleteDevice } = useDevices();
+  const { devices, addDevice, toggleDevice, deleteDevice, setDevices } =
+    useDevices();
 
   const {
     selectedDevice,
@@ -40,15 +41,22 @@ export const Home = () => {
   const [roomToDelete, setRoomToDelete] = useState(null);
 
   const handleRequestDeleteRoom = (roomName) => {
-    closeModal(); // close camera modal if open
-    setRoomToDelete(roomName); // show confirm modal
+    closeModal();
+    setRoomToDelete(roomName);
   };
 
   const handleConfirmDeleteRoom = () => {
-    deleteRoom(roomToDelete); // remove room
-    deleteDevice((d) => d.room === roomToDelete); // remove its devices
-    activateRoom("All"); // make All active
-    setRoomToDelete(null); // close modal
+    setRooms((prevRooms) => {
+      const updated = prevRooms.filter((r) => r.name !== roomToDelete);
+      return updated.map((r) => ({
+        ...r,
+        active: r.name === "All",
+      }));
+    });
+
+    setDevices((prev) => prev.filter((d) => d.room !== roomToDelete));
+
+    setRoomToDelete(null);
   };
 
   const handleCancelDeleteRoom = () => {

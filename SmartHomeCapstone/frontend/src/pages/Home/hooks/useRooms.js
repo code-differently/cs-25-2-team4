@@ -62,5 +62,6 @@ export function useRooms() {
     setNewRoomName,
     activateRoom,
     addRoom,
+    setRooms,
   };
 }
