@@ -4,13 +4,17 @@ import { DeviceIcon } from "./DeviceIcon";
 export const DevicesList = ({
   devices,
   activeRoom,
+  rooms,
   onToggle,
   onCameraOpen,
 }) => {
+  // Get the active room object to find its ID
+  const activeRoomObj = rooms?.find(r => r.name === activeRoom);
+  
   const filteredDevices =
     activeRoom === "All"
       ? devices
-      : devices.filter((d) => d.room === activeRoom);
+      : devices.filter((d) => d.roomId === activeRoomObj?.id);
 
   if (activeRoom !== "All" && filteredDevices.length === 0) {
     return <p className="empty-devices-msg">No devices in this room yet</p>;
@@ -20,20 +24,20 @@ export const DevicesList = ({
     <div className="devices-grid">
       {filteredDevices.map((device, index) => (
         <div
-          key={index}
+          key={device.deviceId || index}
           data-testid="device-card"
           className={`device-card ${device.isOn ? "is-on" : "is-off"} ${
-            device.type === "Camera" ? "clickable" : ""
+            device.deviceType === "CAMERA" ? "clickable" : ""
           }`}
           onClick={() => {
-            if (device.type === "Camera") onCameraOpen(device);
+            if (device.deviceType === "CAMERA") onCameraOpen(device);
           }}
         >
           {/* === HEADER (icon + toggle) === */}
           <div className="device-card-header">
             <div className="device-head-left">
               <span className="icon-box">
-                <DeviceIcon type={device.type} />
+                <DeviceIcon type={device.deviceType} />
               </span>
             </div>
 
@@ -44,8 +48,8 @@ export const DevicesList = ({
             >
               <input
                 type="checkbox"
-                checked={!!device.isOn}
-                onChange={() => onToggle(device.name)}
+                checked={device.isOn}
+                onChange={() => onToggle(device.deviceId, device.isOn)}
               />
               <span className="slider"></span>
             </label>
@@ -53,19 +57,17 @@ export const DevicesList = ({
 
           {/* === NAME === */}
           <span className={`device-title ${device.isOn ? "" : "dim"}`}>
-            {device.name}
+            {device.deviceName}
           </span>
 
           {/* === STATUS TEXT === */}
-          {device.status && (
-            <span
-              className={`device-status-text ${
-                device.isOn ? "" : "status-dim"
-              }`}
-            >
-              {device.status}
-            </span>
-          )}
+          <span
+            className={`device-status-text ${
+              device.isOn ? "" : "status-dim"
+            }`}
+          >
+            {device.isOn ? 'ON' : 'OFF'}
+          </span>
         </div>
       ))}
     </div>
