@@ -6,7 +6,7 @@ import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
 import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
 
 /* ==================== Home Component ==================== */
-export const Home = () => {
+const Home = () => {
   /* ==================== Custom Hooks ==================== */
   const {
     rooms,
@@ -69,3 +69,4 @@ export const Home = () => {
     </div>
   );
 };
+export default Home;

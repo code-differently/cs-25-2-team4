@@ -5,6 +5,7 @@ import Devices from "./pages/Devices.jsx";
 import DeviceAdd from "./pages/DeviceAdd.jsx";
 import DeviceRemove from "./pages/DeviceRemove.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import Home from "./pages/Home/Home.jsx";
 import "./Layout.css";
 
 function Layout(){
@@ -29,6 +30,7 @@ export default function App(){
       <Route path="/register" element={<Register/>}/>
       <Route element={<Layout />}>
         <Route path="/" element={<Navigate to="/login" replace/>}/>
+        <Route path="/home" element={<Home/>}/>
         <Route path="/devices" element={<Devices/>}/>
         <Route path="/devices/add" element={<DeviceAdd/>}/>
         <Route path="/devices/:deviceId/remove" element={<DeviceRemove/>}/>
