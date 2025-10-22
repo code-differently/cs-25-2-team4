@@ -50,9 +50,11 @@ export const deviceService = {
   // GET requests
 
   // Get all devices
-  getAllDevices: async () => {
+  getAllDevices: async (homeId = 1) => {
     try {
-      const response = await apiClient.get('/');
+      const response = await apiClient.get('', {
+        params: { homeId }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching all devices:', error);
@@ -63,7 +65,9 @@ export const deviceService = {
   // Get devices by room ID
   getDevicesByRoom: async (roomId) => {
     try {
-      const response = await apiClient.get(`/?roomId=${roomId}`);
+      const response = await apiClient.get('', {
+        params: { roomId }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching devices by room:', error);
@@ -74,7 +78,9 @@ export const deviceService = {
   // Get devices by home ID
   getDevicesByHome: async (homeId) => {
     try {
-      const response = await apiClient.get(`/?homeId=${homeId}`);
+      const response = await apiClient.get('', {
+        params: { homeId }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching devices by home:', error);
@@ -85,7 +91,9 @@ export const deviceService = {
   // Search devices by name
   searchDevices: async (searchTerm) => {
     try {
-      const response = await apiClient.get(`/?search=${encodeURIComponent(searchTerm)}`);
+      const response = await apiClient.get('', {
+        params: { search: searchTerm }
+      });
       return response.data;
     } catch (error) {
       console.error('Error searching devices:', error);
@@ -109,7 +117,7 @@ export const deviceService = {
   // Create a new device
   createDevice: async (deviceData) => {
     try {
-      const response = await apiClient.post('/', deviceData);
+      const response = await apiClient.post('', deviceData);
       return response.data;
     } catch (error) {
       console.error('Error creating device:', error);
