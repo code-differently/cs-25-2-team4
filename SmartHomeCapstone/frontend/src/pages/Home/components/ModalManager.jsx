@@ -57,17 +57,6 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     setModalType(null);
   };
 
-  const requestDeleteDevice = (device) => {
-    setSelectedDevice(device);
-    setModalType("confirm-delete");
-  };
-
-  const confirmDeleteDevice = () => {
-    if (!selectedDevice) return;
-    onDeleteDevice(selectedDevice.name);
-    closeModal();
-  };
-
   const returnToCameraModal = () => {
     setModalType("camera");
   };
