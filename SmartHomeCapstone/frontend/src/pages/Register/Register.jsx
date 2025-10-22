@@ -1,14 +1,27 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import "./Register.css";
+import AddressForm from "../../components/AddressForm";
+import { addressService } from "../../services/addressService";
 
 export default function Register() {
   const [step, setStep] = useState(1);
   const [msg, setMsg] = useState("");
   const [user, setUser] = useState({ firstName:"", lastName:"", username:"", email:"", password:"", dob:"" });
-  const [house, setHouse] = useState({ name:"", address:"", type:"" });
+  const [house, setHouse] = useState({ name:"", type:"" });
+  const [address, setAddress] = useState({
+    country: '',
+    state: '',
+    city: '',
+    streetAddress: '',
+    zipCode: ''
+  });
 
   function onChangeUser(e){ setUser({ ...user, [e.target.name]: e.target.value }); }
   function onChangeHouse(e){ setHouse({ ...house, [e.target.name]: e.target.value }); }
+  
+  const handleAddressChange = useCallback((newAddress) => {
+    setAddress(newAddress);
+  }, []);
 
   function next(){
     if(!user.firstName || !user.lastName || !user.username || !user.email || !user.password){ setMsg("Please fill all user fields."); return; }
@@ -18,8 +31,24 @@ export default function Register() {
 
   function submit(e){
     e.preventDefault();
-    if(!house.name || !house.address || !house.type){ setMsg("Please fill all house fields."); return; }
-    setMsg("Account created (demo).");
+    
+    // Validate house details
+    if(!house.name || !house.type){ 
+      setMsg("Please fill all house fields."); 
+      return; 
+    }
+    
+    // Validate address
+    const addressErrors = addressService.validateAddress(address);
+    if(addressErrors.length > 0) {
+      setMsg(addressErrors[0]);
+      return;
+    }
+    
+    // Create full address string for storage
+    const fullAddress = `${address.streetAddress}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country}`;
+    
+    setMsg(`Account created (demo). Address: ${fullAddress}`);
   }
 
   return (
@@ -50,8 +79,9 @@ export default function Register() {
           <>
             <label>House Name</label>
             <input className="input" name="name" value={house.name} onChange={onChangeHouse}/>
-            <label>Address</label>
-            <input className="input" name="address" value={house.address} onChange={onChangeHouse}/>
+            
+            <AddressForm onAddressChange={handleAddressChange} initialAddress={address} />
+            
             <label>Type</label>
             <select className="select mb16" name="type" value={house.type} onChange={onChangeHouse}>
               <option value="">Select...</option>
