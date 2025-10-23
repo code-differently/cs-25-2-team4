@@ -45,7 +45,7 @@ export const DeviceManagement = ({
     }, 2250);
   };
 
-  const handleSaveDevice = () => {
+  const handleSaveDevice = async () => {
     if (!deviceName.trim()) {
       showError("Device name is required");
       return;
@@ -60,28 +60,34 @@ export const DeviceManagement = ({
     const roomToAssign =
       activeRoom === "All"
         ? realRooms.length === 1
-          ? realRooms[0].name
-          : selectedRoom
-        : activeRoom;
+          ? realRooms[0]
+          : rooms.find(r => r.name === selectedRoom)
+        : rooms.find(r => r.name === activeRoom);
 
     if (!roomToAssign) return;
 
-    onAddDevice({
-      name: deviceName.trim(),
-      room: roomToAssign,
-      type: deviceType,
-      isOn: false,
-    });
+    try {
+      // Create device
+      const deviceData = {
+        deviceName: deviceName.trim(),
+        deviceType: deviceType,
+        roomId: roomToAssign.id, // Use room ID for backend
+      };
+      
+      await onAddDevice(deviceData);
 
-    // Reset form
-    setDeviceName("");
-    setSelectedRoom("");
-    setShowAddDeviceForm(false);
-    setDeviceError("");
-    setDeviceType("");
-    setDeviceTypeError("");
+      // Reset form
+      setDeviceName("");
+      setSelectedRoom("");
+      setShowAddDeviceForm(false);
+      setDeviceError("");
+      setDeviceType("");
+      setDeviceTypeError("");
 
-    onActivateRoom(roomToAssign);
+      onActivateRoom(roomToAssign.name);
+    } catch (error) {
+      showError(error.message || "Failed to add device");
+    }
   };
 
   const handleCancelForm = () => {
@@ -115,9 +121,10 @@ export const DeviceManagement = ({
         onCancelForm={handleCancelForm}
       />
 
-      <DevicesList
+            <DevicesList
         devices={devices}
         activeRoom={activeRoom}
+        rooms={rooms}
         onToggle={onToggleDevice}
         onCameraOpen={onCameraOpen}
       />

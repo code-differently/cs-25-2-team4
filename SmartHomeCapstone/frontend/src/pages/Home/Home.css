@@ -47,6 +47,33 @@ body:not(.dark-mode) {
   margin: 0 auto;
 }
 
+/* ====================  Add Room Section (Above Rooms Bar) ==================== */
+.add-room-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0 auto 12px;
+  max-width: 900px;
+  padding: 0 6px;
+}
+
+.add-room-section > button {
+  background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
+  color: #111;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.add-room-section > button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
 /* ====================  Rooms Bar ==================== */
 .rooms-bar {
   display: flex;
@@ -57,6 +84,69 @@ body:not(.dark-mode) {
   max-width: var(--page-max);
   overflow-x: auto;
   scrollbar-width: thin;
+  scroll-behavior: smooth;
+  flex-wrap: nowrap;
+  padding-bottom: 10px;
+  margin-bottom: 24px;
+}
+
+/* Improve scrollbar styling */
+.rooms-bar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.rooms-bar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rooms-bar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.rooms-bar::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* ====================  Add Room Form ==================== */
+.add-room-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.add-room-form input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--fg);
+  font-size: 0.9rem;
+  width: 180px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.add-room-form input:focus {
+  outline: none;
+  background: var(--surface-elev);
+  border-color: var(--muted);
+}
+
+.add-room-form button {
+  background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
+  color: #111;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+
+.add-room-form button:hover {
+  transform: scale(1.05);
 }
 
 .rooms-bar button {
@@ -88,6 +178,8 @@ body:not(.dark-mode) {
 .room-delete-icon:hover {
   opacity: 1;
   background: rgba(0,0,0,0.08);
+  flex-shrink: 0;
+  min-width: fit-content;
 }
 
 .rooms-bar button:hover,
@@ -132,7 +224,7 @@ body:not(.dark-mode) {
   text-align: center;
 }
 
-/* ====================  Add Forms & Buttons ==================== */
+/* ====================  Device Add Forms & Buttons ==================== */
 .add-device-btn {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
   color: #111;
@@ -150,32 +242,61 @@ body:not(.dark-mode) {
   opacity: 0.9;
 }
 
-.add-room-form,
 .add-device-form {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.add-room-form input,
-.add-device-form input {
-  background-color: #1e1e1e;
-  border: none;
+.add-device-form input, .add-device-form select {
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px 12px;
-  color: #ddd;
+  color: var(--fg);
   font-size: 0.9rem;
-  width: 180px;
 }
 
-.add-room-form input:focus,
+.add-device-form input, .add-device-form select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--fg);
+  font-size: 0.9rem;
+}
+
+.add-device-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
+}
+
+body.dark-mode .add-device-form select {
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
 .add-device-form input:focus {
   outline: none;
-  background-color: #2a2a2a;
-  color: white;
+  background: var(--surface-elev);
+  border-color: var(--muted);
 }
 
-.add-room-form button,
+.add-device-form select:focus {
+  outline: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0c4ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+.add-device-form select:hover {
+  border-color: var(--muted);
+}
+
 .add-device-form button {
   background: linear-gradient(90deg, #a0c4ff, #bdb2ff);
   color: #111;
@@ -188,9 +309,14 @@ body:not(.dark-mode) {
   transition: transform 0.2s ease;
 }
 
-.add-room-form button:hover,
 .add-device-form button:hover {
   transform: scale(1.05);
+}
+
+.add-device-form select option {
+  background: var(--surface);
+  color: var(--fg);
+  padding: 8px 12px;
 }
 
 /* ====================  Toast Messages ==================== */
@@ -223,14 +349,14 @@ body:not(.dark-mode) {
 }
 
 .toast-room-error {
-    top: -10px;
-    left: 150px;
+    top: -40px;
+    left: 110px;
     z-index: 20;
 }
 
 .toast-device-error {
-    right: 170px;
-    top: -32px;  
+    right: 200px;
+    top: -20px;  
 }
 
 .toast-block-error {
@@ -257,6 +383,7 @@ body:not(.dark-mode) {
   transition: transform .18s ease, box-shadow .25s ease, background .25s ease, opacity .25s ease;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: 12px;
   color: #fff;
 }

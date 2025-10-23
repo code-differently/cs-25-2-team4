@@ -12,8 +12,8 @@ export const ModalManager = ({
   onConfirmDelete,
   onReturnToCamera,
 }) => {
-  const handleToggle = (deviceNameToFlip) => {
-    onToggleDevice(deviceNameToFlip);
+  const handleToggle = (deviceIdToFlip, currentIsOn) => {
+    onToggleDevice(deviceIdToFlip, currentIsOn);
   };
 
   return (
@@ -62,14 +62,14 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     setModalType("camera");
   };
 
-  const handleToggle = (deviceNameToFlip) => {
-    onToggleDevice(deviceNameToFlip);
+  const handleToggle = (deviceIdToFlip, currentIsOn) => {
+    onToggleDevice(deviceIdToFlip, currentIsOn);
     setSelectedDevice((prev) => {
-      if (!prev || prev.name !== deviceNameToFlip) return prev;
+      if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
       return {
         ...prev,
-        isOn: !prev.isOn,
-        status: !prev.isOn ? "Online" : "Offline",
+        isOn: !currentIsOn,
+        status: !currentIsOn ? "Online" : "Offline",
       };
     });
   };
@@ -79,10 +79,15 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     setModalType("confirm-delete");
   };
 
-  const handleConfirmDelete = () => {
-    if (!selectedDevice) return;
-    onDeleteDevice(selectedDevice.name);
-    closeModal();
+  const confirmDeleteDevice = async () => {
+    if (selectedDevice) {
+      try {
+        await onDeleteDevice(selectedDevice.deviceId);
+        closeModal();
+      } catch (error) {
+        console.error('Failed to delete device:', error);
+      }
+    }
   };
 
   return {
@@ -91,7 +96,7 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     openCameraModal,
     closeModal,
     requestDeleteDevice: handleRequestDelete,
-    confirmDeleteDevice: handleConfirmDelete,
+    confirmDeleteDevice,
     returnToCameraModal,
     handleToggle,
   };

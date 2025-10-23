@@ -41,15 +41,15 @@ export const useDevices = () => {
   const deleteDevice = async (deviceId) => {
     try {
       await deviceService.deleteDevice(deviceId);
-      setDevices(prev => prev.filter(device => device.id !== deviceId));
+      setDevices(prev => prev.filter(device => device.deviceId !== deviceId));
     } catch (err) {
       throw err;
     }
   };
 
-  const toggleDevice = async (deviceId, currentStatus) => {
+  const toggleDevice = async (deviceId, currentIsOn) => {
     try {
-      if (currentStatus === 'ON') {
+      if (currentIsOn) {
         await deviceService.turnDeviceOff(deviceId);
       } else {
         await deviceService.turnDeviceOn(deviceId);
@@ -57,8 +57,8 @@ export const useDevices = () => {
       // Update the device status in local state
       setDevices(prev =>
         prev.map(device =>
-          device.id === deviceId
-            ? { ...device, status: currentStatus === 'ON' ? 'OFF' : 'ON' }
+          device.deviceId === deviceId
+            ? { ...device, isOn: !currentIsOn }
             : device
         )
       );

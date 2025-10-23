@@ -1,17 +1,19 @@
 import React from "react";
 import "./Home.css";
 import { useState } from "react";
-import { useDevices } from "./hooks/useDevices";
-import { useRooms } from "./hooks/useRooms";
+import { useDevices } from "../../hooks/useDevices";
+import { useRooms } from "../../hooks/useRooms";
 import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
 import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
 import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
 
 /* ==================== Home Component ==================== */
-export const Home = () => {
+const Home = () => {
   /* ==================== Custom Hooks ==================== */
   const {
     rooms,
+    loading: roomsLoading,
+    error: roomsError,
     roomError,
     fadeOutRoom,
     newRoomName,
@@ -24,7 +26,7 @@ export const Home = () => {
     setRooms,
   } = useRooms();
 
-  const { devices, addDevice, toggleDevice, deleteDevice, setDevices } =
+  const { devices, loading, error, addDevice, toggleDevice, deleteDevice, setDevices } =
     useDevices();
 
   const {
@@ -64,6 +66,22 @@ export const Home = () => {
   };
 
   /* ==================== Render ==================== */
+  if (loading || roomsLoading) {
+    return (
+      <div className="home">
+        <div className="loading">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error || roomsError) {
+    return (
+      <div className="home">
+        <div className="error">Error loading data: {error || roomsError}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="home">
       {/* Room and Device Management */}
@@ -110,3 +128,4 @@ export const Home = () => {
     </div>
   );
 };
+export default Home;
