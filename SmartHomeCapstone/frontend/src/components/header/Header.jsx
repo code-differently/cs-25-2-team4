@@ -1,13 +1,12 @@
 import "./Header.css";
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
-import { useUser } from "../../context/UserContext";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { CustomUserDropdown } from "./CustomUserDropdown";
 
 /* ==================== Header Component ==================== */
 export const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { user, backendUser, isLoading } = useUser();
 
   /* === Handlers === */
   const toggleDarkMode = () => {
@@ -18,39 +17,6 @@ export const Header = () => {
   useEffect(() => {
     document.body.classList.toggle("dark-mode", !isDarkMode);
   }, [isDarkMode]);
-
-  /* === Get display name === */
-  const getDisplayName = () => {
-    if (isLoading) return "Loading...";
-    
-    // Try backend user fullName first
-    if (backendUser?.fullName) {
-      return backendUser.fullName;
-    }
-    
-    // Try Clerk user fullName
-    if (user?.fullName) {
-      return user.fullName;
-    }
-    
-    // Try to construct from Clerk firstName/lastName
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    }
-    
-    // Try individual names
-    if (user?.firstName) return user.firstName;
-    if (user?.lastName) return user.lastName;
-    
-    // Try username or email
-    if (backendUser?.username) return backendUser.username;
-    if (user?.username) return user.username;
-    if (user?.emailAddresses?.[0]?.emailAddress) {
-      return user.emailAddresses[0].emailAddress.split('@')[0];
-    }
-    
-    return "User";
-  };
 
  /* ==================== Render ==================== */
   return (
@@ -94,10 +60,7 @@ export const Header = () => {
           {/* --- Profile Section --- */}
           <div className="profile-section">
             <SignedIn>
-              <span style={{ marginRight: '10px', fontSize: '14px' }}>
-                Welcome, {getDisplayName()}
-              </span>
-              <UserButton />
+              <CustomUserDropdown />
             </SignedIn>
             <SignedOut>
               <span>Please sign in</span>
