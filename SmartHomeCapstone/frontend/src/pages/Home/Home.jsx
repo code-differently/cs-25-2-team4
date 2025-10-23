@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import "./Home.css";
 import { useState } from "react";
 import { useDevices } from "../../hooks/useDevices";
