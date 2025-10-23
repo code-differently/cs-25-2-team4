@@ -22,15 +22,10 @@ public class User {
         @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters")
         private String username;
 
-        @Column(name = "first_name", nullable = false, length = 100)
-        @NotBlank(message = "First name cannot be blank")
-        @Size(max = 100, message = "First name must be at most 100 characters")
-        private String firstName;
-
-        @Column(name = "last_name", nullable = false, length = 100)
-        @NotBlank(message = "Last name cannot be blank")
-        @Size(max = 100, message = "Last name must be at most 100 characters")
-        private String lastName;
+        @Column(name = "full_name", nullable = false, length = 200)
+        @NotBlank(message = "Full name cannot be blank")
+        @Size(max = 200, message = "Full name must be at most 200 characters")
+        private String fullName;
 
         @Column(name = "email", nullable = false, unique = true, length = 255)
         @NotBlank(message = "Email cannot be blank")
@@ -50,11 +45,10 @@ public class User {
         // Constructors
         public User() {}
 
-        public User(String clerkId, String username, String firstName, String lastName, String email) {
+        public User(String clerkId, String username, String fullName, String email) {
                 this.clerkId = clerkId;
                 this.username = username;
-                this.firstName = firstName;
-                this.lastName = lastName;
+                this.fullName = fullName;
                 this.email = email;
         }
 
@@ -79,20 +73,43 @@ public class User {
                 this.username = username;
         }
 
-        public String getFirstName() {
-                return firstName;
+        public String getFullName() {
+                return fullName;
         }
 
-        public void setFirstName(String firstName) {
-                this.firstName = firstName;
+        public void setFullName(String fullName) {
+                this.fullName = fullName;
+        }
+
+        // Convenience methods to get parsed first and last names
+        public String getFirstName() {
+                if (fullName == null || fullName.trim().isEmpty()) {
+                        return "";
+                }
+                String[] parts = fullName.trim().split("\\s+");
+                return parts[0];
         }
 
         public String getLastName() {
-                return lastName;
+                if (fullName == null || fullName.trim().isEmpty()) {
+                        return "";
+                }
+                String[] parts = fullName.trim().split("\\s+");
+                if (parts.length > 1) {
+                        return String.join(" ", java.util.Arrays.copyOfRange(parts, 1, parts.length));
+                }
+                return "";
+        }
+
+        // For backward compatibility, add setters that construct fullName
+        public void setFirstName(String firstName) {
+                String lastName = getLastName();
+                this.fullName = (firstName + " " + lastName).trim();
         }
 
         public void setLastName(String lastName) {
-                this.lastName = lastName;
+                String firstName = getFirstName();
+                this.fullName = (firstName + " " + lastName).trim();
         }
 
         public String getEmail() {
@@ -160,11 +177,8 @@ public class User {
                                 + ", username='"
                                 + username
                                 + '\''
-                                + ", firstName='"
-                                + firstName
-                                + '\''
-                                + ", lastName='"
-                                + lastName
+                                + ", fullName='"
+                                + fullName
                                 + '\''
                                 + ", email='"
                                 + email
@@ -179,13 +193,12 @@ public class User {
                 User user = (User) o;
                 return Objects.equals(clerkId, user.clerkId)
                                 && Objects.equals(username, user.username)
-                                && Objects.equals(firstName, user.firstName)
-                                && Objects.equals(lastName, user.lastName)
+                                && Objects.equals(fullName, user.fullName)
                                 && Objects.equals(email, user.email);
         }
 
         @Override
         public int hashCode() {
-                return Objects.hash(clerkId, username, firstName, lastName, email);
+                return Objects.hash(clerkId, username, fullName, email);
         }
 }

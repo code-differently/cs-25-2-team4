@@ -33,8 +33,7 @@ class UserTest {
 
                 assertNull(newUser.getClerkId());
                 assertNull(newUser.getUsername());
-                assertNull(newUser.getFirstName());
-                assertNull(newUser.getLastName());
+                assertNull(newUser.getFullName());
                 assertNull(newUser.getEmail());
                 assertNull(newUser.getHomeMemberships());
                 assertNull(newUser.getRoomAccesses());
@@ -45,16 +44,16 @@ class UserTest {
         void parameterizedConstructor_ShouldSetFields() {
                 String clerkId = "clerk_123456789";
                 String username = "testuser";
-                String firstName = "John";
-                String lastName = "Doe";
+                String fullName = "John Doe";
                 String email = "test@example.com";
 
-                User newUser = new User(clerkId, username, firstName, lastName, email);
+                User newUser = new User(clerkId, username, fullName, email);
 
                 assertEquals(clerkId, newUser.getClerkId());
                 assertEquals(username, newUser.getUsername());
-                assertEquals(firstName, newUser.getFirstName());
-                assertEquals(lastName, newUser.getLastName());
+                assertEquals(fullName, newUser.getFullName());
+                assertEquals("John", newUser.getFirstName());
+                assertEquals("Doe", newUser.getLastName());
                 assertEquals(email, newUser.getEmail());
         }
 
@@ -63,8 +62,7 @@ class UserTest {
         void validUser_ShouldPassValidation() {
                 user.setClerkId("clerk_123456789");
                 user.setUsername("validuser");
-                user.setFirstName("John");
-                user.setLastName("Doe");
+                user.setFullName("John Doe");
                 user.setEmail("valid@example.com");
 
                 Set<ConstraintViolation<User>> violations = validator.validate(user);
@@ -76,8 +74,7 @@ class UserTest {
         @DisplayName("ClerkId validation tests")
         void clerkIdValidation_ShouldEnforceConstraints() {
                 user.setUsername("validuser");
-                user.setFirstName("John");
-                user.setLastName("Doe");
+                user.setFullName("John Doe");
                 user.setEmail("valid@example.com");
 
                 // Test blank clerkId
@@ -106,8 +103,7 @@ class UserTest {
         @DisplayName("Username validation tests")
         void usernameValidation_ShouldEnforceConstraints() {
                 user.setClerkId("clerk_123456789");
-                user.setFirstName("John");
-                user.setLastName("Doe");
+                user.setFullName("John Doe");
                 user.setEmail("valid@example.com");
 
                 // Test blank username
@@ -146,23 +142,22 @@ class UserTest {
         }
 
         @Test
-        @DisplayName("First name validation tests")
-        void firstNameValidation_ShouldEnforceConstraints() {
+        @DisplayName("Full name validation tests")
+        void fullNameValidation_ShouldEnforceConstraints() {
                 user.setClerkId("clerk_123456789");
                 user.setUsername("validuser");
-                user.setLastName("Doe");
                 user.setEmail("valid@example.com");
 
-                // Test blank first name
-                user.setFirstName("");
+                // Test blank full name
+                user.setFullName("");
                 Set<ConstraintViolation<User>> violations = validator.validate(user);
                 assertFalse(violations.isEmpty());
                 assertTrue(
                                 violations.stream()
-                                                .anyMatch(v -> v.getMessage().contains("First name cannot be blank")));
+                                                .anyMatch(v -> v.getMessage().contains("Full name cannot be blank")));
 
-                // Test first name too long
-                user.setFirstName("a".repeat(101));
+                // Test full name too long
+                user.setFullName("a".repeat(201));
                 violations = validator.validate(user);
                 assertFalse(violations.isEmpty());
                 assertTrue(
@@ -171,38 +166,37 @@ class UserTest {
                                                                 v ->
                                                                                 v.getMessage()
                                                                                                 .contains(
-                                                                                                                "First name must be at most 100"
+                                                                                                                "Full name must be at most 200"
                                                                                                                                 + " characters")));
         }
 
         @Test
-        @DisplayName("Last name validation tests")
-        void lastNameValidation_ShouldEnforceConstraints() {
-                user.setClerkId("clerk_123456789");
-                user.setUsername("validuser");
-                user.setFirstName("John");
-                user.setEmail("valid@example.com");
+        @DisplayName("First and last name parsing tests")
+        void nameParsingTests_ShouldParseCorrectly() {
+                // Test single name
+                user.setFullName("John");
+                assertEquals("John", user.getFirstName());
+                assertEquals("", user.getLastName());
 
-                // Test blank last name
-                user.setLastName("");
-                Set<ConstraintViolation<User>> violations = validator.validate(user);
-                assertFalse(violations.isEmpty());
-                assertTrue(
-                                violations.stream()
-                                                .anyMatch(v -> v.getMessage().contains("Last name cannot be blank")));
+                // Test two names
+                user.setFullName("John Doe");
+                assertEquals("John", user.getFirstName());
+                assertEquals("Doe", user.getLastName());
 
-                // Test last name too long
-                user.setLastName("a".repeat(101));
-                violations = validator.validate(user);
-                assertFalse(violations.isEmpty());
-                assertTrue(
-                                violations.stream()
-                                                .anyMatch(
-                                                                v ->
-                                                                                v.getMessage()
-                                                                                                .contains(
-                                                                                                                "Last name must be at most 100"
-                                                                                                                                + " characters")));
+                // Test three names
+                user.setFullName("John Michael Doe");
+                assertEquals("John", user.getFirstName());
+                assertEquals("Michael Doe", user.getLastName());
+
+                // Test empty name
+                user.setFullName("");
+                assertEquals("", user.getFirstName());
+                assertEquals("", user.getLastName());
+
+                // Test null name
+                user.setFullName(null);
+                assertEquals("", user.getFirstName());
+                assertEquals("", user.getLastName());
         }
 
         @Test
@@ -210,8 +204,7 @@ class UserTest {
         void emailValidation_ShouldEnforceConstraints() {
                 user.setClerkId("clerk_123456789");
                 user.setUsername("validuser");
-                user.setFirstName("John");
-                user.setLastName("Doe");
+                user.setFullName("John Doe");
 
                 // Test blank email
                 user.setEmail("");

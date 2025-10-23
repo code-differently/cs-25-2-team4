@@ -80,7 +80,11 @@ public class WebhookController {
         private void createUser(
                         String clerkId, String username, String firstName, String lastName, String email) {
                 if (!userRepository.existsByClerkId(clerkId)) {
-                        User user = new User(clerkId, username, firstName, lastName, email);
+                        String fullName = (firstName + " " + lastName).trim();
+                        if (fullName.isEmpty()) {
+                                fullName = username != null ? username : "User";
+                        }
+                        User user = new User(clerkId, username, fullName, email);
                         userRepository.save(user);
                 }
         }
@@ -92,8 +96,11 @@ public class WebhookController {
                                 .ifPresent(
                                                 user -> {
                                                         user.setUsername(username);
-                                                        user.setFirstName(firstName);
-                                                        user.setLastName(lastName);
+                                                        String fullName = (firstName + " " + lastName).trim();
+                                                        if (fullName.isEmpty()) {
+                                                                fullName = username != null ? username : "User";
+                                                        }
+                                                        user.setFullName(fullName);
                                                         user.setEmail(email);
                                                         userRepository.save(user);
                                                 });
