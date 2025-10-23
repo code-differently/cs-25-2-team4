@@ -53,3 +53,4 @@ The service expects the backend API to be available at:
 2. Use the returned `devices` array to display device data
 3. Handle `loading` and `error` states appropriately
 4. Call `refreshDevices()` to manually refresh the data
+
