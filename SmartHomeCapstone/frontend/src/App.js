@@ -1,6 +1,7 @@
 import { Header } from './components/header/Header';
 import { Routes, Route, Outlet } from "react-router-dom";
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/clerk-react";
+import { UserProvider } from './context/UserContext';
 import Login from "./pages/Login/Login.jsx";
 import Register from "./pages/Register/Register.jsx";
 import NotFound from "./pages/NotFound";
@@ -36,7 +37,9 @@ function AuthCheck() {
         </div>
       </SignedOut>
       <SignedIn>
-        <Layout />
+        <UserProvider>
+          <Layout />
+        </UserProvider>
       </SignedIn>
     </>
   );
