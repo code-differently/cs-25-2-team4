@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import "./Home.css";
 import { useDevices } from "../../hooks/useDevices";
 import { useRooms } from "../../hooks/useRooms";
@@ -39,26 +39,6 @@ const Home = () => {
     handleToggle,
   } = useModalManager(toggleDevice, deleteDevice);
 
-  /* ==================== Filter Devices by Search Term ==================== */
-  const filteredDevices = useMemo(() => {
-    // Ensure devices array exists
-    if (!devices || !Array.isArray(devices)) {
-      return [];
-    }
-    
-    if (!searchTerm.trim()) {
-      return devices;
-    }
-    
-    return devices.filter(device => {
-      // Check if device and device.deviceName exist and are strings
-      if (!device || typeof device.deviceName !== 'string') {
-        return false;
-      }
-      return device.deviceName.toLowerCase().includes(searchTerm.toLowerCase());
-    });
-  }, [devices, searchTerm]);
-
   /* ==================== Render ==================== */
   if (loading || roomsLoading) {
     return (
@@ -85,7 +65,8 @@ const Home = () => {
       {/* Room and Device Management */}
       <RoomDeviceCoordinator
         rooms={rooms}
-        devices={filteredDevices}
+        devices={devices}
+        searchTerm={searchTerm}
         showAddRoomForm={showAddRoomForm}
         newRoomName={newRoomName}
         roomError={roomError}

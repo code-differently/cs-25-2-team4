@@ -6,6 +6,7 @@ export const DeviceManagement = ({
   rooms,
   devices,
   activeRoom,
+  searchTerm,
   onAddDevice,
   onToggleDevice,
   onCameraOpen,
@@ -61,8 +62,8 @@ export const DeviceManagement = ({
       activeRoom === "All"
         ? realRooms.length === 1
           ? realRooms[0]
-          : rooms.find(r => r.name === selectedRoom)
-        : rooms.find(r => r.name === activeRoom);
+          : rooms.find((r) => r.name === selectedRoom)
+        : rooms.find((r) => r.name === activeRoom);
 
     if (!roomToAssign) return;
 
@@ -73,7 +74,7 @@ export const DeviceManagement = ({
         deviceType: deviceType,
         roomId: roomToAssign.id, // Use room ID for backend
       };
-      
+
       await onAddDevice(deviceData);
 
       // Reset form
@@ -121,10 +122,11 @@ export const DeviceManagement = ({
         onCancelForm={handleCancelForm}
       />
 
-            <DevicesList
+      <DevicesList
         devices={devices}
         activeRoom={activeRoom}
         rooms={rooms}
+        searchTerm={searchTerm}
         onToggle={onToggleDevice}
         onCameraOpen={onCameraOpen}
       />
