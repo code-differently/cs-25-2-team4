@@ -12,6 +12,15 @@ const apiClient = axios.create({
   },
 });
 
+// Function to set auth token for requests
+export const setAuthToken = (token) => {
+  if (token) {
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete apiClient.defaults.headers.common['Authorization'];
+  }
+};
+
 // Add response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => response,
