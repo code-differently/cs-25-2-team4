@@ -1,15 +1,51 @@
-import './modals.css';
+import { useEffect } from "react";
 
-export default function ConfirmDeleteModal({ open, title = "Are you sure?", onCancel, onConfirm }) {
+export default function ConfirmDeleteModal({
+  open,
+  title = "Delete device",
+  deviceName,
+  onCancel,
+  onConfirm,
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && onCancel?.();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onCancel]);
+
   if (!open) return null;
+
+  const stop = (e) => e.stopPropagation();
+
   return (
-    <div className="modal-backdrop" onClick={onCancel}>
-      <div className="modal-card small" onClick={e => e.stopPropagation()}>
-        <h3 className="modal-title">{title}</h3>
-        <div className="modal-actions">
+    <div
+      className="modal-backdrop"
+      role="presentation"
+      onMouseDown={onCancel}
+    >
+      <div
+        className="modal card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-delete-title"
+        onMouseDown={stop}
+      >
+        <header className="modal-header">
+          <h3 id="confirm-delete-title">{title}</h3>
+          <button className="icon-btn" aria-label="Close" onClick={onCancel}>✕</button>
+        </header>
+
+        <div className="modal-body">
+          <p>
+            Are you sure you want to delete <strong>{deviceName || "this device"}</strong>? This action cannot be undone.
+          </p>
+        </div>
+
+        <footer className="modal-footer">
           <button className="btn btn-ghost" onClick={onCancel}>Cancel</button>
           <button className="btn btn-danger" onClick={onConfirm}>Delete</button>
-        </div>
+        </footer>
       </div>
     </div>
   );
