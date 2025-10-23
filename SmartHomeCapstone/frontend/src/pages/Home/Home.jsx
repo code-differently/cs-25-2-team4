@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Home.css";
 import { useState } from "react";
 import { useDevices } from "../../hooks/useDevices";
@@ -6,9 +6,12 @@ import { useRooms } from "../../hooks/useRooms";
 import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
 import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
 import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
+import { Header } from "../../components/header/Header.jsx";
 
 /* ==================== Home Component ==================== */
 const Home = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   /* ==================== Custom Hooks ==================== */
   const {
     rooms,
@@ -69,6 +72,7 @@ const Home = () => {
   if (loading || roomsLoading) {
     return (
       <div className="home">
+        <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <div className="loading">Loading...</div>
       </div>
     );
@@ -77,6 +81,7 @@ const Home = () => {
   if (error || roomsError) {
     return (
       <div className="home">
+        <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <div className="error">Error loading data: {error || roomsError}</div>
       </div>
     );
@@ -84,10 +89,13 @@ const Home = () => {
 
   return (
     <div className="home">
+      <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      
       {/* Room and Device Management */}
       <RoomDeviceCoordinator
         rooms={rooms}
         devices={devices}
+        searchTerm={searchTerm}
         showAddRoomForm={showAddRoomForm}
         newRoomName={newRoomName}
         roomError={roomError}
