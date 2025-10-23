@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { CameraModal } from "./modals/CameraModal.jsx";
 import { ConfirmDeleteModal } from "./modals/ConfirmDeleteModal.jsx";
+import LightModal from "./modals/LightModal.jsx";
+import ThermostatModal from "./modals/ThermostatModal.jsx";
 
 export const ModalManager = ({
   selectedDevice,
@@ -16,6 +18,31 @@ export const ModalManager = ({
     onToggleDevice(deviceIdToFlip, currentIsOn);
   };
 
+  // Adapt the selectedDevice to the shapes Light/Thermostat modals expect
+  const asLightDevice = (d) =>
+    d
+      ? {
+          ...d,
+          id: d.deviceId,
+          name: d.name,
+          power: !!d.isOn,
+          brightness:
+            typeof d.brightness === "number" ? d.brightness : 60,
+        }
+      : null;
+
+  const asThermoDevice = (d) =>
+    d
+      ? {
+          ...d,
+          id: d.deviceId,
+          name: d.name,
+          power: !!d.isOn,
+          setpoint:
+            typeof d.setpoint === "number" ? d.setpoint : 72,
+        }
+      : null;
+
   return (
     <>
       {/* Camera Modal */}
@@ -28,7 +55,27 @@ export const ModalManager = ({
         />
       )}
 
-      {/* Confirm Delete Modal (overlay above camera modal) */}
+      {/* Light Modal (self-contained confirm inside the modal) */}
+      {modalType === "light" && selectedDevice && (
+        <LightModal
+          open={true}
+          onClose={onClose}
+          onDelete={(id) => onDeleteDevice(id)}
+          device={asLightDevice(selectedDevice)}
+        />
+      )}
+
+      {/* Thermostat Modal (self-contained confirm inside the modal) */}
+      {modalType === "thermostat" && selectedDevice && (
+        <ThermostatModal
+          open={true}
+          onClose={onClose}
+          onDelete={(id) => onDeleteDevice(id)}
+          device={asThermoDevice(selectedDevice)}
+        />
+      )}
+
+      {/* Confirm Delete Modal (camera flow keeps using the overlay) */}
       {modalType === "confirm-delete" && selectedDevice && (
         <div className="confirm-overlay">
           <ConfirmDeleteModal
@@ -51,6 +98,17 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
   const openCameraModal = (device) => {
     setSelectedDevice(device);
     setModalType("camera");
+  };
+
+  // NEW: open helpers for Light/Thermostat
+  const openLightModal = (device) => {
+    setSelectedDevice(device);
+    setModalType("light");
+  };
+
+  const openThermostatModal = (device) => {
+    setSelectedDevice(device);
+    setModalType("thermostat");
   };
 
   const closeModal = () => {
@@ -85,7 +143,7 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
         await onDeleteDevice(selectedDevice.deviceId);
         closeModal();
       } catch (error) {
-        console.error('Failed to delete device:', error);
+        console.error("Failed to delete device:", error);
       }
     }
   };
@@ -94,6 +152,8 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     selectedDevice,
     modalType,
     openCameraModal,
+    openLightModal,
+    openThermostatModal,
     closeModal,
     requestDeleteDevice: handleRequestDelete,
     confirmDeleteDevice,
