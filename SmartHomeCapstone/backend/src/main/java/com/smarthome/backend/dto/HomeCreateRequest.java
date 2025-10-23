@@ -12,12 +12,21 @@ public class HomeCreateRequest {
         @Size(max = 255, message = "Address cannot exceed 255 characters")
         private String address;
 
+        @NotBlank(message = "Clerk ID is required")
+        private String clerkId;
+
         // Constructors
         public HomeCreateRequest() {}
 
         public HomeCreateRequest(String name, String address) {
                 this.name = name;
                 this.address = address;
+        }
+
+        public HomeCreateRequest(String name, String address, String clerkId) {
+                this.name = name;
+                this.address = address;
+                this.clerkId = clerkId;
         }
 
         // Getters and setters
@@ -35,5 +44,13 @@ public class HomeCreateRequest {
 
         public void setAddress(String address) {
                 this.address = address;
+        }
+
+        public String getClerkId() {
+                return clerkId;
+        }
+
+        public void setClerkId(String clerkId) {
+                this.clerkId = clerkId;
         }
 }
