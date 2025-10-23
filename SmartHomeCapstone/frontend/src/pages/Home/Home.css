@@ -198,6 +198,10 @@ body:not(.dark-mode) {
 }
 
 /* ====================  Devices Header + Empty State ==================== */
+.devices-section {
+  margin-top: 60px;
+}
+
 .devices-section .devices-header {
   position: relative;
   display: flex;
@@ -320,6 +324,22 @@ body.dark-mode .add-device-form select {
 }
 
 /* ====================  Toast Messages ==================== */
+.all-room-errors {
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  z-index: 100;
+  max-width: 300px;
+}
+
+.toast-device-error.global-error {
+  position: relative;
+  right: auto;
+  top: auto;
+  margin-bottom: 8px;
+  word-wrap: break-word;
+}
+
 .toast-room-error, .toast-device-error, .toast-block-error {
   position: absolute;          
   background: #ff4d4f;
