@@ -22,9 +22,14 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
 
     // Load states when country changes
     useEffect(() => {
-        if (address.country) {
+        if (address.country === 'US') {
             loadStates(address.country);
             // Clear dependent fields
+            setAddress(prev => ({ ...prev, state: '', city: '' }));
+            setCities([]);
+        } else {
+            // Clear states for non-US countries
+            setStates([]);
             setAddress(prev => ({ ...prev, state: '', city: '' }));
             setCities([]);
         }
@@ -123,30 +128,38 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                 placeholder="Enter zip code"
             />
 
-            {/* State */}
-            <label>State/Province</label>
-            {states.length > 0 ? (
-                <select
-                    className="select"
-                    name="state"
-                    value={address.state}
-                    onChange={handleChange}
-                >
-                    <option value="">Select State</option>
-                    {states.map(state => (
-                        <option key={state.code} value={state.code}>
-                            {state.name}
-                        </option>
-                    ))}
-                </select>
-            ) : (
-                <input
-                    className="input"
-                    name="state"
-                    value={address.state}
-                    onChange={handleChange}
-                    placeholder="Enter state/province"
-                />
+            {/* State - Only show for United States */}
+            {address.country === 'US' && (
+                <>
+                    <label>State</label>
+                    <select
+                        className="select"
+                        name="state"
+                        value={address.state}
+                        onChange={handleChange}
+                    >
+                        <option value="">Select State</option>
+                        {states.map(state => (
+                            <option key={state.code} value={state.code}>
+                                {state.name}
+                            </option>
+                        ))}
+                    </select>
+                </>
+            )}
+
+            {/* State/Province for other countries */}
+            {address.country && address.country !== 'US' && (
+                <>
+                    <label>State/Province</label>
+                    <input
+                        className="input"
+                        name="state"
+                        value={address.state}
+                        onChange={handleChange}
+                        placeholder="Enter state/province"
+                    />
+                </>
             )}
 
             {/* City */}
