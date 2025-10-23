@@ -8,18 +8,16 @@ I want to add new smart devices to my home system and be able to delete old ones
 
 ### Acceptance Criteria
 
-1. **Given** the user is logged into the app,  
+- **Given** the user is logged into the app,  
    **When** they navigate to the *Device Registration* section,  
    **Then** the system must display an option to **Add New Device**.
 
-2. **When** the user provides the required device details and confirms,  
-  **Then** an API call must be made to the backend to register the new device and associate it with the user’s account.
+- **When** the user provides the required device details and confirms,  
+  **Then** the device is registered and associated with the user's account.
 
-3. **If** the registration is successful,  
+- **If** the registration is successful,  
   **Then** the new device must appear on the dashboard with its name, category, and default status values.
-
-4. **If** the registration fails (e.g., invalid credentials or unsupported device),  
-  **Then** the app must display a clear error message: (e.g., “Unable to register device. Please try again.”).
+   
 
 ## User Story 2: Device Status Dashboard (Data Retrieval)
 
@@ -31,9 +29,9 @@ I want to view a dynamic dashboard displaying the current status (such as temper
 
 - **Given** the user logs into the app,  
   **When** the dashboard loads,  
-  **Then** an API call must be made to the backend to fetch the list of all connected devices.
+  **Then** all connected devices must be fetched. 
 
-- The dashboard must display the **name** and relevant **status attributes** (e.g., temperature, ON/OFF state, battery life) for each device and categorize them (e.g., Thermostat, Light, Door Lock).
+- The dashboard must successfully display the **name** and relevant **status attributes** (e.g., temperature, ON/OFF state, battery life) for each device and categorize them (e.g., Thermostat, Light, Door Lock).
 
 - **If** the backend service is unavailable,  
   **Then** the dashboard must display a user-friendly error message: (e.g., “Device status currently unavailable.”).
@@ -50,19 +48,12 @@ I want to adjust the target temperature for my smart thermostat and toggle a sma
 
 ### Acceptance Criteria
 
-- **Given** a user clicks the **ON/OFF toggle** for a light,  
-  **When** the API call to update the device state is successful,  
+- **Given** a user clicks the **ON/OFF toggle** for a light,   
   **Then** the local UI must immediately update to reflect the new state (ON to OFF or vice versa).
 
 - **Given** a user enters a new temperature value for the thermostat,  
   **When** they save the change,  
-  **Then** a successful API request must be sent to the backend to persist the new setting.
-
-- **If** the temperature update API call fails,  
-  **Then** the user must receive a clear in-app notification:  
-  > “Failed to set temperature, please try again.”  
-  
-  And the UI must revert to the last confirmed temperature.
+  **Then** the new setting must persist.
 
 - The control interface must include **client-side validation**  
   (e.g., temperature inputs must be numeric and within a reasonable range: **50–90°F**).
