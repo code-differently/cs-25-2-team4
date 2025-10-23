@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { roomService } from '../services/roomService';
 
-export const useRooms = (homeId = 1) => {
+export const useRooms = (homeId) => {
   const [rooms, setRooms] = useState([{ name: "All", active: true }]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,6 +11,12 @@ export const useRooms = (homeId = 1) => {
   const [fadeOutRoom, setFadeOutRoom] = useState(false);
 
   const fetchRooms = useCallback(async () => {
+    if (!homeId) {
+      setLoading(false);
+      setRooms([{ name: "All", active: true }]);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
