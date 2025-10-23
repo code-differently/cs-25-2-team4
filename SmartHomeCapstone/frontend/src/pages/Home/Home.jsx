@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import { useDevices } from "../../hooks/useDevices";
 import { useRooms } from "../../hooks/useRooms";
@@ -11,6 +12,7 @@ import CreateHome from "../CreateHome/CreateHome.jsx";
 /* ==================== Home Component ==================== */
 const Home = () => {
   const { backendUser } = useUser();
+  const navigate = useNavigate();
   
   /* ==================== Custom Hooks ==================== */
   const {
@@ -48,6 +50,19 @@ const Home = () => {
     returnToCameraModal,
     handleToggle,
   } = useModalManager(toggleDevice, deleteDevice);
+
+  /* ==================== Check for Fresh Registration ==================== */
+  useEffect(() => {
+    if (!homesLoading && backendUser) {
+      const isFreshRegistration = sessionStorage.getItem('freshRegistration');
+      
+      if (isFreshRegistration && homes.length === 0) {
+        // Clear the flag and redirect to create home
+        sessionStorage.removeItem('freshRegistration');
+        navigate("/createhome");
+      }
+    }
+  }, [homesLoading, backendUser, homes, navigate]);
 
   /* ==================== Event Handlers ==================== */
   const handleHomeCreated = (newHome) => {
