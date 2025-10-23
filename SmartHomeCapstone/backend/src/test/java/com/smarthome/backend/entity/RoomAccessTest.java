@@ -24,7 +24,7 @@ class RoomAccessTest {
         void setUp() {
                 ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
                 validator = factory.getValidator();
-                user = new User("testuser", "test@example.com", "hash123");
+                user = new User("clerk_123456789", "testuser", "John", "Doe", "test@example.com");
                 Home home = new Home("Test Home", "123 Test St");
                 room = new Room(home, "Test Room");
                 roomAccess = new RoomAccess();

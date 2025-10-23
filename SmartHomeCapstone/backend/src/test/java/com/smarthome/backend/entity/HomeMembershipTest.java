@@ -24,7 +24,7 @@ class HomeMembershipTest {
         void setUp() {
                 ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
                 validator = factory.getValidator();
-                user = new User("testuser", "test@example.com", "hash123");
+                user = new User("clerk_123456789", "testuser", "John", "Doe", "test@example.com");
                 home = new Home("Test Home", "123 Test St");
                 membership = new HomeMembership();
         }
