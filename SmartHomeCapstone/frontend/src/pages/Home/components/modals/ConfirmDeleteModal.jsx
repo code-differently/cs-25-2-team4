@@ -1,10 +1,20 @@
 import React from "react";
 
-export const ConfirmDeleteModal = ({ deviceName, onConfirm, onCancel }) => {
+export const ConfirmDeleteModal = ({ type, targetName, onConfirm, onCancel }) => {
+  const isRoom = type === "room";
   return (
     <div className="confirm-modal-card" onClick={(e) => e.stopPropagation()}>
-      <h3 className="confirm-title">Delete “{deviceName}”?</h3>
-      <p className="confirm-text">This action cannot be undone.</p>
+      {isRoom ? (
+        <>
+          <h3 className="confirm-title">Delete “{targetName}” and all devices inside it?</h3>
+          <p className="confirm-text">This action cannot be undone.</p>
+        </>
+      ) : (
+        <>
+          <h3 className="confirm-title">Remove Device “{targetName}”?</h3>
+          <p className="confirm-text">This action cannot be undone.</p>
+        </>
+      )}
 
       <div className="confirm-actions">
         <button onClick={onConfirm} className="confirm-delete-btn">
