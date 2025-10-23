@@ -1,9 +1,10 @@
-import React, { useState } from "react";
 import "./Home.css";
+import { useState } from "react";
 import { useDevices } from "../../hooks/useDevices";
 import { useRooms } from "../../hooks/useRooms";
 import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
 import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
+import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
 import { Header } from "../../components/header/Header.jsx";
 
 /* ==================== Home Component ==================== */
@@ -24,9 +25,11 @@ const Home = () => {
     setNewRoomName,
     activateRoom,
     addRoom,
+    setRooms,
   } = useRooms();
 
-  const { devices, loading, error, addDevice, toggleDevice, deleteDevice } = useDevices();
+  const { devices, loading, error, addDevice, toggleDevice, deleteDevice, setDevices } =
+    useDevices();
 
   const {
     selectedDevice,
@@ -38,6 +41,31 @@ const Home = () => {
     returnToCameraModal,
     handleToggle,
   } = useModalManager(toggleDevice, deleteDevice);
+
+  const [roomToDelete, setRoomToDelete] = useState(null);
+
+  const handleRequestDeleteRoom = (roomName) => {
+    closeModal();
+    setRoomToDelete(roomName);
+  };
+
+  const handleConfirmDeleteRoom = () => {
+    setRooms((prevRooms) => {
+      const updated = prevRooms.filter((r) => r.name !== roomToDelete);
+      return updated.map((r) => ({
+        ...r,
+        active: r.name === "All",
+      }));
+    });
+
+    setDevices((prev) => prev.filter((d) => d.room !== roomToDelete));
+
+    setRoomToDelete(null);
+  };
+
+  const handleCancelDeleteRoom = () => {
+    setRoomToDelete(null);
+  };
 
   /* ==================== Render ==================== */
   if (loading || roomsLoading) {
@@ -79,6 +107,7 @@ const Home = () => {
         onAddDevice={addDevice}
         onToggleDevice={handleToggle}
         onCameraOpen={openCameraModal}
+        onDeleteRoom={handleRequestDeleteRoom}
       />
 
       {/* Modal Management */}
@@ -92,6 +121,17 @@ const Home = () => {
         onConfirmDelete={confirmDeleteDevice}
         onReturnToCamera={returnToCameraModal}
       />
+
+      {roomToDelete && (
+        <div className="confirm-overlay">
+          <ConfirmDeleteModal
+            type="room"
+            targetName={roomToDelete}
+            onConfirm={handleConfirmDeleteRoom}
+            onCancel={handleCancelDeleteRoom}
+          />
+        </div>
+      )}
     </div>
   );
 };

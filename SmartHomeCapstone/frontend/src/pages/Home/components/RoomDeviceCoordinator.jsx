@@ -1,5 +1,5 @@
 import React from "react";
-import { RoomsBar } from "../RoomsBar.jsx";
+import { RoomsBar } from "./RoomsBar.jsx";
 import { DeviceManagement } from "./DeviceManagement.jsx";
 
 export const RoomDeviceCoordinator = ({
@@ -18,6 +18,7 @@ export const RoomDeviceCoordinator = ({
   onAddDevice,
   onToggleDevice,
   onCameraOpen,
+  onDeleteRoom,
 }) => {
   const activeRoom = rooms.find((r) => r.active)?.name;
 
@@ -35,6 +36,7 @@ export const RoomDeviceCoordinator = ({
         onNewRoomNameChange={onNewRoomNameChange}
         onSaveRoom={onSaveRoom}
         onCancelAddRoom={onCancelAddRoom}
+        onDeleteRoom={onDeleteRoom}
       />
 
       {/* Device Management */}
