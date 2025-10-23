@@ -122,7 +122,7 @@ export const useRooms = (homeId = 1) => {
     fadeOutRoom,
     newRoomName,
     showAddRoomForm,
-
+    setRooms,
     openAddRoomForm,
     cancelAddRoomForm,
     setNewRoomName,
