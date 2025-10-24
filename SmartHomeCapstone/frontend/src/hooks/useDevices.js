@@ -80,7 +80,8 @@ export const useDevices = (homeId) => {
     refreshDevices,
     addDevice,
     deleteDevice,
-    toggleDevice
+    toggleDevice,
+    setDevices
   };
 };
 
