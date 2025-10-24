@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { useHomes } from '../../hooks/useHomes';
 import './CreateHome.css';
+import AddressForm from '../../components/AddressForm';
 
 const CreateHome = ({ onHomeCreated }) => {
+  const navigate = useNavigate();
   const { backendUser } = useUser();
   const { createHome } = useHomes(backendUser?.clerkId);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [homeData, setHomeData] = useState({
     name: '',
-    address: '',
+    address: {},
     type: ''
   });
 
@@ -21,11 +24,40 @@ const CreateHome = ({ onHomeCreated }) => {
     });
   };
 
+  const handleAddressChange = useCallback((address) => {
+    setHomeData(prev => ({ ...prev, address }));
+  }, []);
+
+  const formatAddress = (addressObj) => {
+    const parts = [];
+    
+    if (addressObj.streetAddress) parts.push(addressObj.streetAddress.trim());
+    if (addressObj.city) parts.push(addressObj.city.trim());
+    if (addressObj.state) parts.push(addressObj.state.trim());
+    if (addressObj.zipCode) parts.push(addressObj.zipCode.trim());
+    if (addressObj.country) parts.push(addressObj.country.trim());
+    
+    return parts.join(', ');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!homeData.name || !homeData.address || !homeData.type) {
-      setError('Please fill in all fields.');
+    const formattedAddress = formatAddress(homeData.address);
+    
+    // Validation
+    if (!homeData.name || !homeData.name.trim()) {
+      setError('Please enter a home name.');
+      return;
+    }
+
+    if (!formattedAddress) {
+      setError('Please fill in at least one address field.');
+      return;
+    }
+
+    if (!homeData.type) {
+      setError('Please select a home type.');
       return;
     }
 
@@ -38,17 +70,26 @@ const CreateHome = ({ onHomeCreated }) => {
       setLoading(true);
       setError('');
 
-      const newHome = await createHome({
+      const payload = {
         name: homeData.name.trim(),
-        address: homeData.address.trim(),
+        address: formattedAddress,
         clerkId: backendUser.clerkId
-      });
+      };
 
-      // Call the callback to notify parent component
+      const newHome = await createHome(payload);
+
+      console.log('Success! New home created:', newHome);
+
+      // Call the callback if provided
       if (onHomeCreated) {
         onHomeCreated(newHome);
       }
+
+      // Navigate to home page
+      navigate('/');
+      
     } catch (err) {
+      console.error('Error creating home:', err);
       setError(err.message || 'Failed to create home. Please try again.');
     } finally {
       setLoading(false);
@@ -71,14 +112,9 @@ const CreateHome = ({ onHomeCreated }) => {
           disabled={loading}
         />
 
-        <label>Address</label>
-        <input
-          className="input"
-          name="address"
-          value={homeData.address}
-          onChange={handleInputChange}
-          placeholder="e.g., 123 Main Street, City, State"
-          disabled={loading}
+        <AddressForm
+          onAddressChange={handleAddressChange}
+          initialAddress={homeData.address}
         />
 
         <label>Home Type</label>

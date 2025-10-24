@@ -10,6 +10,7 @@ const apiClient = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
 });
 
@@ -26,12 +27,25 @@ export const setAuthToken = (token) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('=== FULL AXIOS ERROR ===');
+    console.error('Error object:', error);
+    console.error('Response:', error.response);
+    console.error('Response data:', error.response?.data);
+    console.error('Response status:', error.response?.status);
+    console.error('Response headers:', error.response?.headers);
+    console.error('Request:', error.request);
+    console.error('Config:', error.config);
+    console.error('=======================');
+    
     if (error.response) {
       const status = error.response.status;
+      const backendMessage = error.response.data?.message || error.response.data;
       let message = 'An error occurred';
       switch (status) {
         case 400:
-          message = 'Invalid request. Please check your input.';
+          message = typeof backendMessage === 'string' 
+            ? backendMessage 
+            : 'Invalid request. Please check your input.';
           break;
         case 404:
           message = 'Home not found.';
@@ -69,7 +83,9 @@ export const homeService = {
   // Create a new home
   createHome: async (homeData) => {
     try {
+      console.log('Making POST request with data:', homeData);
       const response = await apiClient.post('', homeData);
+      console.log('POST response:', response);
       return response.data;
     } catch (error) {
       console.error('Error creating home:', error);
