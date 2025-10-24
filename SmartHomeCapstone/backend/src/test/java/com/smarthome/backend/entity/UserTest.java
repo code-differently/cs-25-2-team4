@@ -31,10 +31,10 @@ class UserTest {
         void defaultConstructor_ShouldCreateEmptyUser() {
                 User newUser = new User();
 
-                assertNull(newUser.getUserId());
+                assertNull(newUser.getClerkId());
                 assertNull(newUser.getUsername());
+                assertNull(newUser.getFullName());
                 assertNull(newUser.getEmail());
-                assertNull(newUser.getPasswordHash());
                 assertNull(newUser.getHomeMemberships());
                 assertNull(newUser.getRoomAccesses());
         }
@@ -42,24 +42,28 @@ class UserTest {
         @Test
         @DisplayName("Parameterized constructor sets fields correctly")
         void parameterizedConstructor_ShouldSetFields() {
+                String clerkId = "clerk_123456789";
                 String username = "testuser";
+                String fullName = "John Doe";
                 String email = "test@example.com";
-                String passwordHash = "hashedpassword123";
 
-                User newUser = new User(username, email, passwordHash);
+                User newUser = new User(clerkId, username, fullName, email);
 
+                assertEquals(clerkId, newUser.getClerkId());
                 assertEquals(username, newUser.getUsername());
+                assertEquals(fullName, newUser.getFullName());
+                assertEquals("John", newUser.getFirstName());
+                assertEquals("Doe", newUser.getLastName());
                 assertEquals(email, newUser.getEmail());
-                assertEquals(passwordHash, newUser.getPasswordHash());
-                assertNull(newUser.getUserId()); // ID is generated
         }
 
         @Test
         @DisplayName("Valid user passes validation")
         void validUser_ShouldPassValidation() {
+                user.setClerkId("clerk_123456789");
                 user.setUsername("validuser");
+                user.setFullName("John Doe");
                 user.setEmail("valid@example.com");
-                user.setPasswordHash("validhash123");
 
                 Set<ConstraintViolation<User>> violations = validator.validate(user);
 
@@ -67,10 +71,40 @@ class UserTest {
         }
 
         @Test
+        @DisplayName("ClerkId validation tests")
+        void clerkIdValidation_ShouldEnforceConstraints() {
+                user.setUsername("validuser");
+                user.setFullName("John Doe");
+                user.setEmail("valid@example.com");
+
+                // Test blank clerkId
+                user.setClerkId("");
+                Set<ConstraintViolation<User>> violations = validator.validate(user);
+                assertFalse(violations.isEmpty());
+                assertTrue(
+                                violations.stream()
+                                                .anyMatch(v -> v.getMessage().contains("Clerk ID cannot be blank")));
+
+                // Test clerkId too long
+                user.setClerkId("a".repeat(101));
+                violations = validator.validate(user);
+                assertFalse(violations.isEmpty());
+                assertTrue(
+                                violations.stream()
+                                                .anyMatch(
+                                                                v ->
+                                                                                v.getMessage()
+                                                                                                .contains(
+                                                                                                                "Clerk ID must be at most 100"
+                                                                                                                                + " characters")));
+        }
+
+        @Test
         @DisplayName("Username validation tests")
         void usernameValidation_ShouldEnforceConstraints() {
+                user.setClerkId("clerk_123456789");
+                user.setFullName("John Doe");
                 user.setEmail("valid@example.com");
-                user.setPasswordHash("validhash123");
 
                 // Test blank username
                 user.setUsername("");
@@ -108,10 +142,69 @@ class UserTest {
         }
 
         @Test
+        @DisplayName("Full name validation tests")
+        void fullNameValidation_ShouldEnforceConstraints() {
+                user.setClerkId("clerk_123456789");
+                user.setUsername("validuser");
+                user.setEmail("valid@example.com");
+
+                // Test blank full name
+                user.setFullName("");
+                Set<ConstraintViolation<User>> violations = validator.validate(user);
+                assertFalse(violations.isEmpty());
+                assertTrue(
+                                violations.stream()
+                                                .anyMatch(v -> v.getMessage().contains("Full name cannot be blank")));
+
+                // Test full name too long
+                user.setFullName("a".repeat(201));
+                violations = validator.validate(user);
+                assertFalse(violations.isEmpty());
+                assertTrue(
+                                violations.stream()
+                                                .anyMatch(
+                                                                v ->
+                                                                                v.getMessage()
+                                                                                                .contains(
+                                                                                                                "Full name must be at most 200"
+                                                                                                                                + " characters")));
+        }
+
+        @Test
+        @DisplayName("First and last name parsing tests")
+        void nameParsingTests_ShouldParseCorrectly() {
+                // Test single name
+                user.setFullName("John");
+                assertEquals("John", user.getFirstName());
+                assertEquals("", user.getLastName());
+
+                // Test two names
+                user.setFullName("John Doe");
+                assertEquals("John", user.getFirstName());
+                assertEquals("Doe", user.getLastName());
+
+                // Test three names
+                user.setFullName("John Michael Doe");
+                assertEquals("John", user.getFirstName());
+                assertEquals("Michael Doe", user.getLastName());
+
+                // Test empty name
+                user.setFullName("");
+                assertEquals("", user.getFirstName());
+                assertEquals("", user.getLastName());
+
+                // Test null name
+                user.setFullName(null);
+                assertEquals("", user.getFirstName());
+                assertEquals("", user.getLastName());
+        }
+
+        @Test
         @DisplayName("Email validation tests")
         void emailValidation_ShouldEnforceConstraints() {
+                user.setClerkId("clerk_123456789");
                 user.setUsername("validuser");
-                user.setPasswordHash("validhash123");
+                user.setFullName("John Doe");
 
                 // Test blank email
                 user.setEmail("");
@@ -127,23 +220,6 @@ class UserTest {
                 user.setEmail("a".repeat(250) + "@example.com");
                 violations = validator.validate(user);
                 assertFalse(violations.isEmpty(), "Too long email should produce violations");
-        }
-
-        @Test
-        @DisplayName("Password hash validation tests")
-        void passwordHashValidation_ShouldEnforceConstraints() {
-                user.setUsername("validuser");
-                user.setEmail("valid@example.com");
-
-                // Test blank password hash
-                user.setPasswordHash("");
-                Set<ConstraintViolation<User>> violations = validator.validate(user);
-                assertFalse(violations.isEmpty(), "Blank password should produce violations");
-
-                // Test password hash too long
-                user.setPasswordHash("a".repeat(256));
-                violations = validator.validate(user);
-                assertFalse(violations.isEmpty(), "Too long password should produce violations");
         }
 
         @Test

@@ -9,7 +9,7 @@ import java.util.Objects;
 @Entity
 @Table(
                 name = "HomeMembership",
-                uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "home_id"})})
+                uniqueConstraints = {@UniqueConstraint(columnNames = {"clerk_id", "home_id"})})
 public class HomeMembership {
 
         @Id
@@ -18,7 +18,7 @@ public class HomeMembership {
         private Long membershipId;
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id", nullable = false)
+        @JoinColumn(name = "clerk_id", nullable = false)
         @NotNull(message = "User cannot be null")
         @JsonIgnore
         private User user;
@@ -83,8 +83,8 @@ public class HomeMembership {
                 return "HomeMembership{"
                                 + "membershipId="
                                 + membershipId
-                                + ", userId="
-                                + (user != null ? user.getUserId() : null)
+                                + ", clerkId="
+                                + (user != null ? user.getClerkId() : null)
                                 + ", homeId="
                                 + (home != null ? home.getHomeId() : null)
                                 + ", role="
@@ -99,8 +99,8 @@ public class HomeMembership {
                 HomeMembership that = (HomeMembership) o;
                 return Objects.equals(membershipId, that.membershipId)
                                 && Objects.equals(
-                                                user != null ? user.getUserId() : null,
-                                                that.user != null ? that.user.getUserId() : null)
+                                                user != null ? user.getClerkId() : null,
+                                                that.user != null ? that.user.getClerkId() : null)
                                 && Objects.equals(
                                                 home != null ? home.getHomeId() : null,
                                                 that.home != null ? that.home.getHomeId() : null)
@@ -111,7 +111,7 @@ public class HomeMembership {
         public int hashCode() {
                 return Objects.hash(
                                 membershipId,
-                                user != null ? user.getUserId() : null,
+                                user != null ? user.getClerkId() : null,
                                 home != null ? home.getHomeId() : null,
                                 role);
         }

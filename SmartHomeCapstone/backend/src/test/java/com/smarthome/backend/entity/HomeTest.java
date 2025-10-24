@@ -113,7 +113,7 @@ class HomeTest {
         @Test
         @DisplayName("Add home membership convenience method")
         void addHomeMembership_ShouldAddAndSetBidirectionalRelationship() {
-                User user = new User("testuser", "test@example.com", "hash123");
+                User user = new User("clerk_123456789", "testuser", "John Doe", "test@example.com");
                 HomeMembership membership = new HomeMembership(user, home, MembershipRole.ADMIN);
 
                 home.addHomeMembership(membership);
@@ -126,7 +126,7 @@ class HomeTest {
         @Test
         @DisplayName("Remove home membership convenience method")
         void removeHomeMembership_ShouldRemoveAndClearRelationship() {
-                User user = new User("testuser", "test@example.com", "hash123");
+                User user = new User("clerk_123456789", "testuser", "John Doe", "test@example.com");
                 HomeMembership membership = new HomeMembership(user, home, MembershipRole.ADMIN);
 
                 home.addHomeMembership(membership);
@@ -163,7 +163,7 @@ class HomeTest {
         @Test
         @DisplayName("Convenience methods handle null collections")
         void convenienceMethods_ShouldHandleNullCollections() {
-                User user = new User("testuser", "test@example.com", "hash123");
+                User user = new User("clerk_123456789", "testuser", "John Doe", "test@example.com");
                 HomeMembership membership = new HomeMembership(user, home, MembershipRole.MEMBER);
 
                 assertNull(home.getHomeMemberships());

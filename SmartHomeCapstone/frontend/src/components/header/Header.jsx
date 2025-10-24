@@ -1,19 +1,16 @@
 import "./Header.css";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { CustomUserDropdown } from "./CustomUserDropdown";
 
 /* ==================== Header Component ==================== */
 export const Header = ({ searchTerm, onSearchChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   /* === Handlers === */
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleSearchChange = (e) => {
@@ -68,27 +65,12 @@ export const Header = ({ searchTerm, onSearchChange }) => {
 
           {/* --- Profile Section --- */}
           <div className="profile-section">
-            <div className="profile-dropdown" onClick={toggleDropdown}>
-              <img
-                src="/api/placeholder/32/32"
-                alt="Profile"
-                className="profile-picture"
-              />
-              <span className="profile-name">John Doe</span>
-              <span
-                className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}
-              >
-                ▼
-              </span>
-            </div>
-
-            {isDropdownOpen && (
-              <div className="dropdown-menu">
-                <a href="/profile">Profile</a>
-                <a href="/settings">About</a>
-                <a href="/logout">Logout</a>
-              </div>
-            )}
+            <SignedIn>
+              <CustomUserDropdown />
+            </SignedIn>
+            <SignedOut>
+              <span>Please sign in</span>
+            </SignedOut>
           </div>
         </div>
       </nav>

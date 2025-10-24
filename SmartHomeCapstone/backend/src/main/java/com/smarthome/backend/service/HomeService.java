@@ -2,7 +2,12 @@ package com.smarthome.backend.service;
 
 import com.smarthome.backend.dto.HomeCreateRequest;
 import com.smarthome.backend.entity.Home;
+import com.smarthome.backend.entity.HomeMembership;
+import com.smarthome.backend.entity.User;
+import com.smarthome.backend.enums.MembershipRole;
 import com.smarthome.backend.repository.HomeRepository;
+import com.smarthome.backend.repository.HomeMembershipRepository;
+import com.smarthome.backend.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class HomeService {
 
         private final HomeRepository homeRepository;
+        private final HomeMembershipRepository homeMembershipRepository;
+        private final UserRepository userRepository;
 
         @Autowired
-        public HomeService(HomeRepository homeRepository) {
+        public HomeService(HomeRepository homeRepository, 
+                         HomeMembershipRepository homeMembershipRepository,
+                         UserRepository userRepository) {
                 this.homeRepository = homeRepository;
+                this.homeMembershipRepository = homeMembershipRepository;
+                this.userRepository = userRepository;
         }
 
         // Create a new home
@@ -27,8 +38,21 @@ public class HomeService {
                         throw new RuntimeException("Home with name '" + request.getName() + "' already exists");
                 }
 
+                // Verify user exists
+                Optional<User> userOpt = userRepository.findById(request.getClerkId());
+                if (userOpt.isEmpty()) {
+                        throw new RuntimeException("User not found with clerkId: " + request.getClerkId());
+                }
+
+                User user = userOpt.get();
                 Home home = new Home(request.getName(), request.getAddress());
-                return homeRepository.save(home);
+                Home savedHome = homeRepository.save(home);
+
+                // Create home membership with ADMIN role for the creator
+                HomeMembership membership = new HomeMembership(user, savedHome, MembershipRole.ADMIN);
+                homeMembershipRepository.save(membership);
+
+                return savedHome;
         }
 
         // Get home by ID
@@ -42,8 +66,8 @@ public class HomeService {
         }
 
         // Get homes for a specific user
-        public List<Home> getHomesByUserId(Long userId) {
-                return homeRepository.findHomesByUserId(userId);
+        public List<Home> getHomesByClerkId(String clerkId) {
+                return homeRepository.findHomesByClerkId(clerkId);
         }
 
         // Search homes by name
