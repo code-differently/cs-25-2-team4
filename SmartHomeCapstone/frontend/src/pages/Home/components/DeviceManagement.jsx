@@ -28,6 +28,13 @@ export const DeviceManagement = ({
       return;
     }
 
+    // Reset ALL form fields when opening the form
+    setDeviceName("");
+    setDeviceType("");
+    setSelectedRoom("");
+    setDeviceError("");
+    setDeviceTypeError("");
+    setFadeOutDevice(false);
     setShowAddDeviceForm(true);
   };
 
@@ -44,35 +51,80 @@ export const DeviceManagement = ({
       setDeviceTypeError("");
       setFadeOutDevice(false);
     }, 2250);
+
+    // Always dispatch global error for "All" room collection
+    window.dispatchEvent(
+      new CustomEvent("deviceError", {
+        detail: {
+          roomName: activeRoom,
+          errorMessage: message,
+          errorType: isTypeError ? "type" : "name",
+        },
+      })
+    );
   };
 
   const handleSaveDevice = async () => {
+    const realRooms = rooms.filter((r) => r.name !== "All");
+    const needsRoomSelection = activeRoom === "All" && realRooms.length > 1;
+
+    // Collect missing fields
+    const missingFields = [];
+
     if (!deviceName.trim()) {
-      showError("Device name is required");
-      return;
+      missingFields.push("name");
     }
 
     if (!deviceType) {
-      showError("Device type is required", true);
+      missingFields.push("type");
+    }
+    
+    if (needsRoomSelection && !selectedRoom) {
+      missingFields.push("room");
+    }
+
+    // Show appropriate error message based on what's missing
+    if (missingFields.length > 0) {
+      let errorMessage = "";
+
+      if (missingFields.length === 1) {
+        errorMessage = `Device ${missingFields[0]} is required`;
+      } else if (missingFields.length === 2) {
+        // Handle all 2-field combinations
+        if (missingFields.includes("name") && missingFields.includes("type")) {
+          errorMessage = "Device name and type are required";
+        } else if (missingFields.includes("name") && missingFields.includes("room")) {
+          errorMessage = "Device name and room are required";
+        } else if (missingFields.includes("type") && missingFields.includes("room")) {
+          errorMessage = "Device type and room are required";
+        }
+      } else if (missingFields.length === 3) {
+        errorMessage = "Device name, type, and room are required";
+      }
+
+      // Always show as name error for consistency, unless only type is missing
+      const isTypeError = missingFields.length === 1 && missingFields[0] === "type";
+      showError(errorMessage, isTypeError);
       return;
     }
 
-    const realRooms = rooms.filter((r) => r.name !== "All");
-    const roomToAssign =
-      activeRoom === "All"
-        ? realRooms.length === 1
-          ? realRooms[0]
-          : rooms.find((r) => r.name === selectedRoom)
-        : rooms.find((r) => r.name === activeRoom);
+    const roomToAssign = needsRoomSelection
+      ? rooms.find((r) => r.name === selectedRoom)
+      : activeRoom === "All"
+      ? realRooms[0]
+      : rooms.find((r) => r.name === activeRoom);
 
-    if (!roomToAssign) return;
+    if (!roomToAssign) {
+      showError("Room selection is required");
+      return;
+    }
 
     try {
       // Create device
       const deviceData = {
         deviceName: deviceName.trim(),
         deviceType: deviceType,
-        roomId: roomToAssign.id, // Use room ID for backend
+        roomId: roomToAssign.id,
       };
 
       await onAddDevice(deviceData);
@@ -100,6 +152,10 @@ export const DeviceManagement = ({
     setDeviceTypeError("");
   };
 
+  const handleRoomSelect = (roomName) => {
+    setSelectedRoom(roomName);
+  };
+
   return (
     <section className="devices-section">
       <DevicesHeader
@@ -117,7 +173,7 @@ export const DeviceManagement = ({
         // Form actions
         onDeviceNameChange={setDeviceName}
         onDeviceTypeChange={setDeviceType}
-        onRoomSelect={setSelectedRoom}
+        onRoomSelect={handleRoomSelect}
         onSaveDevice={handleSaveDevice}
         onCancelForm={handleCancelForm}
       />
