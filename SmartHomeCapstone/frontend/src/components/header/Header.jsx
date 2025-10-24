@@ -1,5 +1,5 @@
 import "./Header.css";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { CustomUserDropdown } from "./CustomUserDropdown";
@@ -12,10 +12,6 @@ export const Header = ({ searchTerm, onSearchChange }) => {
   /* === Handlers === */
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleSearchChange = (e) => {

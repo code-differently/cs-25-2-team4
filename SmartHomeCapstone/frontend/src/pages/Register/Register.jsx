@@ -1,9 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSignUp } from "@clerk/clerk-react";
 import "./Register.css";
-import AddressForm from "../../components/AddressForm";
-import { addressService } from "../../services/addressService";
+
 
 export default function Register() {
   const [msg, setMsg] = useState("");
