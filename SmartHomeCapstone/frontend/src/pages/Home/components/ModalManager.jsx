@@ -78,17 +78,16 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     
     if (deviceType === "CAMERA" || deviceType === "SECURITYCAMERA") {
       setModalType("camera");
-    } else if (deviceType === "LIGHT" || deviceType === "SMARTLIGHT") {
+    } else if (deviceType === "LIGHT") {
       setModalType("light");
-    } else if (deviceType === "THERMOSTAT" || deviceType === "SMARTTHERMOSTAT") {
+    } else if (deviceType === "THERMOSTAT") {
       setModalType("thermostat");
     } else {
-      // Default to camera if unknown (for backwards compatibility)
+      // Default to camera if unknown
       setModalType("camera");
     }
   };
 
-  // Keep the old name for backwards compatibility
   const openCameraModal = openDeviceModal;
 
   const closeModal = () => {
@@ -97,15 +96,14 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
   };
 
   const returnToDeviceModal = () => {
-    // Return to the appropriate device modal based on device type
     if (selectedDevice) {
       const deviceType = selectedDevice.deviceType?.toUpperCase();
       
       if (deviceType === "CAMERA" || deviceType === "SECURITYCAMERA") {
         setModalType("camera");
-      } else if (deviceType === "LIGHT" || deviceType === "SMARTLIGHT") {
+      } else if (deviceType === "LIGHT") {
         setModalType("light");
-      } else if (deviceType === "THERMOSTAT" || deviceType === "SMARTTHERMOSTAT") {
+      } else if (deviceType === "THERMOSTAT") {
         setModalType("thermostat");
       }
     }

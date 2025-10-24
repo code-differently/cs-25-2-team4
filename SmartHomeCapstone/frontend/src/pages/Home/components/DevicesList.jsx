@@ -27,16 +27,13 @@ export const DevicesList = ({
       )
     : roomFilteredDevices;
 
-  // Check if a device type should open a modal
   const shouldOpenModal = (deviceType) => {
     const type = deviceType?.toUpperCase();
     return (
       type === "CAMERA" ||
       type === "SECURITYCAMERA" ||
       type === "LIGHT" ||
-      type === "SMARTLIGHT" ||
-      type === "THERMOSTAT" ||
-      type === "SMARTTHERMOSTAT"
+      type === "THERMOSTAT"
     );
   };
 
@@ -75,7 +72,7 @@ export const DevicesList = ({
           }`}
           onClick={() => {
             if (shouldOpenModal(device.deviceType)) {
-              onCameraOpen(device); // Note: This prop name is kept for backwards compatibility
+              onCameraOpen(device);
             }
           }}
         >
