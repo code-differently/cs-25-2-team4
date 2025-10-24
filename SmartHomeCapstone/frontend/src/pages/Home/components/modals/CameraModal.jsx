@@ -17,7 +17,7 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
         <div className="modal-row top-controls">
           <label
             className="device-toggle"
-            aria-label={`Toggle ${device.name}`}
+            aria-label={`Toggle ${device.deviceName}`}
             onClick={(e) => e.stopPropagation()}
           >
             <input
@@ -41,7 +41,7 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
         </div>
 
         {/* === Title === */}
-        <h2 className="modal-title">{device.name} — Camera</h2>
+        <h2 className="modal-title">{device.deviceName} — Camera</h2>
 
         {/* === Camera Feed === */}
         <div className={`camera-feed ${device.isOn ? "" : "off"}`}>

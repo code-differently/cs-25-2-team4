@@ -34,11 +34,11 @@ const Home = () => {
   const {
     selectedDevice,
     modalType,
-    openCameraModal,
+    openDeviceModal,
     closeModal,
     requestDeleteDevice,
     confirmDeleteDevice,
-    returnToCameraModal,
+    returnToDeviceModal,
     handleToggle,
   } = useModalManager(toggleDevice, deleteDevice);
 
@@ -106,7 +106,7 @@ const Home = () => {
         onCancelAddRoom={cancelAddRoomForm}
         onAddDevice={addDevice}
         onToggleDevice={handleToggle}
-        onCameraOpen={openCameraModal}
+        onCameraOpen={openDeviceModal}
         onDeleteRoom={handleRequestDeleteRoom}
       />
 
@@ -119,7 +119,7 @@ const Home = () => {
         onDeleteDevice={deleteDevice}
         onRequestDelete={requestDeleteDevice}
         onConfirmDelete={confirmDeleteDevice}
-        onReturnToCamera={returnToCameraModal}
+        onReturnToDevice={returnToDeviceModal}
       />
 
       {roomToDelete && (

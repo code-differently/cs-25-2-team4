@@ -1,147 +1,134 @@
-import { useEffect, useState } from "react";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import React, { useState, useEffect } from "react";
+import { Trash } from "lucide-react";
 
-export default function ThermostatModal({ open, onClose, onDelete, device }) {
-  const [confirm, setConfirm] = useState(false);
-  const [power, setPower]   = useState(true);
+export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) => {
   const [setpoint, setSetpoint] = useState(72);
-  const name = device?.name || "Thermostat";
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempInput, setTempInput] = useState("72");
 
   useEffect(() => {
-    if (!open) return;
-    setPower(device?.power ?? true);
-    setSetpoint(Number.isFinite(device?.setpoint) ? device.setpoint : 72);
-  }, [open, device]);
+    if (!device) return;
+    const temp = Number.isFinite(device?.setpoint) ? device.setpoint : 72;
+    setSetpoint(temp);
+    setTempInput(String(temp));
+  }, [device]);
 
-  if (!open) return null;
+  if (!device) return null;
 
-  const stop = (e) => e.stopPropagation();
-
-  // Backdrop
-  const backdropStyle = {
-    position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)",
-    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+  const handleSetpointChange = (e) => {
+    setSetpoint(Number(e.target.value));
+    setTempInput(e.target.value);
+    // TODO: Add API call to update setpoint on backend if needed
   };
 
-  // Card (blue gradient) — dims when off
-  const cardStyle = {
-    width: "min(980px, 92vw)",
-    borderRadius: 24,
-    padding: 24,
-    color: "#fff",
-    background: "linear-gradient(135deg, #2249b7 0%, #3f6eea 100%)",
-    boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
-    filter: power ? "none" : "brightness(0.78) saturate(0.9)",
-    transition: "filter .18s ease-in-out",
+  const handleTempClick = () => {
+    setIsEditing(true);
   };
 
-  // Dial styles
-  const knobWrap = { display: "flex", justifyContent: "center", margin: "14px 0 22px" };
-  const knob = {
-    width: 220, height: 220, borderRadius: "50%",
-    background: "radial-gradient(circle at 50% 42%, #181818 0%, #0f0f0f 55%, #000 100%)",
-    boxShadow: "0 20px 40px rgba(0,0,0,.35)",
-    border: "2px solid rgba(255,255,255,.12)",
-    display: "flex", alignItems: "center", justifyContent: "center",
+  const handleTempInputChange = (e) => {
+    const value = e.target.value;
+    // Allow only numbers
+    if (value === "" || /^\d+$/.test(value)) {
+      setTempInput(value);
+    }
   };
-  const degStyle = { fontSize: 64, fontWeight: 700, color: "#cfe1ff", letterSpacing: 1 };
+
+  const handleTempInputBlur = () => {
+    setIsEditing(false);
+    let temp = parseInt(tempInput, 10);
+    
+    // Validate range
+    if (isNaN(temp)) {
+      temp = setpoint; // Revert to previous value
+    } else {
+      temp = Math.max(50, Math.min(100, temp)); // Clamp between 50-100
+    }
+    
+    setSetpoint(temp);
+    setTempInput(String(temp));
+    // TODO: Add API call to update setpoint on backend if needed
+  };
+
+  const handleTempInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.target.blur();
+    } else if (e.key === "Escape") {
+      setTempInput(String(setpoint));
+      setIsEditing(false);
+    }
+  };
 
   return (
-    <div className="modal-backdrop" style={backdropStyle} onMouseDown={onClose}>
-      {/* Scoped fallback CSS so the pill toggle always renders */}
-      <style>{`
-        .device-card.thermo .thermo .pill{
-          width:64px;height:34px;border-radius:999px;position:relative;cursor:pointer;
-          background:#0f2344; box-shadow: inset 0 0 0 2px rgba(255,255,255,.15);
-        }
-        .device-card.thermo .thermo .pill::after{
-          content:""; position:absolute; top:4px; left:4px; width:26px; height:26px;
-          border-radius:50%; background:#e8edf7; box-shadow: 0 2px 6px rgba(0,0,0,.35);
-          transition: transform .2s ease;
-        }
-        .device-card.thermo .thermo .pill.on{ background:#37b24d; }
-        .device-card.thermo .thermo .pill.on::after{ transform: translateX(30px); }
-
-        /* Optional: subtle focus ring for keyboard users */
-        .device-card .top-actions .btn.btn-ghost:focus,
-        .device-card .top-actions .btn.btn-ghost:focus-visible {
-          outline: none !important;
-          box-shadow: 0 0 0 2px rgba(255,255,255,.18), inset 0 0 0 1px rgba(255,255,255,.10) !important;
-        }
-      `}</style>
-
+    <div className="modal-backdrop" onClick={onClose}>
       <div
-        className={`device-card thermo${power ? "" : " is-off"}`}
-        style={cardStyle}
-        onMouseDown={stop}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Thermostat"
+        className={`modal-card thermostat-modal ${!device.isOn ? "is-off" : ""}`}
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Header: pill toggle (left) + Delete (right) */}
-        <div className="device-card-header" style={{ display: "flex", alignItems: "center" }}>
-          <div className="thermo" style={{ marginRight: 12 }}>
-            <div
-              className={`pill ${power ? "on" : "off"}`}
-              role="switch"
-              aria-checked={power}
-              aria-label={power ? "Turn off" : "Turn on"}
-              onClick={() => setPower(p => !p)}
+        {/* === Top Controls === */}
+        <div className="modal-row top-controls">
+          <label
+            className="device-toggle"
+            aria-label={`Toggle ${device.deviceName}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <input
+              type="checkbox"
+              checked={!!device.isOn}
+              onChange={() => onToggle(device.deviceId, device.isOn)}
             />
-          </div>
+            <span className="slider"></span>
+          </label>
 
-          <div style={{ flex: 1 }} />
+          <button
+            className="delete-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRequestDelete(device);
+            }}
+          >
+            <Trash size={16} />
+            <span>Delete</span>
+          </button>
+        </div>
 
-          <div className="top-actions">
-            <button
-              className="btn btn-ghost"
-              type="button"
-              onClick={() => setConfirm(true)}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                background: "rgba(9,20,38,.72)", color: "#fff",
-                borderRadius: 12, padding: "6px 12px", fontWeight: 600,
-                backdropFilter: "saturate(140%) blur(2px)",
-                border: "none", outline: "none", WebkitAppearance: "none", appearance: "none",
-                boxShadow: "0 10px 24px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.10)"
-              }}
-              aria-label={`Delete ${name}`}
-            >
-              Delete
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" style={{ opacity: .9 }}>
-                <path d="M9 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1h4v2H4V5h5V4zm-2 6h2v9H7v-9zm4 0h2v9h-2v-9zm4 0h2v9h-2v-9z"/>
-              </svg>
-            </button>
+        {/* === Title === */}
+        <h2 className="modal-title">{device.deviceName} — Thermostat</h2>
+
+        {/* === Temperature Dial === */}
+        <div className="temperature-dial-container">
+          <div 
+            className={`temperature-dial ${isEditing ? "editing" : ""}`}
+            onClick={handleTempClick}
+          >
+            {isEditing ? (
+              <input
+                type="text"
+                value={tempInput}
+                onChange={handleTempInputChange}
+                onBlur={handleTempInputBlur}
+                onKeyDown={handleTempInputKeyDown}
+                className="temperature-input"
+                autoFocus
+                maxLength={3}
+              />
+            ) : (
+              <div className="temperature-display">{setpoint}°</div>
+            )}
           </div>
         </div>
 
-        <h2 className="device-title" style={{ fontSize: 32, fontWeight: 700, margin: "12px 0 0 0" }}>{name}</h2>
-
-        {/* Big dial */}
-        <div style={knobWrap}>
-          <div style={knob}>
-            <div style={degStyle}>{setpoint}°</div>
-          </div>
-        </div>
-
-        <label className="label" style={{ color: "#e9eefc", fontSize: 18 }}>Setpoint</label>
+        {/* === Setpoint Control === */}
+        <label className="setpoint-control">Setpoint</label>
         <input
           type="range"
           min="50"
-          max="85"
+          max="100"
           value={setpoint}
-          onChange={(e) => setSetpoint(Number(e.target.value))}
-          style={{ width: "100%" }}
+          onChange={handleSetpointChange}
+          className="setpoint-slider"
           aria-label="Setpoint"
         />
       </div>
-
-      <ConfirmDeleteModal
-        open={confirm}
-        deviceName={name}
-        onCancel={() => setConfirm(false)}
-        onConfirm={() => { setConfirm(false); onDelete?.(device?.id); onClose?.(); }}
-      />
     </div>
   );
-}
+};

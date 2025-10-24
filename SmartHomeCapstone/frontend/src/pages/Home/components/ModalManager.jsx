@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { CameraModal } from "./modals/CameraModal.jsx";
+import { LightModal } from "./modals/LightModal.jsx";
+import { ThermostatModal } from "./modals/ThermostatModal.jsx";
 import { ConfirmDeleteModal } from "./modals/ConfirmDeleteModal.jsx";
-import LightModal from "./modals/LightModal.jsx";
-import ThermostatModal from "./modals/ThermostatModal.jsx";
 
 export const ModalManager = ({
   selectedDevice,
@@ -12,36 +12,11 @@ export const ModalManager = ({
   onDeleteDevice,
   onRequestDelete,
   onConfirmDelete,
-  onReturnToCamera,
+  onReturnToDevice,
 }) => {
   const handleToggle = (deviceIdToFlip, currentIsOn) => {
     onToggleDevice(deviceIdToFlip, currentIsOn);
   };
-
-  // Adapt the selectedDevice to the shapes Light/Thermostat modals expect
-  const asLightDevice = (d) =>
-    d
-      ? {
-          ...d,
-          id: d.deviceId,
-          name: d.name,
-          power: !!d.isOn,
-          brightness:
-            typeof d.brightness === "number" ? d.brightness : 60,
-        }
-      : null;
-
-  const asThermoDevice = (d) =>
-    d
-      ? {
-          ...d,
-          id: d.deviceId,
-          name: d.name,
-          power: !!d.isOn,
-          setpoint:
-            typeof d.setpoint === "number" ? d.setpoint : 72,
-        }
-      : null;
 
   return (
     <>
@@ -55,34 +30,34 @@ export const ModalManager = ({
         />
       )}
 
-      {/* Light Modal (self-contained confirm inside the modal) */}
+      {/* Light Modal */}
       {modalType === "light" && selectedDevice && (
         <LightModal
-          open={true}
+          device={selectedDevice}
           onClose={onClose}
-          onDelete={(id) => onDeleteDevice(id)}
-          device={asLightDevice(selectedDevice)}
+          onToggle={handleToggle}
+          onRequestDelete={onRequestDelete}
         />
       )}
 
-      {/* Thermostat Modal (self-contained confirm inside the modal) */}
+      {/* Thermostat Modal */}
       {modalType === "thermostat" && selectedDevice && (
         <ThermostatModal
-          open={true}
+          device={selectedDevice}
           onClose={onClose}
-          onDelete={(id) => onDeleteDevice(id)}
-          device={asThermoDevice(selectedDevice)}
+          onToggle={handleToggle}
+          onRequestDelete={onRequestDelete}
         />
       )}
 
-      {/* Confirm Delete Modal (camera flow keeps using the overlay) */}
+      {/* Confirm Delete Modal (overlay above device modal) */}
       {modalType === "confirm-delete" && selectedDevice && (
         <div className="confirm-overlay">
           <ConfirmDeleteModal
             type="device"
-            targetName={selectedDevice.name}
+            targetName={selectedDevice.deviceName}
             onConfirm={onConfirmDelete}
-            onCancel={onReturnToCamera}
+            onCancel={onReturnToDevice}
           />
         </div>
       )}
@@ -95,29 +70,45 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [modalType, setModalType] = useState(null);
 
-  const openCameraModal = (device) => {
+  const openDeviceModal = (device) => {
     setSelectedDevice(device);
-    setModalType("camera");
+    
+    // Determine modal type based on device type
+    const deviceType = device.deviceType?.toUpperCase();
+    
+    if (deviceType === "CAMERA" || deviceType === "SECURITYCAMERA") {
+      setModalType("camera");
+    } else if (deviceType === "LIGHT" || deviceType === "SMARTLIGHT") {
+      setModalType("light");
+    } else if (deviceType === "THERMOSTAT" || deviceType === "SMARTTHERMOSTAT") {
+      setModalType("thermostat");
+    } else {
+      // Default to camera if unknown (for backwards compatibility)
+      setModalType("camera");
+    }
   };
 
-  // NEW: open helpers for Light/Thermostat
-  const openLightModal = (device) => {
-    setSelectedDevice(device);
-    setModalType("light");
-  };
-
-  const openThermostatModal = (device) => {
-    setSelectedDevice(device);
-    setModalType("thermostat");
-  };
+  // Keep the old name for backwards compatibility
+  const openCameraModal = openDeviceModal;
 
   const closeModal = () => {
     setSelectedDevice(null);
     setModalType(null);
   };
 
-  const returnToCameraModal = () => {
-    setModalType("camera");
+  const returnToDeviceModal = () => {
+    // Return to the appropriate device modal based on device type
+    if (selectedDevice) {
+      const deviceType = selectedDevice.deviceType?.toUpperCase();
+      
+      if (deviceType === "CAMERA" || deviceType === "SECURITYCAMERA") {
+        setModalType("camera");
+      } else if (deviceType === "LIGHT" || deviceType === "SMARTLIGHT") {
+        setModalType("light");
+      } else if (deviceType === "THERMOSTAT" || deviceType === "SMARTTHERMOSTAT") {
+        setModalType("thermostat");
+      }
+    }
   };
 
   const handleToggle = (deviceIdToFlip, currentIsOn) => {
@@ -143,7 +134,7 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
         await onDeleteDevice(selectedDevice.deviceId);
         closeModal();
       } catch (error) {
-        console.error("Failed to delete device:", error);
+        console.error('Failed to delete device:', error);
       }
     }
   };
@@ -151,13 +142,13 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
   return {
     selectedDevice,
     modalType,
+    openDeviceModal,
     openCameraModal,
-    openLightModal,
-    openThermostatModal,
     closeModal,
     requestDeleteDevice: handleRequestDelete,
     confirmDeleteDevice,
-    returnToCameraModal,
+    returnToDeviceModal,
+    returnToCameraModal: returnToDeviceModal,
     handleToggle,
   };
 };

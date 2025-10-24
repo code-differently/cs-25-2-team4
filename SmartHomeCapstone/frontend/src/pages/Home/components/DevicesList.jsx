@@ -7,7 +7,7 @@ export const DevicesList = ({
   rooms,
   searchTerm = "",
   onToggle,
-  onCameraOpen,
+  onCameraOpen, // This will now handle all device types
 }) => {
   // Get the active room object to find its ID
   const activeRoomObj = rooms?.find((r) => r.name === activeRoom);
@@ -26,6 +26,19 @@ export const DevicesList = ({
           device.name?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     : roomFilteredDevices;
+
+  // Check if a device type should open a modal
+  const shouldOpenModal = (deviceType) => {
+    const type = deviceType?.toUpperCase();
+    return (
+      type === "CAMERA" ||
+      type === "SECURITYCAMERA" ||
+      type === "LIGHT" ||
+      type === "SMARTLIGHT" ||
+      type === "THERMOSTAT" ||
+      type === "SMARTTHERMOSTAT"
+    );
+  };
 
   // Determine what message to show when no devices are displayed
   const renderEmptyState = () => {
@@ -58,17 +71,12 @@ export const DevicesList = ({
           key={device.deviceId || index}
           data-testid="device-card"
           className={`device-card ${device.isOn ? "is-on" : "is-off"} ${
-            device.deviceType === "CAMERA" ||
-            device.deviceType === "SECURITYCAMERA"
-              ? "clickable"
-              : ""
+            shouldOpenModal(device.deviceType) ? "clickable" : ""
           }`}
           onClick={() => {
-            if (
-              device.deviceType === "CAMERA" ||
-              device.deviceType === "SECURITYCAMERA"
-            )
-              onCameraOpen(device);
+            if (shouldOpenModal(device.deviceType)) {
+              onCameraOpen(device); // Note: This prop name is kept for backwards compatibility
+            }
           }}
         >
           {/* === HEADER (icon + toggle) === */}
