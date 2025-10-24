@@ -5,12 +5,20 @@ import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { CustomUserDropdown } from "./CustomUserDropdown";
 
 /* ==================== Header Component ==================== */
-export const Header = () => {
+export const Header = ({ searchTerm, onSearchChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   /* === Handlers === */
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleSearchChange = (e) => {
+    onSearchChange(e.target.value);
   };
 
   /* === Side Effect: Apply Dark Mode to <body> === */
@@ -35,8 +43,10 @@ export const Header = () => {
           <div className="header-search">
             <input
               type="text"
-              placeholder="Search devices and rooms"
+              placeholder="Search devices by name"
               className="search-input"
+              value={searchTerm}
+              onChange={handleSearchChange}
             />
           </div>
         </div>

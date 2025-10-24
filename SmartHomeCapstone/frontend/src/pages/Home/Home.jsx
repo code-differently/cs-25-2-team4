@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+import { useState } from "react";
 import { useDevices } from "../../hooks/useDevices";
 import { useRooms } from "../../hooks/useRooms";
 import { useHomes } from "../../hooks/useHomes";
@@ -13,7 +14,10 @@ import CreateHome from "../CreateHome/CreateHome.jsx";
 const Home = () => {
   const { backendUser } = useUser();
   const navigate = useNavigate();
-  
+  import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
+  import { Header } from "../../components/header/Header.jsx";
+  const [searchTerm, setSearchTerm] = useState("");
+
   /* ==================== Custom Hooks ==================== */
   const {
     homes,
@@ -36,9 +40,11 @@ const Home = () => {
     setNewRoomName,
     activateRoom,
     addRoom,
+    setRooms,
   } = useRooms(currentHome?.homeId);
 
-  const { devices, loading, error, addDevice, toggleDevice, deleteDevice } = useDevices(currentHome?.homeId);
+  const { devices, loading, error, addDevice, toggleDevice, deleteDevice, setDevices } =
+    useDevices(currentHome?.homeId);
 
   const {
     selectedDevice,
@@ -68,6 +74,31 @@ const Home = () => {
   const handleHomeCreated = (newHome) => {
     // Refresh homes to get the updated list
     refreshHomes();
+  };
+  
+   const [roomToDelete, setRoomToDelete] = useState(null);
+
+  const handleRequestDeleteRoom = (roomName) => {
+    closeModal();
+    setRoomToDelete(roomName);
+  };
+
+  const handleConfirmDeleteRoom = () => {
+    setRooms((prevRooms) => {
+      const updated = prevRooms.filter((r) => r.name !== roomToDelete);
+      return updated.map((r) => ({
+        ...r,
+        active: r.name === "All",
+      }));
+    });
+
+    setDevices((prev) => prev.filter((d) => d.room !== roomToDelete));
+
+    setRoomToDelete(null);
+  };
+
+  const handleCancelDeleteRoom = () => {
+    setRoomToDelete(null);
   };
 
   /* ==================== Loading & Error States ==================== */
@@ -112,6 +143,7 @@ const Home = () => {
   if (loading || roomsLoading) {
     return (
       <div className="home">
+        <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <div className="loading">Loading your home data...</div>
       </div>
     );
@@ -120,6 +152,7 @@ const Home = () => {
   if (error || roomsError) {
     return (
       <div className="home">
+        <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <div className="error">Error loading data: {error || roomsError}</div>
         <button onClick={() => window.location.reload()}>Retry</button>
       </div>
@@ -129,10 +162,13 @@ const Home = () => {
   /* ==================== Render Main Home Interface ==================== */
   return (
     <div className="home">
+      <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      
       {/* Room and Device Management */}
       <RoomDeviceCoordinator
         rooms={rooms}
         devices={devices}
+        searchTerm={searchTerm}
         showAddRoomForm={showAddRoomForm}
         newRoomName={newRoomName}
         roomError={roomError}
@@ -145,6 +181,7 @@ const Home = () => {
         onAddDevice={addDevice}
         onToggleDevice={handleToggle}
         onCameraOpen={openCameraModal}
+        onDeleteRoom={handleRequestDeleteRoom}
       />
 
       {/* Modal Management */}
@@ -158,6 +195,17 @@ const Home = () => {
         onConfirmDelete={confirmDeleteDevice}
         onReturnToCamera={returnToCameraModal}
       />
+
+      {roomToDelete && (
+        <div className="confirm-overlay">
+          <ConfirmDeleteModal
+            type="room"
+            targetName={roomToDelete}
+            onConfirm={handleConfirmDeleteRoom}
+            onCancel={handleCancelDeleteRoom}
+          />
+        </div>
+      )}
     </div>
   );
 };
