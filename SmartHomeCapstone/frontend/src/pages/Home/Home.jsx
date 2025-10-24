@@ -9,13 +9,13 @@ import { useUser } from "../../context/UserContext";
 import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
 import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
 import CreateHome from "../CreateHome/CreateHome.jsx";
-
+import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
+import { Header } from "../../components/header/Header.jsx";
 /* ==================== Home Component ==================== */
 const Home = () => {
   const { backendUser } = useUser();
   const navigate = useNavigate();
-  import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
-  import { Header } from "../../components/header/Header.jsx";
+  
   const [searchTerm, setSearchTerm] = useState("");
 
   /* ==================== Custom Hooks ==================== */
