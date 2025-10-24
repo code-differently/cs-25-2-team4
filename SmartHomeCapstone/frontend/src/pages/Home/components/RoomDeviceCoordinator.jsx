@@ -1,10 +1,11 @@
 import React from "react";
-import { RoomsBar } from "../RoomsBar.jsx";
+import { RoomsBar } from "./RoomsBar.jsx";
 import { DeviceManagement } from "./DeviceManagement.jsx";
 
 export const RoomDeviceCoordinator = ({
   rooms,
   devices,
+  searchTerm,
   showAddRoomForm,
   newRoomName,
   roomError,
@@ -17,6 +18,7 @@ export const RoomDeviceCoordinator = ({
   onAddDevice,
   onToggleDevice,
   onCameraOpen,
+  onDeleteRoom,
 }) => {
   const activeRoom = rooms.find((r) => r.active)?.name;
 
@@ -34,6 +36,7 @@ export const RoomDeviceCoordinator = ({
         onNewRoomNameChange={onNewRoomNameChange}
         onSaveRoom={onSaveRoom}
         onCancelAddRoom={onCancelAddRoom}
+        onDeleteRoom={onDeleteRoom}
       />
 
       {/* Device Management */}
@@ -41,6 +44,7 @@ export const RoomDeviceCoordinator = ({
         rooms={rooms}
         devices={devices}
         activeRoom={activeRoom}
+        searchTerm={searchTerm}
         onAddDevice={onAddDevice}
         onToggleDevice={onToggleDevice}
         onCameraOpen={onCameraOpen}

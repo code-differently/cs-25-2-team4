@@ -60,11 +60,10 @@ export const AddDeviceForm = ({
         </select>
       )}
 
-      <button onClick={onSave} disabled={shouldShowRoomSelect && !selectedRoom}>
+      <button onClick={onSave}>
         Save
       </button>
       <button onClick={onCancel}>Cancel</button>
-
     </div>
   );
 };

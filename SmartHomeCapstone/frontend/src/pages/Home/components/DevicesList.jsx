@@ -5,19 +5,60 @@ export const DevicesList = ({
   devices,
   activeRoom,
   rooms,
+  searchTerm = "",
   onToggle,
-  onCameraOpen,
+  onCameraOpen, // This will now handle all device types
 }) => {
   // Get the active room object to find its ID
-  const activeRoomObj = rooms?.find(r => r.name === activeRoom);
-  
-  const filteredDevices =
+  const activeRoomObj = rooms?.find((r) => r.name === activeRoom);
+
+  // First filter by room
+  const roomFilteredDevices =
     activeRoom === "All"
       ? devices
       : devices.filter((d) => d.roomId === activeRoomObj?.id);
 
-  if (activeRoom !== "All" && filteredDevices.length === 0) {
-    return <p className="empty-devices-msg">No devices in this room yet</p>;
+  // Then filter by search term
+  const filteredDevices = searchTerm
+    ? roomFilteredDevices.filter(
+        (device) =>
+          device.deviceName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          device.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+    : roomFilteredDevices;
+
+  const shouldOpenModal = (deviceType) => {
+    const type = deviceType?.toUpperCase();
+    return (
+      type === "CAMERA" ||
+      type === "SECURITYCAMERA" ||
+      type === "LIGHT" ||
+      type === "THERMOSTAT"
+    );
+  };
+
+  // Determine what message to show when no devices are displayed
+  const renderEmptyState = () => {
+    if (
+      searchTerm &&
+      roomFilteredDevices.length > 0 &&
+      filteredDevices.length === 0
+    ) {
+      return (
+        <p className="empty-devices-msg">
+          There are no devices with that name.
+        </p>
+      );
+    } else if (activeRoom !== "All" && roomFilteredDevices.length === 0) {
+      return <p className="empty-devices-msg">No devices in this room yet</p>;
+    } else if (activeRoom === "All" && filteredDevices.length === 0) {
+      return <p className="empty-devices-msg">No devices found</p>;
+    }
+    return null;
+  };
+
+  if (filteredDevices.length === 0) {
+    return renderEmptyState();
   }
 
   return (
@@ -27,10 +68,12 @@ export const DevicesList = ({
           key={device.deviceId || index}
           data-testid="device-card"
           className={`device-card ${device.isOn ? "is-on" : "is-off"} ${
-            device.deviceType === "CAMERA" || device.deviceType === "SECURITYCAMERA" ? "clickable" : ""
+            shouldOpenModal(device.deviceType) ? "clickable" : ""
           }`}
           onClick={() => {
-            if (device.deviceType === "CAMERA" || device.deviceType === "SECURITYCAMERA") onCameraOpen(device);
+            if (shouldOpenModal(device.deviceType)) {
+              onCameraOpen(device);
+            }
           }}
         >
           {/* === HEADER (icon + toggle) === */}
@@ -62,11 +105,9 @@ export const DevicesList = ({
 
           {/* === STATUS TEXT === */}
           <span
-            className={`device-status-text ${
-              device.isOn ? "" : "status-dim"
-            }`}
+            className={`device-status-text ${device.isOn ? "" : "status-dim"}`}
           >
-            {device.isOn ? 'ON' : 'OFF'}
+            {device.isOn ? "ON" : "OFF"}
           </span>
         </div>
       ))}
