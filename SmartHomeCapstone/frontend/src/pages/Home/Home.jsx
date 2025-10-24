@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useDevices } from "../../hooks/useDevices";
 import { useRooms } from "../../hooks/useRooms";
 import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
+import { roomService } from "../../services/roomService";
+import { deviceService } from "../../services/deviceService";
 import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
 import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
 import { Header } from "../../components/header/Header.jsx";
@@ -49,7 +51,36 @@ const Home = () => {
     setRoomToDelete(roomName);
   };
 
-  const handleConfirmDeleteRoom = () => {
+  const handleConfirmDeleteRoom = async () => {
+  try {
+    // Find the room object to get its ID
+    const roomToDeleteObj = rooms.find((r) => r.name === roomToDelete);
+    
+    if (roomToDeleteObj && roomToDeleteObj.id) {
+      // Call the API to delete the room from the database
+      await roomService.deleteRoom(roomToDeleteObj.id);
+      
+      // Delete all devices in that room from the database
+      // Filter by roomId instead of room name
+      const devicesToDelete = devices.filter((d) => d.roomId === roomToDeleteObj.id || d.room === roomToDelete);
+      
+      // Delete each device from the database
+      for (const device of devicesToDelete) {
+        try {
+          await deviceService.deleteDevice(device.deviceId);
+        } catch (error) {
+          console.error(`Error deleting device ${device.deviceId}:`, error);
+        }
+      }
+
+      // Update local state - remove devices from the room
+      // Filter by both roomId and room name to be safe
+      setDevices((prev) => prev.filter((d) => 
+        d.roomId !== roomToDeleteObj.id && d.room !== roomToDelete
+      ));
+    }
+
+    // Update local state - remove the room
     setRooms((prevRooms) => {
       const updated = prevRooms.filter((r) => r.name !== roomToDelete);
       return updated.map((r) => ({
@@ -58,10 +89,12 @@ const Home = () => {
       }));
     });
 
-    setDevices((prev) => prev.filter((d) => d.room !== roomToDelete));
-
     setRoomToDelete(null);
-  };
+  } catch (error) {
+    console.error('Error deleting room:', error);
+    // Optionally show an error message to the user
+  }
+};
 
   const handleCancelDeleteRoom = () => {
     setRoomToDelete(null);

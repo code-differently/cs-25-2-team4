@@ -74,7 +74,8 @@ export const useDevices = () => {
     refreshDevices,
     addDevice,
     deleteDevice,
-    toggleDevice
+    toggleDevice,
+    setDevices
   };
 };
 
