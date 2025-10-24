@@ -7,7 +7,6 @@ import { CustomUserDropdown } from "./CustomUserDropdown";
 /* ==================== Header Component ==================== */
 export const Header = ({ searchTerm, onSearchChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   /* === Handlers === */
   const toggleDarkMode = () => {
