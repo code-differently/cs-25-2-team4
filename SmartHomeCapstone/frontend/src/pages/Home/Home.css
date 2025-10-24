@@ -53,7 +53,7 @@ body:not(.dark-mode) {
   justify-content: flex-end;
   align-items: center;
   margin: 0 auto 12px;
-  max-width: 900px;
+  max-width: 1100px;
   padding: 0 6px;
 }
 
@@ -80,8 +80,8 @@ body:not(.dark-mode) {
   align-items: center;
   gap: 12px;
   padding: 6px;
-  margin: 0 40px 20px;
-  max-width: var(--page-max);
+  margin: 0 auto 20px;
+  max-width: 1100px;
   overflow-x: auto;
   scrollbar-width: thin;
   scroll-behavior: smooth;
@@ -211,8 +211,9 @@ body:not(.dark-mode) {
 }
 
 .devices-header {
-  max-width: 900px;  
+  max-width: 1100px;
   margin: 0 auto;
+  padding: 0 6px;
 }
 
 .devices-list {
