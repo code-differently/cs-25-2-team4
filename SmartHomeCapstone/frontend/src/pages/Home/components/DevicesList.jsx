@@ -1,5 +1,6 @@
 import React from "react";
 import { DeviceIcon } from "./DeviceIcon";
+import { EmptyState } from "./EmptyState";
 
 export const DevicesList = ({
   devices,
@@ -7,7 +8,7 @@ export const DevicesList = ({
   rooms,
   searchTerm = "",
   onToggle,
-  onCameraOpen, // This will now handle all device types
+  onCameraOpen,
 }) => {
   // Get the active room object to find its ID
   const activeRoomObj = rooms?.find((r) => r.name === activeRoom);
@@ -37,28 +38,28 @@ export const DevicesList = ({
     );
   };
 
-  // Determine what message to show when no devices are displayed
+  // Determine what empty state to show
   const renderEmptyState = () => {
     if (
       searchTerm &&
       roomFilteredDevices.length > 0 &&
       filteredDevices.length === 0
     ) {
-      return (
-        <p className="empty-devices-msg">
-          There are no devices with that name.
-        </p>
-      );
+      return <EmptyState type="search" searchTerm={searchTerm} />;
     } else if (activeRoom !== "All" && roomFilteredDevices.length === 0) {
-      return <p className="empty-devices-msg">No devices in this room yet</p>;
+      return <EmptyState type="room" activeRoom={activeRoom} />;
     } else if (activeRoom === "All" && filteredDevices.length === 0) {
-      return <p className="empty-devices-msg">No devices found</p>;
+      return <EmptyState type="no-devices" />;
     }
     return null;
   };
 
   if (filteredDevices.length === 0) {
-    return renderEmptyState();
+    return (
+      <div className="devices-list">
+        {renderEmptyState()}
+      </div>
+    );
   }
 
   return (

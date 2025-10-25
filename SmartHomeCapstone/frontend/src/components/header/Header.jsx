@@ -10,7 +10,7 @@ export const Header = ({ searchTerm, onSearchChange }) => {
 
   /* === Handlers === */
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    setIsDarkMode((prev) => !prev);
   };
 
   const handleSearchChange = (e) => {
