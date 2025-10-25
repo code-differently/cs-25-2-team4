@@ -47,14 +47,26 @@ body:not(.dark-mode) {
   margin: 0 auto;
 }
 
+/* ====================  Add Room + Rooms Bar Row ==================== */
+.add-room-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1300px;
+  margin: 0 auto 20px;
+  padding: 0 6px;
+  gap: 16px;
+}
+
+
 /* ====================  Add Room Section (Above Rooms Bar) ==================== */
 .add-room-section {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin: 0 auto 12px;
+  margin: 0;
   max-width: 1300px;
-  padding: 0 6px;
+  padding: 0;
 }
 
 .add-room-section > button {
@@ -80,14 +92,14 @@ body:not(.dark-mode) {
   align-items: center;
   gap: 12px;
   padding: 6px;
-  margin: 0 auto 20px;
+  margin: 0;
   max-width: 1300px;
   overflow-x: auto;
   scrollbar-width: thin;
   scroll-behavior: smooth;
   flex-wrap: nowrap;
   padding-bottom: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 /* Improve scrollbar styling */
