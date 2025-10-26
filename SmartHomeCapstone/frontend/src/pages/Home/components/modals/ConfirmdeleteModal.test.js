@@ -3,73 +3,58 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
+const mockOnConfirm = jest.fn();
+const mockOnCancel = jest.fn();
+
+const renderModal = (props = {}) =>
+  render(
+    <ConfirmDeleteModal
+      type="device"
+      targetName="Test"
+      onConfirm={mockOnConfirm}
+      onCancel={mockOnCancel}
+      {...props}
+    />
+  );
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('ConfirmDeleteModal Component', () => {
-  const mockOnConfirm = jest.fn();
-  const mockOnCancel = jest.fn();
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe('Device Deletion Modal', () => {
     it('renders device deletion modal with correct text', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Living Room Light"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      expect(screen.getByText(/remove device "living room light"/i)).toBeInTheDocument();
+      // Act
+      renderModal({ type: "device", targetName: "Living Room Light" });
+      // Assert
+      const heading = screen.getByRole('heading', { level: 3 });
+      expect(heading.textContent).toMatch(/remove device/i);
+      expect(heading.textContent).toMatch(/living room light/i);
       expect(screen.getByText(/this action cannot be undone/i)).toBeInTheDocument();
     });
 
     it('renders delete and cancel buttons for device', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test Device"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
+      // Act
+      renderModal({ type: "device", targetName: "Test Device" });
+      // Assert
       expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     });
 
     it('calls onConfirm when delete button is clicked for device', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test Device"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      const deleteButton = screen.getByRole('button', { name: /delete/i });
-      fireEvent.click(deleteButton);
-
+      // Act
+      renderModal({ type: "device", targetName: "Test Device" });
+      fireEvent.click(screen.getByRole('button', { name: /delete/i }));
+      // Assert
       expect(mockOnConfirm).toHaveBeenCalledTimes(1);
       expect(mockOnCancel).not.toHaveBeenCalled();
     });
 
     it('calls onCancel when cancel button is clicked for device', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test Device"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      const cancelButton = screen.getByRole('button', { name: /cancel/i });
-      fireEvent.click(cancelButton);
-
+      // Act
+      renderModal({ type: "device", targetName: "Test Device" });
+      fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+      // Assert
       expect(mockOnCancel).toHaveBeenCalledTimes(1);
       expect(mockOnConfirm).not.toHaveBeenCalled();
     });
@@ -77,186 +62,98 @@ describe('ConfirmDeleteModal Component', () => {
 
   describe('Room Deletion Modal', () => {
     it('renders room deletion modal with correct text', () => {
-      render(
-        <ConfirmDeleteModal
-          type="room"
-          targetName="Bedroom"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      expect(screen.getByText(/delete "bedroom" and all devices inside it/i)).toBeInTheDocument();
+      // Act
+      renderModal({ type: "room", targetName: "Bedroom" });
+      // Assert
+      const heading = screen.getByRole('heading', { level: 3 });
+      expect(heading.textContent).toMatch(/delete/i);
+      expect(heading.textContent).toMatch(/bedroom/i);
+      expect(heading.textContent).toMatch(/and all devices inside it/i);
       expect(screen.getByText(/this action cannot be undone/i)).toBeInTheDocument();
     });
 
     it('renders delete and cancel buttons for room', () => {
-      render(
-        <ConfirmDeleteModal
-          type="room"
-          targetName="Living Room"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
+      // Act
+      renderModal({ type: "room", targetName: "Living Room" });
+      // Assert
       expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     });
 
     it('calls onConfirm when delete button is clicked for room', () => {
-      render(
-        <ConfirmDeleteModal
-          type="room"
-          targetName="Kitchen"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      const deleteButton = screen.getByRole('button', { name: /delete/i });
-      fireEvent.click(deleteButton);
-
+      // Act
+      renderModal({ type: "room", targetName: "Kitchen" });
+      fireEvent.click(screen.getByRole('button', { name: /delete/i }));
+      // Assert
       expect(mockOnConfirm).toHaveBeenCalledTimes(1);
       expect(mockOnCancel).not.toHaveBeenCalled();
     });
 
     it('calls onCancel when cancel button is clicked for room', () => {
-      render(
-        <ConfirmDeleteModal
-          type="room"
-          targetName="Bathroom"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      const cancelButton = screen.getByRole('button', { name: /cancel/i });
-      fireEvent.click(cancelButton);
-
+      // Act
+      renderModal({ type: "room", targetName: "Bathroom" });
+      fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+      // Assert
       expect(mockOnCancel).toHaveBeenCalledTimes(1);
       expect(mockOnConfirm).not.toHaveBeenCalled();
     });
 
     it('displays warning about deleting all devices in room', () => {
-      render(
-        <ConfirmDeleteModal
-          type="room"
-          targetName="Office"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      const title = screen.getByText(/delete "office" and all devices inside it/i);
-      expect(title).toBeInTheDocument();
+      // Act
+      renderModal({ type: "room", targetName: "Office" });
+      // Assert
+      const heading = screen.getByRole('heading', { level: 3 });
+      expect(heading.textContent).toMatch(/delete/i);
+      expect(heading.textContent).toMatch(/office/i);
+      expect(heading.textContent).toMatch(/and all devices inside it/i);
     });
   });
 
   describe('Modal Styling', () => {
     it('delete button has correct CSS class', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      const deleteButton = screen.getByRole('button', { name: /delete/i });
-      expect(deleteButton).toHaveClass('confirm-delete-btn');
+      // Act
+      renderModal();
+      // Assert
+      expect(screen.getByRole('button', { name: /delete/i })).toHaveClass('confirm-delete-btn');
     });
 
     it('cancel button has correct CSS class', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      const cancelButton = screen.getByRole('button', { name: /cancel/i });
-      expect(cancelButton).toHaveClass('confirm-cancel-btn');
+      // Act
+      renderModal();
+      // Assert
+      expect(screen.getByRole('button', { name: /cancel/i })).toHaveClass('confirm-cancel-btn');
     });
 
     it('modal has correct structure', () => {
-      const { container } = render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      expect(container.querySelector('.confirm-modal-card')).toBeInTheDocument();
-      expect(container.querySelector('.confirm-actions')).toBeInTheDocument();
+      // Act
+      renderModal();
+      // Assert
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 3 })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     });
   });
 
   describe('Target Name Display', () => {
-    it('displays device name with special characters', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Mom's Camera #1"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      expect(screen.getByText(/mom's camera #1/i)).toBeInTheDocument();
-    });
-
-    it('displays room name with special characters', () => {
-      render(
-        <ConfirmDeleteModal
-          type="room"
-          targetName="Kid's Bedroom"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      expect(screen.getByText(/kid's bedroom/i)).toBeInTheDocument();
-    });
-
-    it('displays long device names', () => {
-      const longName = 'Very Long Device Name That Should Still Display Correctly';
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName={longName}
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      expect(screen.getByText(new RegExp(longName, 'i'))).toBeInTheDocument();
-    });
-
-    it('displays long room names', () => {
-      const longName = 'Master Bedroom with Walk-in Closet and Ensuite Bathroom';
-      render(
-        <ConfirmDeleteModal
-          type="room"
-          targetName={longName}
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      expect(screen.getByText(new RegExp(longName, 'i'))).toBeInTheDocument();
+    it.each([
+      ["device", "Mom's Camera #1"],
+      ["room", "Kid's Bedroom"],
+      ["device", "Very Long Device Name That Should Still Display Correctly"],
+      ["room", "Master Bedroom with Walk-in Closet and Ensuite Bathroom"]
+    ])('displays %s name with special/long characters: %s', (type, name) => {
+      // Act
+      renderModal({ type, targetName: name });
+      // Assert
+      expect(screen.getByText(new RegExp(name, 'i'))).toBeInTheDocument();
     });
   });
 
   describe('Event Propagation', () => {
     it('stops propagation when modal is clicked', () => {
+      // Act
       const mockOuterClick = jest.fn();
-      const { container } = render(
+      render(
         <div onClick={mockOuterClick}>
           <ConfirmDeleteModal
             type="device"
@@ -266,58 +163,41 @@ describe('ConfirmDeleteModal Component', () => {
           />
         </div>
       );
-
-      const modal = container.querySelector('.confirm-modal-card');
-      fireEvent.click(modal);
-
-      // Modal click should stop propagation
+      fireEvent.click(screen.getByRole('dialog'));
+      // Assert
       expect(mockOuterClick).not.toHaveBeenCalled();
     });
   });
 
   describe('Different Type Values', () => {
     it('handles device type correctly', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
+      // Act
+      renderModal({ type: "device", targetName: "Test" });
+      // Assert
       expect(screen.getByText(/remove device/i)).toBeInTheDocument();
       expect(screen.queryByText(/and all devices inside it/i)).not.toBeInTheDocument();
     });
 
     it('handles room type correctly', () => {
-      render(
-        <ConfirmDeleteModal
-          type="room"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      expect(screen.getByText(/delete "test" and all devices inside it/i)).toBeInTheDocument();
+      // Act
+      renderModal({ type: "room", targetName: "Test" });
+      // Assert
+      const heading = screen.getByRole('heading', { level: 3 });
+      expect(heading.textContent).toMatch(/delete/i);
+      expect(heading.textContent).toMatch(/test/i);
+      expect(heading.textContent).toMatch(/and all devices inside it/i);
       expect(screen.queryByText(/remove device/i)).not.toBeInTheDocument();
     });
   });
 
   describe('Warning Message', () => {
     it('shows warning for both device and room deletion', () => {
-      const { rerender } = render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
+      // Act
+      const { rerender } = renderModal({ type: "device", targetName: "Test" });
+      // Assert
       expect(screen.getByText(/this action cannot be undone/i)).toBeInTheDocument();
 
+      // Act
       rerender(
         <ConfirmDeleteModal
           type="room"
@@ -326,22 +206,16 @@ describe('ConfirmDeleteModal Component', () => {
           onCancel={mockOnCancel}
         />
       );
-
+      // Assert
       expect(screen.getByText(/this action cannot be undone/i)).toBeInTheDocument();
     });
   });
 
   describe('Button Order', () => {
     it('renders delete button before cancel button', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
+      // Act
+      renderModal();
+      // Assert
       const buttons = screen.getAllByRole('button');
       expect(buttons[0]).toHaveTextContent('Delete');
       expect(buttons[1]).toHaveTextContent('Cancel');
@@ -350,71 +224,42 @@ describe('ConfirmDeleteModal Component', () => {
 
   describe('Multiple Clicks', () => {
     it('handles multiple delete button clicks', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
+      // Act
+      renderModal();
       const deleteButton = screen.getByRole('button', { name: /delete/i });
       fireEvent.click(deleteButton);
       fireEvent.click(deleteButton);
       fireEvent.click(deleteButton);
-
+      // Assert
       expect(mockOnConfirm).toHaveBeenCalledTimes(3);
     });
 
     it('handles multiple cancel button clicks', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
+      // Act
+      renderModal();
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
       fireEvent.click(cancelButton);
       fireEvent.click(cancelButton);
-
+      // Assert
       expect(mockOnCancel).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('Accessibility', () => {
     it('modal content is in the document', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test Device"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
+      // Act
+      renderModal({ type: "device", targetName: "Test Device" });
+      // Assert
       const title = screen.getByRole('heading', { level: 3 });
       expect(title).toHaveClass('confirm-title');
     });
 
     it('buttons are keyboard accessible', () => {
-      render(
-        <ConfirmDeleteModal
-          type="device"
-          targetName="Test"
-          onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
-        />
-      );
-
-      const deleteButton = screen.getByRole('button', { name: /delete/i });
-      const cancelButton = screen.getByRole('button', { name: /cancel/i });
-
-      expect(deleteButton).toBeInTheDocument();
-      expect(cancelButton).toBeInTheDocument();
+      // Act
+      renderModal();
+      // Assert
+      expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     });
   });
 });
