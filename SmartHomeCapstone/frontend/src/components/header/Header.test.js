@@ -109,8 +109,6 @@ import { Header } from "./Header";
 describe("Header Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
-    // Mock localStorage for theme
     Storage.prototype.getItem = jest.fn((key) => {
       if (key === 'theme') return 'light';
       return null;
@@ -124,128 +122,136 @@ describe("Header Component", () => {
 
   describe("Initial Render", () => {
     it("renders the header element", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       const header = screen.getByRole("banner");
       expect(header).toBeInTheDocument();
     });
 
     it("renders the SmartHome title", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       expect(screen.getByText(/SmartHome/i)).toBeInTheDocument();
     });
 
     it("renders search input", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       const searchInput = screen.getByPlaceholderText(/search devices by name/i);
       expect(searchInput).toBeInTheDocument();
     });
 
     it("renders dark mode toggle", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       const darkModeToggle = screen.getByRole("checkbox");
       expect(darkModeToggle).toBeInTheDocument();
       expect(darkModeToggle).toHaveAttribute("id", "dark-mode-toggle");
     });
 
     it("renders user dropdown when signed in", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       expect(screen.getByTestId("custom-user-dropdown")).toBeInTheDocument();
     });
   });
 
   describe("Search Functionality", () => {
     it("displays the search term from props", () => {
+      // act
       const searchTerm = "living room lamp";
       render(<Header searchTerm={searchTerm} onSearchChange={jest.fn()} />);
-      
+      // assert
       const searchInput = screen.getByDisplayValue(searchTerm);
       expect(searchInput).toBeInTheDocument();
     });
 
     it("calls onSearchChange when user types", () => {
+      // act
       const mockOnSearchChange = jest.fn();
       render(<Header searchTerm="" onSearchChange={mockOnSearchChange} />);
-      
       const searchInput = screen.getByPlaceholderText(/search devices by name/i);
       fireEvent.change(searchInput, { target: { value: "thermostat" } });
-      
+      // assert
       expect(mockOnSearchChange).toHaveBeenCalledWith("thermostat");
     });
 
     it("updates search input value when typing", () => {
+      // act
       const mockOnSearchChange = jest.fn();
       render(<Header searchTerm="" onSearchChange={mockOnSearchChange} />);
-      
       const searchInput = screen.getByPlaceholderText(/search devices by name/i);
       fireEvent.change(searchInput, { target: { value: "camera" } });
-      
+      // assert
       expect(mockOnSearchChange).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("Dark Mode Toggle", () => {
     it("has dark mode toggle unchecked by default", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       const toggle = screen.getByRole("checkbox");
       expect(toggle).not.toBeChecked();
     });
 
     it("toggles dark mode when clicked", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
       const toggle = screen.getByRole("checkbox");
-      
-      // Initially unchecked (light mode)
+      // assert
       expect(toggle).not.toBeChecked();
-      
-      // Click to enable dark mode
       fireEvent.click(toggle);
       expect(toggle).toBeChecked();
-      
-      // Click again to disable
       fireEvent.click(toggle);
       expect(toggle).not.toBeChecked();
     });
 
     it("shows moon emoji when in dark mode", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
+      // assert
       expect(screen.getByText("🌙")).toBeInTheDocument();
     });
 
     it("shows sun emoji when in light mode", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
       const toggle = screen.getByRole("checkbox");
       fireEvent.click(toggle); // Disable dark mode
+      // assert
       expect(screen.getByText("☀️")).toBeInTheDocument();
     });
   });
 
   describe("User Authentication", () => {
     it("shows user dropdown for signed in users", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       expect(screen.getByTestId("signed-in")).toBeInTheDocument();
       expect(screen.getByTestId("custom-user-dropdown")).toBeInTheDocument();
     });
 
     it("does not show signed out message when user is signed in", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       expect(screen.queryByText(/please sign in/i)).not.toBeInTheDocument();
     });
   });
 
   describe("Navigation", () => {
     it("has a link to home page", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       const homeLink = screen.getByRole("link", { name: /SmartHome/i });
       expect(homeLink).toHaveAttribute("href", "/");
     });
@@ -253,25 +259,27 @@ describe("Header Component", () => {
 
   describe("Accessibility", () => {
     it("header has proper banner role", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       const header = screen.getByRole("banner");
       expect(header).toBeInTheDocument();
     });
 
     it("search input has appropriate placeholder", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       const searchInput = screen.getByPlaceholderText(/search devices by name/i);
       expect(searchInput).toBeInTheDocument();
     });
 
     it("dark mode toggle has proper id for label association", () => {
+      // act
       render(<Header searchTerm="" onSearchChange={jest.fn()} />);
-      
+      // assert
       const toggle = screen.getByRole("checkbox");
       expect(toggle).toHaveAttribute("id", "dark-mode-toggle");
-      
       // Verify label exists and is associated with the checkbox
       const label = screen.getByLabelText("🌙");
       expect(label).toBe(toggle);
