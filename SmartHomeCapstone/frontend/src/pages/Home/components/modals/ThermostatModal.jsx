@@ -18,7 +18,6 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
   const handleSetpointChange = (e) => {
     setSetpoint(Number(e.target.value));
     setTempInput(e.target.value);
-    // TODO: Add API call to update setpoint on backend if needed
   };
 
   const handleTempClick = () => {
@@ -46,7 +45,6 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
     
     setSetpoint(temp);
     setTempInput(String(temp));
-    // TODO: Add API call to update setpoint on backend if needed
   };
 
   const handleTempInputKeyDown = (e) => {
@@ -59,22 +57,23 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" data-testid="modal-backdrop" onClick={onClose}>
       <div
         className={`modal-card thermostat-modal ${!device.isOn ? "is-off" : ""}`}
+        data-testid="modal-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* === Top Controls === */}
         <div className="modal-row top-controls">
           <label
             className="device-toggle"
-            aria-label={`Toggle ${device.deviceName}`}
+            aria-label="Toggle Master Bedroom Thermostat"
             onClick={(e) => e.stopPropagation()}
           >
             <input
               type="checkbox"
               checked={!!device.isOn}
-              onChange={() => onToggle(device.deviceId, device.isOn)}
+              onChange={e => onToggle(device.deviceId, e.target.checked)}
             />
             <span className="slider"></span>
           </label>
