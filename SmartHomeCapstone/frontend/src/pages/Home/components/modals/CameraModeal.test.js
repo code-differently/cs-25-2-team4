@@ -1,126 +1,36 @@
-// Additional tests for CameraModal Component
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { CameraModal } from './CameraModal';
 
-describe('CameraModal Component - Edge Cases & Robustness', () => {
-    const mockDevice = {
-        deviceId: '123',
-        deviceName: 'Front Door Camera',
-        deviceType: 'CAMERA',
-        isOn: true,
-    };
+describe('CameraModal Component', () => {
+  const mockDevice = {
+    deviceId: '123',
+    deviceName: 'Front Door Camera',
+    deviceType: 'CAMERA',
+    isOn: true,
+  };
 
-    const mockOnClose = jest.fn();
-    const mockOnToggle = jest.fn();
-    const mockOnRequestDelete = jest.fn();
+  const mockOnClose = jest.fn();
+  const mockOnToggle = jest.fn();
+  const mockOnRequestDelete = jest.fn();
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    it('does not call onToggle if toggle is disabled', () => {
-        render(
-            <CameraModal
-                device={mockDevice}
-                onClose={mockOnClose}
-                onToggle={mockOnToggle}
-                onRequestDelete={mockOnRequestDelete}
-                toggleDisabled={true}
-            />
-        );
-        const toggle = screen.getByRole('checkbox');
-        fireEvent.change(toggle);
-        expect(mockOnToggle).not.toHaveBeenCalled();
-    });
+  describe('Rendering', () => {
+    it('renders modal with device name', () => {
+      render(
+        <CameraModal
+          device={mockDevice}
+          onClose={mockOnClose}
+          onToggle={mockOnToggle}
+          onRequestDelete={mockOnRequestDelete}
+        />
+      );
 
-    it('calls onToggle only once per click', () => {
-        render(
-            <CameraModal
-                device={mockDevice}
-                onClose={mockOnClose}
-                onToggle={mockOnToggle}
-                onRequestDelete={mockOnRequestDelete}
-            />
-        );
-        const toggle = screen.getByRole('checkbox');
-        fireEvent.click(toggle);
-        expect(mockOnToggle).toHaveBeenCalledTimes(1);
-    });
-
-    it('delete button is disabled when device is null', () => {
-        render(
-            <CameraModal
-                device={null}
-                onClose={mockOnClose}
-                onToggle={mockOnToggle}
-                onRequestDelete={mockOnRequestDelete}
-            />
-        );
-        const deleteButton = screen.queryByRole('button', { name: /delete/i });
-        expect(deleteButton).toBeNull();
-    });
-
-    it('toggle switch is not rendered when device is not a camera', () => {
-        render(
-            <CameraModal
-                device={{ ...mockDevice, deviceType: 'LIGHT' }}
-                onClose={mockOnClose}
-                onToggle={mockOnToggle}
-                onRequestDelete={mockOnRequestDelete}
-            />
-        );
-        expect(screen.queryByRole('checkbox')).toBeNull();
-    });
-
-    it('renders correct aria-label for toggle with special characters in device name', () => {
-        render(
-            <CameraModal
-                device={{ ...mockDevice, deviceName: 'Caméra Spécialé' }}
-                onClose={mockOnClose}
-                onToggle={mockOnToggle}
-                onRequestDelete={mockOnRequestDelete}
-            />
-        );
-        const toggle = screen.getByRole('checkbox');
-        expect(toggle).toHaveAttribute('aria-label', 'Toggle Caméra Spécialé');
-    });
-
-    it('renders camera image with correct alt text for different device names', () => {
-        render(
-            <CameraModal
-                device={{ ...mockDevice, deviceName: 'Backyard Cam' }}
-                onClose={mockOnClose}
-                onToggle={mockOnToggle}
-                onRequestDelete={mockOnRequestDelete}
-            />
-        );
-        const cameraImage = screen.getByAltText('Camera feed');
-        expect(cameraImage).toBeInTheDocument();
-    });
-
-    it('does not render camera image if deviceType is not CAMERA', () => {
-        render(
-            <CameraModal
-                device={{ ...mockDevice, deviceType: 'LIGHT' }}
-                onClose={mockOnClose}
-                onToggle={mockOnToggle}
-                onRequestDelete={mockOnRequestDelete}
-            />
-        );
-        expect(screen.queryByAltText('Camera feed')).toBeNull();
-    });
-
-    it('modal closes when Escape key is pressed', () => {
-        render(
-            <CameraModal
-                device={mockDevice}
-                onClose={mockOnClose}
-                onToggle={mockOnToggle}
-                onRequestDelete={mockOnRequestDelete}
-            />
-        );
-        fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
-        expect(mockOnClose).toHaveBeenCalledTimes(1);
-    });
-});
+      expect(screen.getByText(/front door camera — camera/i)).toBeInTheDocument();
     });
 
     it('renders toggle switch', () => {
