@@ -269,10 +269,7 @@ const defaultDevicesMock = {
  */
 describe("Home Component", () => {
   beforeEach(() => {
-    // Always reset call counts and implementations to defaults
     jest.clearAllMocks();
-
-    // Default return values for all hooks
     mockUseUser.mockReturnValue(defaultUserMock);
     mockUseHomes.mockReturnValue(defaultHomesMock);
     mockUseRooms.mockReturnValue(defaultRoomsMock);
@@ -285,30 +282,20 @@ describe("Home Component", () => {
 
   describe("Initial Render", () => {
     it("renders main structure correctly", () => {
+      // Act
       renderWithRouter(<Home />);
-
-      // Rooms nav landmark (your component likely sets aria-label="Rooms")
-      expect(
-        screen.getByRole("navigation", { name: /rooms/i })
-      ).toBeInTheDocument();
-
-      // Title text
+      // Assert
+      expect(screen.getByRole("navigation", { name: /rooms/i })).toBeInTheDocument();
       expect(screen.getByText("My Devices")).toBeInTheDocument();
-
-      // Default room button
       expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
-
-      // Add Room button
-      expect(
-        screen.getByRole("button", { name: "+ Add Room" })
-      ).toBeInTheDocument();
-
-      // Add Device button (assumes data-testid is present)
+      expect(screen.getByRole("button", { name: "+ Add Room" })).toBeInTheDocument();
       expect(screen.getByTestId("add-device-btn")).toBeInTheDocument();
     });
 
     it("shows All room as active by default", () => {
+      // Act
       renderWithRouter(<Home />);
+      // Assert
       expect(screen.getByRole("button", { name: "All" })).toHaveClass("active");
     });
   });
@@ -319,8 +306,9 @@ describe("Home Component", () => {
         ...defaultRoomsMock,
         loading: true,
       });
-
+      // Act
       renderWithRouter(<Home />);
+      // Assert
       expect(screen.getByText(/loading/i)).toBeInTheDocument();
     });
 
@@ -329,8 +317,9 @@ describe("Home Component", () => {
         ...defaultDevicesMock,
         loading: true,
       });
-
+      // Act
       renderWithRouter(<Home />);
+      // Assert
       expect(screen.getByText(/loading/i)).toBeInTheDocument();
     });
   });
@@ -341,8 +330,9 @@ describe("Home Component", () => {
         ...defaultRoomsMock,
         error: "Failed to load rooms",
       });
-
+      // Act
       renderWithRouter(<Home />);
+      // Assert
       expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
     });
 
@@ -351,8 +341,9 @@ describe("Home Component", () => {
         ...defaultDevicesMock,
         error: "Failed to load devices",
       });
-
+      // Act
       renderWithRouter(<Home />);
+      // Assert
       expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
     });
   });
@@ -364,10 +355,10 @@ describe("Home Component", () => {
         ...defaultRoomsMock,
         openAddRoomForm: mockOpenAddRoomForm,
       });
-
+      // Act
       renderWithRouter(<Home />);
       fireEvent.click(screen.getByRole("button", { name: "+ Add Room" }));
-
+      // Assert
       expect(mockOpenAddRoomForm).toHaveBeenCalled();
     });
 
@@ -377,16 +368,12 @@ describe("Home Component", () => {
         showAddRoomForm: true,
         newRoomName: "Test Room",
       });
-
+      // Act
       renderWithRouter(<Home />);
-
+      // Assert
       expect(screen.getByDisplayValue("Test Room")).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /save room/i })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /cancel/i })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /save room/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
     });
 
     it("displays multiple rooms from hook data", () => {
@@ -398,21 +385,13 @@ describe("Home Component", () => {
           { name: "Kitchen", active: false, id: 3 },
         ],
       });
-
+      // Act
       renderWithRouter(<Home />);
-
-      expect(
-        screen.getByRole("button", { name: "All" })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "Living Room" })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "Kitchen" })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "Living Room" })
-      ).toHaveClass("active");
+      // Assert
+      expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Living Room" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Kitchen" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Living Room" })).toHaveClass("active");
     });
 
     it("calls activateRoom when room button is clicked", () => {
@@ -425,10 +404,10 @@ describe("Home Component", () => {
         ],
         activateRoom: mockActivateRoom,
       });
-
+      // Act
       renderWithRouter(<Home />);
       fireEvent.click(screen.getByRole("button", { name: "Bedroom" }));
-
+      // Assert
       expect(mockActivateRoom).toHaveBeenCalledWith("Bedroom");
     });
   });
@@ -454,9 +433,9 @@ describe("Home Component", () => {
           },
         ],
       });
-
+      // Act
       renderWithRouter(<Home />);
-
+      // Assert
       const deviceCards = screen.getAllByTestId("device-card");
       expect(deviceCards).toHaveLength(2);
       expect(screen.getByText("Smart Light")).toBeInTheDocument();
@@ -483,9 +462,9 @@ describe("Home Component", () => {
           },
         ],
       });
-
+      // Act
       renderWithRouter(<Home />);
-
+      // Assert
       const checkboxes = screen.getAllByRole("checkbox");
       expect(checkboxes).toHaveLength(2);
       expect(checkboxes[0]).toBeChecked();
@@ -500,12 +479,10 @@ describe("Home Component", () => {
           { name: "Empty Room", active: true, id: 2 },
         ],
       });
-
+      // Act
       renderWithRouter(<Home />);
-
-      expect(
-        screen.getByText(/no devices in this room yet/i)
-      ).toBeInTheDocument();
+      // Assert
+      expect(screen.getByText(/no devices in this room yet/i)).toBeInTheDocument();
     });
   });
 
@@ -537,15 +514,13 @@ describe("Home Component", () => {
           },
         ],
       });
-
+      // Act
       renderWithRouter(<Home />);
-
+      // Assert
       const deviceCards = screen.getAllByTestId("device-card");
       expect(deviceCards).toHaveLength(1);
       expect(screen.getByText("Bedroom Light")).toBeInTheDocument();
-      expect(
-        screen.queryByText("Kitchen Light")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Kitchen Light")).not.toBeInTheDocument();
     });
 
     it("shows all devices when All room is active", () => {
@@ -568,9 +543,9 @@ describe("Home Component", () => {
           },
         ],
       });
-
+      // Act
       renderWithRouter(<Home />);
-
+      // Assert
       const deviceCards = screen.getAllByTestId("device-card");
       expect(deviceCards).toHaveLength(2);
       expect(screen.getByText("Light 1")).toBeInTheDocument();
@@ -578,8 +553,9 @@ describe("Home Component", () => {
     });
 
     it("calls useDevices and useRooms hooks", () => {
+      // Act
       renderWithRouter(<Home />);
-
+      // Assert
       expect(mockUseRooms).toHaveBeenCalled();
       expect(mockUseDevices).toHaveBeenCalled();
     });
