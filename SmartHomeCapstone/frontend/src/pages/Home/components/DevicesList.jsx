@@ -100,8 +100,8 @@ export const DevicesList = ({
           </div>
 
           {/* === NAME === */}
-          <span className={`device-title ${device.isOn ? "" : "dim"}`}>
-            {device.deviceName}
+          <span className="device-title ">
+            {device.deviceName || device.name}
           </span>
 
           {/* === STATUS TEXT === */}

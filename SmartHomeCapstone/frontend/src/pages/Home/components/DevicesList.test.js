@@ -159,7 +159,7 @@ describe('DevicesList Component', () => {
       );
 
       const toggles = screen.getAllByRole('checkbox');
-      fireEvent.change(toggles[0]);
+      fireEvent.click(toggles[0]); // <-- Use click instead of change
 
       expect(mockOnToggle).toHaveBeenCalledWith('1', true);
     });
