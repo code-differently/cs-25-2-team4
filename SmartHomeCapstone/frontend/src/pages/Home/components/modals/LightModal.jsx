@@ -26,15 +26,13 @@ export const LightModal = ({ device, onClose, onToggle, onRequestDelete }) => {
       >
         {/* === Top Controls === */}
         <div className="modal-row top-controls">
-          <label
-            className="device-toggle"
-            aria-label={`Toggle ${device.deviceName}`}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <label className="device-toggle" onClick={(e) => e.stopPropagation()}>
             <input
               type="checkbox"
               checked={!!device.isOn}
-              onChange={() => onToggle(device.deviceId, device.isOn)}
+              onChange={e => onToggle(device.deviceId, e.target.checked)}
+              aria-label={`Toggle ${device.deviceName}`}
+              disabled={!device}
             />
             <span className="slider"></span>
           </label>
@@ -87,6 +85,7 @@ export const LightModal = ({ device, onClose, onToggle, onRequestDelete }) => {
             max="100"
             value={brightness}
             onChange={handleBrightnessChange}
+            disabled={!device?.isOn}
           />
         </div>
       </div>
