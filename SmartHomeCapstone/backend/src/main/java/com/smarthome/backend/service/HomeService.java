@@ -5,8 +5,8 @@ import com.smarthome.backend.entity.Home;
 import com.smarthome.backend.entity.HomeMembership;
 import com.smarthome.backend.entity.User;
 import com.smarthome.backend.enums.MembershipRole;
-import com.smarthome.backend.repository.HomeRepository;
 import com.smarthome.backend.repository.HomeMembershipRepository;
+import com.smarthome.backend.repository.HomeRepository;
 import com.smarthome.backend.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -23,9 +23,10 @@ public class HomeService {
         private final UserRepository userRepository;
 
         @Autowired
-        public HomeService(HomeRepository homeRepository, 
-                         HomeMembershipRepository homeMembershipRepository,
-                         UserRepository userRepository) {
+        public HomeService(
+                        HomeRepository homeRepository,
+                        HomeMembershipRepository homeMembershipRepository,
+                        UserRepository userRepository) {
                 this.homeRepository = homeRepository;
                 this.homeMembershipRepository = homeMembershipRepository;
                 this.userRepository = userRepository;
