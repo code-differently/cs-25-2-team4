@@ -55,17 +55,17 @@ beforeEach(() => {
 describe('DevicesList Component', () => {
   describe('Rendering Devices', () => {
     it('renders all devices when "All" room is active', () => {
-      // act
+      // Act
       renderDevicesList();
 
-      // assert
+      // Assert
       expect(screen.getByText('Living Room Light')).toBeInTheDocument();
       expect(screen.getByText('Bedroom Camera')).toBeInTheDocument();
       expect(screen.getByText('Kitchen Thermostat')).toBeInTheDocument();
     });
 
     it('renders only devices from active room', () => {
-      // act
+      // Act
       renderDevicesList({
         activeRoom: 'Living Room',
         rooms: [
@@ -75,17 +75,17 @@ describe('DevicesList Component', () => {
         ]
       });
 
-      // assert
+      // Assert
       expect(screen.getByText('Living Room Light')).toBeInTheDocument();
       expect(screen.getByText('Kitchen Thermostat')).toBeInTheDocument();
       expect(screen.queryByText('Bedroom Camera')).not.toBeInTheDocument();
     });
 
     it('renders each device with correct status', () => {
-      // act
+      // Act
       renderDevicesList();
 
-      // assert
+      // Assert
       const cards = screen.getAllByTestId('device-card');
       expect(cards[0]).toHaveTextContent('ON');
       expect(cards[1]).toHaveTextContent('OFF');
@@ -93,10 +93,10 @@ describe('DevicesList Component', () => {
     });
 
     it('applies correct CSS classes based on device state', () => {
-      // act
+      // Act
       renderDevicesList();
 
-      // assert
+      // Assert
       const cards = screen.getAllByTestId('device-card');
       expect(cards[0]).toHaveClass('is-on');
       expect(cards[1]).toHaveClass('is-off');
@@ -105,19 +105,19 @@ describe('DevicesList Component', () => {
 
   describe('Device Toggles', () => {
     it('renders toggle switches for all devices', () => {
-      // act
+      // Act
       renderDevicesList();
 
-      // assert
+      // Assert
       const toggles = screen.getAllByRole('checkbox');
       expect(toggles).toHaveLength(3);
     });
 
     it('toggle switch reflects device on/off state', () => {
-      // act
+      // Act
       renderDevicesList();
 
-      // assert
+      // Assert
       const toggles = screen.getAllByRole('checkbox');
       expect(toggles[0]).toBeChecked();
       expect(toggles[1]).not.toBeChecked();
@@ -125,20 +125,20 @@ describe('DevicesList Component', () => {
     });
 
     it('calls onToggle with correct parameters when toggle is clicked', () => {
-      // act
+      // Act
       renderDevicesList();
       const toggles = screen.getAllByRole('checkbox');
       fireEvent.click(toggles[0]);
 
-      // assert
+      // Assert
       expect(mockOnToggle).toHaveBeenCalledWith('1', true);
     });
 
     it('toggle has accessible label', () => {
-      // act
+      // Act
       renderDevicesList();
 
-      // assert
+      // Assert
       const deviceCards = screen.getAllByTestId('device-card');
       const firstCard = deviceCards[0];
       const label = within(firstCard).getByLabelText('Toggle Living Room Light');
@@ -148,10 +148,10 @@ describe('DevicesList Component', () => {
 
   describe('Device Click Behavior', () => {
     it('device card is clickable for modal-enabled devices', () => {
-      // act
+      // Act
       renderDevicesList();
 
-      // assert
+      // Assert
       const cards = screen.getAllByTestId('device-card');
       expect(cards[0]).toHaveClass('clickable');
       expect(cards[1]).toHaveClass('clickable');
@@ -159,66 +159,66 @@ describe('DevicesList Component', () => {
     });
 
     it('calls onCameraOpen when camera device is clicked', () => {
-      // act
+      // Act
       renderDevicesList();
       const cards = screen.getAllByTestId('device-card');
       fireEvent.click(cards[1]);
 
-      // assert
+      // Assert
       expect(mockOnCameraOpen).toHaveBeenCalledWith(mockDevices[1]);
     });
 
     it('calls onCameraOpen when light device is clicked', () => {
-      // act
+      // Act
       renderDevicesList();
       const cards = screen.getAllByTestId('device-card');
       fireEvent.click(cards[0]);
 
-      // assert
+      // Assert
       expect(mockOnCameraOpen).toHaveBeenCalledWith(mockDevices[0]);
     });
 
     it('calls onCameraOpen when thermostat device is clicked', () => {
-      // act
+      // Act
       renderDevicesList();
       const cards = screen.getAllByTestId('device-card');
       fireEvent.click(cards[2]);
 
-      // assert
+      // Assert
       expect(mockOnCameraOpen).toHaveBeenCalledWith(mockDevices[2]);
     });
   });
 
   describe('Search Filtering', () => {
     it('filters devices by search term', () => {
-      // act
+      // Act
       renderDevicesList({ searchTerm: 'camera' });
 
-      // assert
+      // Assert
       expect(screen.getByText('Bedroom Camera')).toBeInTheDocument();
       expect(screen.queryByText('Living Room Light')).not.toBeInTheDocument();
       expect(screen.queryByText('Kitchen Thermostat')).not.toBeInTheDocument();
     });
 
     it('search is case insensitive', () => {
-      // act
+      // Act
       renderDevicesList({ searchTerm: 'LIGHT' });
 
-      // assert
+      // Assert
       expect(screen.getByText('Living Room Light')).toBeInTheDocument();
     });
 
     it('shows search empty state when no devices match', () => {
-      // act
+      // Act
       renderDevicesList({ searchTerm: 'nonexistent' });
 
-      // assert
+      // Assert
       expect(screen.getByText('No devices found')).toBeInTheDocument();
       expect(screen.getByText(/no devices match "nonexistent"/i)).toBeInTheDocument();
     });
 
     it('combines room filter and search filter', () => {
-      // act
+      // Act
       renderDevicesList({
         activeRoom: 'Living Room',
         rooms: [
@@ -229,7 +229,7 @@ describe('DevicesList Component', () => {
         searchTerm: 'kitchen'
       });
 
-      // assert
+      // Assert
       expect(screen.getByText('Kitchen Thermostat')).toBeInTheDocument();
       expect(screen.queryByText('Living Room Light')).not.toBeInTheDocument();
     });
@@ -237,7 +237,7 @@ describe('DevicesList Component', () => {
 
   describe('Empty States', () => {
     it('shows room empty state when room has no devices', () => {
-      // act
+      // Act
       renderDevicesList({
         activeRoom: 'Empty Room',
         rooms: [
@@ -246,23 +246,23 @@ describe('DevicesList Component', () => {
         ]
       });
 
-      // assert
+      // Assert
       expect(screen.getByText(/no devices in empty room/i)).toBeInTheDocument();
     });
 
     it('shows no devices empty state when All room is empty', () => {
-      // act
+      // Act
       renderDevicesList({ devices: [] });
 
-      // assert
+      // Assert
       expect(screen.getByText('No devices yet')).toBeInTheDocument();
     });
 
     it('shows search empty state with search term', () => {
-      // act
+      // Act
       renderDevicesList({ searchTerm: 'xyz' });
 
-      // assert
+      // Assert
       expect(screen.getByText('No devices found')).toBeInTheDocument();
       expect(screen.getByText(/no devices match "xyz"/i)).toBeInTheDocument();
     });
@@ -270,10 +270,10 @@ describe('DevicesList Component', () => {
 
   describe('Device Icons', () => {
     it('renders icon for each device', () => {
-      // act
+      // Act
       renderDevicesList();
 
-      // assert
+      // Assert
       const deviceCards = screen.getAllByTestId('device-card');
       const iconBoxes = deviceCards.map(card =>
         within(card).getByTestId('icon-box')
@@ -285,7 +285,7 @@ describe('DevicesList Component', () => {
 
   describe('Device Name Variations', () => {
     it('handles devices with "name" property instead of "deviceName"', () => {
-      // act
+      // Act
       renderDevicesList({
         devices: [
           {
@@ -298,40 +298,40 @@ describe('DevicesList Component', () => {
         ]
       });
 
-      // assert
+      // Assert
       expect(screen.getByText('Old Style Device')).toBeInTheDocument();
     });
   });
 
   describe('Edge Cases', () => {
     it('handles empty device list', () => {
-      // act
+      // Act
       renderDevicesList({ devices: [] });
 
-      // assert
+      // Assert
       expect(screen.getByText('No devices yet')).toBeInTheDocument();
     });
 
     it('handles undefined searchTerm', () => {
-      // act
+      // Act
       renderDevicesList({ searchTerm: undefined });
 
-      // assert
+      // Assert
       expect(screen.getByText('Living Room Light')).toBeInTheDocument();
       expect(screen.getByText('Bedroom Camera')).toBeInTheDocument();
       expect(screen.getByText('Kitchen Thermostat')).toBeInTheDocument();
     });
 
     it('handles empty searchTerm', () => {
-      // act
+      // Act
       renderDevicesList({ searchTerm: '' });
 
-      // assert
+      // Assert
       expect(screen.getByText('Living Room Light')).toBeInTheDocument();
     });
 
     it('handles devices without roomId', () => {
-      // act
+      // Act
       renderDevicesList({
         devices: [
           {
@@ -343,14 +343,14 @@ describe('DevicesList Component', () => {
         ]
       });
 
-      // assert
+      // Assert
       expect(screen.getByText('Orphan Device')).toBeInTheDocument();
     });
   });
 
   describe('Device Type Case Variations', () => {
     it('handles uppercase device types', () => {
-      // act
+      // Act
       renderDevicesList({
         devices: [{
           deviceId: '1',
@@ -361,13 +361,13 @@ describe('DevicesList Component', () => {
         }]
       });
 
-      // assert
+      // Assert
       const card = screen.getByTestId('device-card');
       expect(card).toHaveClass('clickable');
     });
 
     it('handles SECURITYCAMERA device type', () => {
-      // act
+      // Act
       renderDevicesList({
         devices: [{
           deviceId: '1',
@@ -378,7 +378,7 @@ describe('DevicesList Component', () => {
         }]
       });
 
-      // assert
+      // Assert
       const card = screen.getByTestId('device-card');
       fireEvent.click(card);
       expect(mockOnCameraOpen).toHaveBeenCalled();
