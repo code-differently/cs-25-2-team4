@@ -3,10 +3,8 @@ spring:
     name: backend
   
   # PostgreSQL Database Configuration
-  # Note: Set JDBC_DATABASE_URL environment variable in Render
-  # (Render's DATABASE_URL needs to be converted from postgres:// to jdbc:postgresql://)
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/smarthome}
+    url: ${JDBC_DATABASE_URL}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
