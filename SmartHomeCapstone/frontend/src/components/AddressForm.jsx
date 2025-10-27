@@ -34,19 +34,12 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
         }
     }, [address.country]);
 
-    // Load cities when state changes
-    useEffect(() => {
-        if (address.country && address.state) {
-            loadCitiesByState(address.country, address.state);
-        } else {
-            setCities([]);
-        }
-    }, [address.country, address.state]);
-
-    // Load cities when zip code changes (as an alternative method)
+    // Load cities when zip code changes
     useEffect(() => {
         if (address.country && address.zipCode && address.zipCode.length >= 5) {
             loadCitiesByZip(address.country, address.zipCode);
+        } else {
+            setCities([]);
         }
     }, [address.country, address.zipCode]);
 
@@ -74,19 +67,6 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
         } catch (error) {
             console.error('Failed to load states:', error);
             setStates([]);
-        }
-    };
-
-    const loadCitiesByState = async (countryCode, stateCode) => {
-        setLoading(prev => ({ ...prev, cities: true }));
-        try {
-            const cityList = await addressService.getCitiesByState(countryCode, stateCode);
-            setCities(cityList);
-        } catch (error) {
-            console.error('Failed to load cities:', error);
-            setCities([]);
-        } finally {
-            setLoading(prev => ({ ...prev, cities: false }));
         }
     };
 
@@ -145,6 +125,7 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                         {country.name}
                     </option>
                 ))}
+                required
             </select>
 
 
@@ -178,6 +159,17 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                 </>
             )}
 
+            {/* Street Address */}
+            <label>Street Address</label>
+            <input
+                className="input"
+                name="streetAddress"
+                value={address.streetAddress}
+                onChange={handleChange}
+                placeholder="Enter street address"
+                required
+            />
+
             {/* City */}
             <label>City</label>
             {cities.length > 0 ? (
@@ -205,27 +197,19 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                     onChange={handleChange}
                     placeholder={loading.cities ? 'Loading cities...' : 'Enter city'}
                     disabled={loading.cities}
+                    required
                 />
             )}
-
-            {/* Street Address */}
-            <label>Street Address</label>
-            <input
-                className="input mb16"
-                name="streetAddress"
-                value={address.streetAddress}
-                onChange={handleChange}
-                placeholder="Enter street address"
-            />
 
             {/* Zip Code */}
             <label>Zip Code</label>
             <input
-                className="input"
+                className="input mb16"
                 name="zipCode"
                 value={address.zipCode}
                 onChange={handleChange}
                 placeholder="Enter zip code"
+                required
             />
         </div>
     );

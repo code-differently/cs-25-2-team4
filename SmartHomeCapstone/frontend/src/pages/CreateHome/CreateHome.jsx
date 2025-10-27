@@ -110,6 +110,7 @@ const CreateHome = ({ onHomeCreated }) => {
           onChange={handleInputChange}
           placeholder="e.g., My Family Home"
           disabled={loading}
+          required
         />
 
         <AddressForm
