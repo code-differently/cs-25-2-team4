@@ -88,8 +88,9 @@ export default function Login() {
           or
         </div>
 
-        <label>Email address or username</label>
-        <input 
+        <label htmlFor="login-identifier">Email address or username</label>
+        <input
+          id="login-identifier"
           className="input" 
           name="email" 
           type="text" 
@@ -97,8 +98,9 @@ export default function Login() {
           onChange={onChange} 
           placeholder="Enter email or username"
         />
-        <label>Password</label>
+        <label htmlFor="login-password">Password</label>
         <input 
+          id="login-password"
           className="input mb16" 
           name="password" 
           type="password" 

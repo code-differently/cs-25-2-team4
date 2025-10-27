@@ -1,6 +1,11 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+import './styles/RoomsBar.css';   
+import './styles/DeviceCards.css'; 
+import './styles/Modals.css';     
+import './styles/Forms.css';     
+import './styles/Toast.css';      
 import { useState } from "react";
 import { useDevices } from "../../hooks/useDevices";
 import { useRooms } from "../../hooks/useRooms";
