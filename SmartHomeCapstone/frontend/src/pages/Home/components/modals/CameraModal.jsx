@@ -1,20 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import cameraGif from "../../../../assets/camera.gif";
 import { Trash } from "lucide-react";
 
 export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
-  // Always call hooks at the top level
+  // Sync local state with device prop
   const [isOn, setIsOn] = useState(!!device?.isOn);
+
+  // Update local state when device prop changes
+  useEffect(() => {
+    setIsOn(!!device?.isOn);
+  }, [device?.isOn]);
 
   // Early return after hooks
   if (!device || !device.deviceId || !device.deviceName) return null;
 
   const handleToggle = (e) => {
     e.stopPropagation();
-    const newValue = e.target.checked;
-    setIsOn(newValue);
+    const currentState = isOn; // Capture the CURRENT state
+    const newState = !currentState; // Calculate new state
+    
+    // Update local state optimistically
+    setIsOn(newState);
+    
+    // Pass CURRENT state to onToggle (before the change)
     if (typeof onToggle === "function") {
-      onToggle(device.deviceId, newValue);
+      onToggle(device.deviceId, currentState);
     }
   };
 
@@ -25,8 +35,6 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
         data-testid="modal-card"
         onClick={(e) => e.stopPropagation()}
       >
-        {!isOn && <div className="modal-dim-overlay"></div>}
-
         {/* === Top Controls === */}
         <div className="modal-row top-controls">
           <label className="device-toggle" onClick={(e) => e.stopPropagation()}>
@@ -45,7 +53,7 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
             onClick={(e) => {
               e.stopPropagation();
               if (typeof onRequestDelete === "function") {
-                onRequestDelete(device.deviceId);
+                onRequestDelete(device);
               }
             }}
           >
@@ -66,6 +74,7 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
               draggable="false"
               className={isOn ? "" : "off"}
             />
+            {!isOn && <div className="modal-dim-overlay"></div>}
           </div>
         )}
       </div>

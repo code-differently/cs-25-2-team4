@@ -136,11 +136,12 @@ describe('LightModal Component', () => {
     );
     
     // Act
-    const toggle = screen.getByRole('checkbox');
-    fireEvent.click(toggle);
+    const checkbox = screen.getByLabelText('Toggle Living Room Light');
+    fireEvent.click(checkbox);
     
     // Assert
-    expect(mockOnToggle).toHaveBeenCalledWith('456', false);
+    // The handler is called with the current state (true)
+    expect(mockOnToggle).toHaveBeenCalledWith('456', true);
   });
 
   it('does not render toggle when device is null', () => {

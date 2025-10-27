@@ -4,10 +4,13 @@ import { Trash } from "lucide-react";
 export const LightModal = ({ device, onClose, onToggle, onRequestDelete }) => {
   const [brightness, setBrightness] = useState(60);
   const [useFallback, setUseFallback] = useState(false);
+  const [isOn, setIsOn] = useState(!!device?.isOn);
 
+  // Sync with device prop
   useEffect(() => {
     if (!device) return;
     setBrightness(Number.isFinite(device?.brightness) ? device.brightness : 60);
+    setIsOn(!!device.isOn);
     setUseFallback(false);
   }, [device]);
 
@@ -18,21 +21,36 @@ export const LightModal = ({ device, onClose, onToggle, onRequestDelete }) => {
     // TODO: Add API call to update brightness on backend if needed
   };
 
+  const handleToggle = () => {
+    const currentState = isOn; // Capture CURRENT state
+    const newState = !currentState;
+    
+    // Update local state optimistically
+    setIsOn(newState);
+    
+    // Pass CURRENT state to onToggle (before the change)
+    if (typeof onToggle === "function") {
+      onToggle(device.deviceId, currentState);
+    }
+  };
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className={`modal-card light-modal ${!device.isOn ? "is-off" : ""}`}
+        className={`modal-card light-modal ${!isOn ? "is-off" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* === Top Controls === */}
         <div className="modal-row top-controls">
-          <label className="device-toggle" onClick={(e) => e.stopPropagation()}>
+          <label
+            className="device-toggle"
+            onClick={(e) => e.stopPropagation()}
+          >
             <input
               type="checkbox"
-              checked={!!device.isOn}
-              onChange={e => onToggle(device.deviceId, e.target.checked)}
+              checked={isOn}
+              onChange={handleToggle}
               aria-label={`Toggle ${device.deviceName}`}
-              disabled={!device}
             />
             <span className="slider"></span>
           </label>
@@ -85,7 +103,7 @@ export const LightModal = ({ device, onClose, onToggle, onRequestDelete }) => {
             max="100"
             value={brightness}
             onChange={handleBrightnessChange}
-            disabled={!device?.isOn}
+            disabled={!isOn}
           />
         </div>
       </div>

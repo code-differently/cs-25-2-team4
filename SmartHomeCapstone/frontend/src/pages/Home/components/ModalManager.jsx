@@ -4,23 +4,6 @@ import { LightModal } from "./modals/LightModal.jsx";
 import { ThermostatModal } from "./modals/ThermostatModal.jsx";
 import { ConfirmDeleteModal } from "./modals/ConfirmDeleteModal.jsx";
 
-// Modal registry for device types
-const MODAL_REGISTRY = {
-  CAMERA: CameraModal,
-  SECURITYCAMERA: CameraModal,
-  LIGHT: LightModal,
-  THERMOSTAT: ThermostatModal,
-};
-
-// Register new modals without modifying existing code
-export const registerDeviceModal = (deviceType, ModalComponent) => {
-  MODAL_REGISTRY[deviceType.toUpperCase()] = ModalComponent;
-};
-
-export const getModalForDevice = (deviceType) => {
-  return MODAL_REGISTRY[deviceType?.toUpperCase()];
-};
-
 export const ModalManager = ({
   selectedDevice,
   modalType,
@@ -35,19 +18,39 @@ export const ModalManager = ({
     onToggleDevice(deviceIdToFlip, currentIsOn);
   };
 
-  // Use registry for modal selection
-  const DeviceModalComponent = getModalForDevice(selectedDevice?.deviceType);
-
   return (
     <>
-      {selectedDevice && DeviceModalComponent && modalType !== "confirm-delete" && (
-        <DeviceModalComponent
+      {/* Camera Modal */}
+      {modalType === "camera" && selectedDevice && (
+        <CameraModal
           device={selectedDevice}
           onClose={onClose}
           onToggle={handleToggle}
           onRequestDelete={onRequestDelete}
         />
       )}
+
+      {/* Light Modal */}
+      {modalType === "light" && selectedDevice && (
+        <LightModal
+          device={selectedDevice}
+          onClose={onClose}
+          onToggle={handleToggle}
+          onRequestDelete={onRequestDelete}
+        />
+      )}
+
+      {/* Thermostat Modal */}
+      {modalType === "thermostat" && selectedDevice && (
+        <ThermostatModal
+          device={selectedDevice}
+          onClose={onClose}
+          onToggle={handleToggle}
+          onRequestDelete={onRequestDelete}
+        />
+      )}
+
+      {/* Confirm Delete Modal (overlay above device modal) */}
       {modalType === "confirm-delete" && selectedDevice && (
         <div className="confirm-overlay">
           <ConfirmDeleteModal
@@ -62,14 +65,30 @@ export const ModalManager = ({
   );
 };
 
+// Export the hook for external components to use
 export const useModalManager = (onToggleDevice, onDeleteDevice) => {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [modalType, setModalType] = useState(null);
 
   const openDeviceModal = (device) => {
     setSelectedDevice(device);
-    setModalType("device");
+    
+    // Determine modal type based on device type
+    const deviceType = device.deviceType?.toUpperCase();
+    
+    if (deviceType === "CAMERA" || deviceType === "SECURITYCAMERA") {
+      setModalType("camera");
+    } else if (deviceType === "LIGHT") {
+      setModalType("light");
+    } else if (deviceType === "THERMOSTAT") {
+      setModalType("thermostat");
+    } else {
+      // Default to camera if unknown
+      setModalType("camera");
+    }
   };
+
+  const openCameraModal = openDeviceModal;
 
   const closeModal = () => {
     setSelectedDevice(null);
@@ -77,19 +96,45 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
   };
 
   const returnToDeviceModal = () => {
-    setModalType("device");
+    if (selectedDevice) {
+      const deviceType = selectedDevice.deviceType?.toUpperCase();
+      
+      if (deviceType === "CAMERA" || deviceType === "SECURITYCAMERA") {
+        setModalType("camera");
+      } else if (deviceType === "LIGHT") {
+        setModalType("light");
+      } else if (deviceType === "THERMOSTAT") {
+        setModalType("thermostat");
+      }
+    }
   };
 
-  const handleToggle = (deviceIdToFlip, currentIsOn) => {
-    onToggleDevice(deviceIdToFlip, currentIsOn);
-    setSelectedDevice((prev) => {
-      if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
-      return {
-        ...prev,
-        isOn: !currentIsOn,
-        status: !currentIsOn ? "Online" : "Offline",
-      };
-    });
+  const handleToggle = async (deviceIdToFlip, currentIsOn) => {
+    try {
+      // First update the selected device state optimistically
+      setSelectedDevice((prev) => {
+        if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
+        return {
+          ...prev,
+          isOn: !currentIsOn,
+          status: !currentIsOn ? "Online" : "Offline",
+        };
+      });
+      
+      // Then toggle the device in the backend and parent state
+      await onToggleDevice(deviceIdToFlip, currentIsOn);
+    } catch (error) {
+      console.error('Failed to toggle device:', error);
+      // Revert the optimistic update on error
+      setSelectedDevice((prev) => {
+        if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
+        return {
+          ...prev,
+          isOn: currentIsOn,
+          status: currentIsOn ? "Online" : "Offline",
+        };
+      });
+    }
   };
 
   const handleRequestDelete = (device) => {
@@ -112,10 +157,12 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     selectedDevice,
     modalType,
     openDeviceModal,
+    openCameraModal,
     closeModal,
     requestDeleteDevice: handleRequestDelete,
     confirmDeleteDevice,
     returnToDeviceModal,
+    returnToCameraModal: returnToDeviceModal,
     handleToggle,
   };
 };

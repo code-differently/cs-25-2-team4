@@ -98,13 +98,10 @@ describe('ThermostatModal', () => {
 
   it('calls onToggle with correct params', () => {
     renderModal();
-    
-    // Act
     const checkbox = screen.getByLabelText('Toggle Master Bedroom Thermostat');
     fireEvent.click(checkbox);
-    
-    // Assert
-    expect(mockOnToggle).toHaveBeenCalledWith('789', false);
+    // The handler is called with the current state (true)
+    expect(mockOnToggle).toHaveBeenCalledWith('789', true);
   });
 
   it('calls onRequestDelete with device', () => {

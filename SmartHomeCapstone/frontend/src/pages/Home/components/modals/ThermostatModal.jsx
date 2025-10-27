@@ -5,12 +5,15 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
   const [setpoint, setSetpoint] = useState(72);
   const [isEditing, setIsEditing] = useState(false);
   const [tempInput, setTempInput] = useState("72");
+  const [isOn, setIsOn] = useState(!!device?.isOn);
 
+  // Sync with device prop
   useEffect(() => {
     if (!device) return;
     const temp = Number.isFinite(device?.setpoint) ? device.setpoint : 72;
     setSetpoint(temp);
     setTempInput(String(temp));
+    setIsOn(!!device.isOn);
   }, [device]);
 
   if (!device) return null;
@@ -18,6 +21,7 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
   const handleSetpointChange = (e) => {
     setSetpoint(Number(e.target.value));
     setTempInput(e.target.value);
+    // TODO: Add API call to update setpoint on backend if needed
   };
 
   const handleTempClick = () => {
@@ -45,6 +49,7 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
     
     setSetpoint(temp);
     setTempInput(String(temp));
+    // TODO: Add API call to update setpoint on backend if needed
   };
 
   const handleTempInputKeyDown = (e) => {
@@ -56,10 +61,27 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
     }
   };
 
+  const handleToggle = () => {
+    const currentState = isOn; // Capture CURRENT state
+    const newState = !currentState;
+    
+    // Update local state optimistically
+    setIsOn(newState);
+    
+    // Pass CURRENT state to onToggle (before the change)
+    if (typeof onToggle === "function") {
+      onToggle(device.deviceId, currentState);
+    }
+  };
+
   return (
-    <div className="modal-backdrop" data-testid="modal-backdrop" onClick={onClose}>
+    <div
+      className="modal-backdrop"
+      data-testid="modal-backdrop"
+      onClick={onClose}
+    >
       <div
-        className={`modal-card thermostat-modal ${!device.isOn ? "is-off" : ""}`}
+        className={`modal-card thermostat-modal ${!isOn ? "is-off" : ""}`}
         data-testid="modal-card"
         onClick={(e) => e.stopPropagation()}
       >
@@ -67,13 +89,13 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
         <div className="modal-row top-controls">
           <label
             className="device-toggle"
-            aria-label="Toggle Master Bedroom Thermostat"
+            aria-label={`Toggle ${device.deviceName}`}
             onClick={(e) => e.stopPropagation()}
           >
             <input
               type="checkbox"
-              checked={!!device.isOn}
-              onChange={e => onToggle(device.deviceId, e.target.checked)}
+              checked={isOn}
+              onChange={handleToggle}
             />
             <span className="slider"></span>
           </label>

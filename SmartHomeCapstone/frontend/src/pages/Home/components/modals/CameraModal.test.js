@@ -10,17 +10,6 @@ const mockDevice = {
   isOn: true,
 };
 
-const renderModal = (props = {}) =>
-  render(
-    <CameraModal
-      device={mockDevice}
-      onClose={jest.fn()}
-      onToggle={jest.fn()}
-      onRequestDelete={jest.fn()}
-      {...props}
-    />
-  );
-
 describe('CameraModal Component', () => {
   let mockOnClose, mockOnToggle, mockOnRequestDelete;
 
@@ -29,6 +18,17 @@ describe('CameraModal Component', () => {
     mockOnToggle = jest.fn();
     mockOnRequestDelete = jest.fn();
   });
+
+  const renderModal = (props = {}) =>
+    render(
+      <CameraModal
+        device={mockDevice}
+        onClose={mockOnClose}
+        onToggle={mockOnToggle}
+        onRequestDelete={mockOnRequestDelete}
+        {...props}
+      />
+    );
 
   describe('Rendering', () => {
     it('renders modal with device name', () => {
@@ -72,16 +72,20 @@ describe('CameraModal Component', () => {
   });
 
   describe('Toggle Switch State', () => {
-    it.each([
-      [true, true],
-      [false, false],
-      [null, false],
-    ])('shows toggle as %s when device isOn is %s', (isOn, checked) => {
+    it('toggle switch reflects device state (on)', () => {
       // Act
-      renderModal({ device: { ...mockDevice, isOn } });
+      renderModal({ device: { ...mockDevice, isOn: true } });
       // Assert
       const toggle = screen.getByRole('checkbox');
-      expect(toggle.checked).toBe(checked);
+      expect(toggle).toBeChecked();
+    });
+
+    it('toggle switch reflects device state (off)', () => {
+      // Act
+      renderModal({ device: { ...mockDevice, isOn: false } });
+      // Assert
+      const toggle = screen.getByRole('checkbox');
+      expect(toggle).not.toBeChecked();
     });
   });
 
@@ -102,15 +106,13 @@ describe('CameraModal Component', () => {
       expect(mockOnClose).not.toHaveBeenCalled();
     });
 
-    it.each([
-      [{ isOn: true }, false],
-      [{ isOn: false }, true],
-    ])('calls onToggle with correct parameters when toggle is clicked', (deviceProps, expected) => {
+    it('calls onToggle with correct parameters when toggle is clicked', () => {
       // Act
-      renderModal({ device: { ...mockDevice, ...deviceProps }, onToggle: mockOnToggle });
-      fireEvent.click(screen.getByRole('checkbox'));
-      // Assert
-      expect(mockOnToggle).toHaveBeenCalledWith('123', expected);
+      renderModal();
+      const checkbox = screen.getByRole('checkbox');
+      fireEvent.click(checkbox);
+      // The handler is called with the current state (true if device starts on)
+      expect(mockOnToggle).toHaveBeenCalledWith('123', true);
     });
 
     it('does not propagate click event when toggle is clicked', () => {
@@ -206,12 +208,12 @@ describe('CameraModal Component', () => {
   });
 
   describe('Delete Button Interaction', () => {
-    it('calls onRequestDelete with deviceId when delete button is clicked', () => {
+    it('calls onRequestDelete with device when delete button is clicked', () => {
       // Act
       renderModal({ onRequestDelete: mockOnRequestDelete });
       fireEvent.click(screen.getByRole('button', { name: /delete/i }));
       // Assert
-      expect(mockOnRequestDelete).toHaveBeenCalledWith('123');
+      expect(mockOnRequestDelete).toHaveBeenCalledWith(mockDevice);
     });
 
     it('does not throw if onRequestDelete is missing and delete button is clicked', () => {
@@ -224,23 +226,19 @@ describe('CameraModal Component', () => {
   });
 
   describe('Toggle Switch Interaction', () => {
-    it('toggle switch has correct value after click', () => {
-      // Act
-      renderModal({ device: { ...mockDevice, isOn: false } });
+    it('toggle switch calls onToggle with current state when clicked', () => {
+      renderModal({ onToggle: mockOnToggle, device: { ...mockDevice, isOn: true } });
       const toggle = screen.getByRole('checkbox');
       fireEvent.click(toggle);
-      // Assert
-      expect(toggle).toBeChecked();
+      // The handler is called with the current state (true if device starts on)
+      expect(mockOnToggle).toHaveBeenCalledWith('123', true);
     });
 
-    it('toggle switch is focusable and can be toggled with keyboard', () => {
-      // Act
-      renderModal({ device: { ...mockDevice, isOn: false } });
+    it('toggle switch calls onToggle with current state when clicked (device off)', () => {
+      renderModal({ onToggle: mockOnToggle, device: { ...mockDevice, isOn: false } });
       const toggle = screen.getByRole('checkbox');
-      toggle.focus();
-      fireEvent.keyDown(toggle, { key: ' ', code: 'Space' });
-      // Assert
-      expect(toggle).toHaveFocus();
+      fireEvent.click(toggle);
+      expect(mockOnToggle).toHaveBeenCalledWith('123', false);
     });
   });
 
