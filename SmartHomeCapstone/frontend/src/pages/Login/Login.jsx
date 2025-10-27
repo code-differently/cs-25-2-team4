@@ -56,7 +56,7 @@ export default function Login() {
   return (
     <div className="auth-wrap">
       <form onSubmit={onSubmit} className="login-card">
-        <h2 className="title">Sign in to My Application</h2>
+        <h2 className="title">Sign in to My Smart Home</h2>
         <p style={{margin: '0 0 16px', opacity: 0.9, fontSize: 14}}>
           Welcome back! Please sign in to continue
         </p>
