@@ -79,6 +79,46 @@ export const addressService = {
         return [];
     },
 
+    // Get cities by state (using GeoNames API)
+    getCitiesByState: async (countryCode, stateCode) => {
+        const GEONAMES_USERNAME = 'demo'; //TBR
+        
+        if (!countryCode || !stateCode) return [];
+
+        try {
+            const response = await axios.get(
+                `http://api.geonames.org/searchJSON`, {
+                    params: {
+                        country: countryCode,
+                        adminCode1: stateCode,
+                        featureCode: 'PPL,PPLA,PPLA2,PPLA3,PPLA4',
+                        maxRows: 1000,
+                        username: GEONAMES_USERNAME,
+                        orderby: 'name'
+                    }
+                }
+            );
+
+            if (response.data.geonames) {
+                return response.data.geonames
+                    .map(place => ({
+                        name: place.name,
+                        code: place.name,
+                        population: place.population
+                    }))
+                    // Remove duplicates
+                    .filter((city, index, self) => 
+                        index === self.findIndex(c => c.name === city.name)
+                    )
+                    .sort((a, b) => a.name.localeCompare(b.name));
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching cities:', error);
+            return [];
+        }
+    },
+
     // Get cities by zip code (using Zippopotam.us API)
     getCitiesByZip: async (countryCode, zipCode) => {
         if (!zipCode || zipCode.length < 3) return [];

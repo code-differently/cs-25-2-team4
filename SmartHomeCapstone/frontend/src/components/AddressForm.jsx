@@ -35,6 +35,15 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
         }
     }, [address.country]);
 
+    // Load cities when state changes
+    useEffect(() => {
+        if (address.country && address.state) {
+            loadCitiesByState(address.country, address.state);
+        } else {
+            setCities([]);
+        }
+    }, [address.country, address.state]);
+
     // Load cities when zip code changes
     useEffect(() => {
         if (address.country && address.zipCode && address.zipCode.length >= 5) {
@@ -71,6 +80,19 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
         }
     };
 
+    const loadCitiesByState = async (countryCode, stateCode) => {
+        setLoading(prev => ({ ...prev, cities: true }));
+        try {
+            const cityList = await addressService.getCitiesByState(countryCode, stateCode);
+            setCities(cityList);
+        } catch (error) {
+            console.error('Failed to load cities:', error);
+            setCities([]);
+        } finally {
+            setLoading(prev => ({ ...prev, cities: false }));
+        }
+    };
+
     const loadCities = async (countryCode, zipCode) => {
         setLoading(prev => ({ ...prev, cities: true }));
         try {
@@ -94,7 +116,13 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setAddress(prev => ({ ...prev, [name]: value }));
+        
+        // Clear city when state changes
+        if (name === 'state') {
+            setAddress(prev => ({ ...prev, [name]: value, city: '' }));
+        } else {
+            setAddress(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     return (
@@ -155,7 +183,7 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
 
             {/* City */}
             <label>City</label>
-            {cities.length > 1 ? (
+            {cities.length > 0 ? (
                 <select
                     className="select"
                     name="city"
@@ -167,8 +195,8 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                         {loading.cities ? 'Loading cities...' : 'Select City'}
                     </option>
                     {cities.map((city, index) => (
-                        <option key={index} value={city.city}>
-                            {city.city}
+                        <option key={index} value={city.name || city.city}>
+                            {city.name || city.city}
                         </option>
                     ))}
                 </select>
@@ -178,7 +206,7 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                     name="city"
                     value={address.city}
                     onChange={handleChange}
-                    placeholder="Enter city"
+                    placeholder={loading.cities ? 'Loading cities...' : 'Enter city'}
                     disabled={loading.cities}
                 />
             )}
