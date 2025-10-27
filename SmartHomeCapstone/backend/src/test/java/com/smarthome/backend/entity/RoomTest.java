@@ -129,7 +129,7 @@ class RoomTest {
         @Test
         @DisplayName("Add room access convenience method")
         void addRoomAccess_ShouldAddAndSetBidirectionalRelationship() {
-                User user = new User("clerk_123456789", "testuser", "John Doe", "test@example.com");
+                User user = new User("testuser", "test@example.com", "hash123");
                 RoomAccess roomAccess = new RoomAccess(user, room, Permission.WRITE);
 
                 room.addRoomAccess(roomAccess);
@@ -142,7 +142,7 @@ class RoomTest {
         @Test
         @DisplayName("Remove room access convenience method")
         void removeRoomAccess_ShouldRemoveAndClearRelationship() {
-                User user = new User("clerk_123456789", "testuser", "John Doe", "test@example.com");
+                User user = new User("testuser", "test@example.com", "hash123");
                 RoomAccess roomAccess = new RoomAccess(user, room, Permission.WRITE);
 
                 room.addRoomAccess(roomAccess);

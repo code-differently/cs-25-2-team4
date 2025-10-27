@@ -82,24 +82,6 @@ public class DeviceService {
                                 case "turn_off":
                                         device.turnOff();
                                         break;
-                                case "brightness":
-                                        // Handle brightness for Light devices
-                                        if (device instanceof Light light) {
-                                                Integer brightness = convertToInteger(value);
-                                                light.setBrightness(brightness);
-                                        } else {
-                                                throw new IllegalArgumentException("Device is not a Light");
-                                        }
-                                        break;
-                                case "temperature":
-                                        // Handle temperature for Thermostat devices
-                                        if (device instanceof Thermostat thermostat) {
-                                                Double temperature = convertToDouble(value);
-                                                thermostat.setTargetTemp(temperature);
-                                        } else {
-                                                throw new IllegalArgumentException("Device is not a Thermostat");
-                                        }
-                                        break;
                                 default:
                                         // Use performAction for device-specific actions
                                         device.performAction(action, value);
@@ -110,37 +92,11 @@ public class DeviceService {
                                         "Invalid action '"
                                                         + action
                                                         + "' for device type: "
-                                                        + device.getClass().getSimpleName()
-                                                        + ". Error: "
-                                                        + e.getMessage());
+                                                        + device.getClass().getSimpleName());
                 }
 
                 // Save and return updated device
                 return deviceRepository.save(device);
-        }
-
-        /** Helper method to convert Object to Integer */
-        private Integer convertToInteger(Object value) {
-                if (value instanceof Integer) {
-                        return (Integer) value;
-                } else if (value instanceof Number) {
-                        return ((Number) value).intValue();
-                } else if (value instanceof String) {
-                        return Integer.parseInt((String) value);
-                }
-                throw new IllegalArgumentException("Cannot convert value to Integer: " + value);
-        }
-
-        /** Helper method to convert Object to Double */
-        private Double convertToDouble(Object value) {
-                if (value instanceof Double) {
-                        return (Double) value;
-                } else if (value instanceof Number) {
-                        return ((Number) value).doubleValue();
-                } else if (value instanceof String) {
-                        return Double.parseDouble((String) value);
-                }
-                throw new IllegalArgumentException("Cannot convert value to Double: " + value);
         }
 
         /** Delete a device */

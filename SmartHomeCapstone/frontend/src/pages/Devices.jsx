@@ -1,0 +1,30 @@
+import { useState } from "react";
+import LightModal from "../components/modals/LightModal";
+import ThermostatModal from "../components/modals/ThermostatModal";
+
+export default function Devices() {
+  const [lightOpen, setLightOpen] = useState(false);
+  const [thermoOpen, setThermoOpen] = useState(false);
+
+  return (
+    <>
+      <h1>Devices</h1>
+      <ul>
+        <li><button onClick={() => setLightOpen(true)}>Open Light</button></li>
+        <li><button onClick={() => setThermoOpen(true)}>Open Thermostat</button></li>
+      </ul>
+
+      <LightModal
+        open={lightOpen}
+        onClose={() => setLightOpen(false)}
+        onDelete={() => console.log("Light deleted")}
+      />
+
+      <ThermostatModal
+        open={thermoOpen}
+        onClose={() => setThermoOpen(false)}
+        onDelete={() => console.log("Thermostat deleted")}
+      />
+    </>
+  );
+}

@@ -1,263 +1,382 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import "./Home.css";
-import './styles/RoomsBar.css';   
-import './styles/DeviceCards.css'; 
-import './styles/Modals.css';     
-import './styles/Forms.css';     
-import './styles/Toast.css';      
-import { useState } from "react";
-import { useDevices } from "../../hooks/useDevices";
-import { useRooms } from "../../hooks/useRooms";
-import { useHomes } from "../../hooks/useHomes";
-import { useUser } from "../../context/UserContext";
-import { RoomDeviceCoordinator } from "./components/RoomDeviceCoordinator.jsx";
-import { roomService } from "../../services/roomService";
-import { deviceService } from "../../services/deviceService";
-import { ModalManager, useModalManager } from "./components/ModalManager.jsx";
-import CreateHome from "../CreateHome/CreateHome.jsx";
-import { ConfirmDeleteModal } from "./components/modals/ConfirmDeleteModal.jsx";
-import { Header } from "../../components/header/Header.jsx";
+import { Lightbulb, Thermometer, Camera as CameraIcon } from "lucide-react";
+
 /* ==================== Home Component ==================== */
-const Home = () => {
-  const { backendUser } = useUser();
-  const navigate = useNavigate();
-  
-  const [searchTerm, setSearchTerm] = useState("");
+export const Home = () => {
+  /* ==================== State ==================== */
+  const [rooms, setRooms] = useState([{ name: "All", active: true }]);
+  const [showAddRoomForm, setShowAddRoomForm] = useState(false);
+  const [newRoomName, setNewRoomName] = useState("");
+  const [roomError, setRoomError] = useState("");
+  const [fadeOutRoom, setFadeOutRoom] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState("");
 
-  /* ==================== Custom Hooks ==================== */
-  const {
-    homes,
-    currentHome,
-    loading: homesLoading,
-    error: homesError,
-    refreshHomes,
-  } = useHomes(backendUser?.clerkId);
+  const [showAddDeviceForm, setShowAddDeviceForm] = useState(false);
+  const [deviceName, setDeviceName] = useState("");
+  const [devices, setDevices] = useState([]);
+  const [deviceError, setDeviceError] = useState("");
+  const [fadeOutDevice, setFadeOutDevice] = useState(false);
+  const [deviceType, setDeviceType] = useState("");
+  const [deviceTypeError, setDeviceTypeError] = useState("");
 
-  const {
-    rooms,
-    loading: roomsLoading,
-    error: roomsError,
-    roomError,
-    fadeOutRoom,
-    newRoomName,
-    showAddRoomForm,
-    openAddRoomForm,
-    cancelAddRoomForm,
-    setNewRoomName,
-    activateRoom,
-    addRoom,
-    setRooms,
-  } = useRooms(currentHome?.homeId);
+  /* === Room Handlers === */
+  const handleAddRoomClick = () => setShowAddRoomForm(true);
 
-  const { devices, loading, error, addDevice, toggleDevice, deleteDevice, setDevices } =
-    useDevices(currentHome?.homeId);
-
-  // Function to update a single device in the list
-  const updateDeviceInList = (updatedDevice) => {
-    setDevices((prevDevices) =>
-      prevDevices.map((device) =>
-        device.deviceId === updatedDevice.deviceId
-          ? { ...device, ...updatedDevice }
-          : device
-      )
-    );
-  };
-
-  const {
-    selectedDevice,
-    modalType,
-    openDeviceModal,
-    closeModal,
-    requestDeleteDevice,
-    confirmDeleteDevice,
-    returnToDeviceModal,
-    handleToggle,
-    handleDeviceUpdate,
-  } = useModalManager(toggleDevice, deleteDevice, updateDeviceInList);
-
-  /* ==================== Check for Fresh Registration ==================== */
-  useEffect(() => {
-    if (!homesLoading && backendUser) {
-      const isFreshRegistration = sessionStorage.getItem('freshRegistration');
-      
-      if (isFreshRegistration && homes.length === 0) {
-        // Clear the flag and redirect to create home
-        sessionStorage.removeItem('freshRegistration');
-        navigate("/createhome");
-      }
-    }
-  }, [homesLoading, backendUser, homes, navigate]);
-
-  /* ==================== Event Handlers ==================== */
-  const handleHomeCreated = (newHome) => {
-    // Refresh homes to get the updated list
-    refreshHomes();
-  };
-  
-   const [roomToDelete, setRoomToDelete] = useState(null);
-
-  const handleRequestDeleteRoom = (roomName) => {
-    closeModal();
-    setRoomToDelete(roomName);
-  };
-
-  const handleConfirmDeleteRoom = async () => {
-  try {
-    // Find the room object to get its ID
-    const roomToDeleteObj = rooms.find((r) => r.name === roomToDelete);
-    
-    if (roomToDeleteObj && roomToDeleteObj.id) {
-      // Call the API to delete the room from the database
-      await roomService.deleteRoom(roomToDeleteObj.id);
-      
-      // Delete all devices in that room from the database
-      // Filter by roomId instead of room name
-      const devicesToDelete = devices.filter((d) => d.roomId === roomToDeleteObj.id || d.room === roomToDelete);
-      
-      // Delete each device from the database
-      for (const device of devicesToDelete) {
-        try {
-          await deviceService.deleteDevice(device.deviceId);
-        } catch (error) {
-          console.error(`Error deleting device ${device.deviceId}:`, error);
-        }
-      }
-
-      // Update local state - remove devices from the room
-      // Filter by both roomId and room name to be safe
-      setDevices((prev) => prev.filter((d) => 
-        d.roomId !== roomToDeleteObj.id && d.room !== roomToDelete
-      ));
+  const handleSaveRoom = () => {
+    if (!newRoomName.trim()) {
+      setRoomError("Room name is required");
+      setFadeOutRoom(false);
+      setTimeout(() => {
+        setFadeOutRoom(true);
+      }, 1500);
+      setTimeout(() => {
+        setRoomError("");
+        setFadeOutRoom(false);
+      }, 2250);
+      return;
     }
 
-    // Update local state - remove the room
-    setRooms((prevRooms) => {
-      const updated = prevRooms.filter((r) => r.name !== roomToDelete);
-      return updated.map((r) => ({
+    setRoomError("");
+    const updatedRooms = rooms.map((r) => ({ ...r, active: false }));
+    const newRoom = { name: newRoomName.trim(), active: true };
+    setRooms([...updatedRooms, newRoom]);
+    setNewRoomName("");
+    setShowAddRoomForm(false);
+  };
+
+  const handleRoomClick = (roomName) => {
+    setRooms(rooms.map((r) => ({ ...r, active: r.name === roomName })));
+  };
+
+  /* === Device Handlers === */
+  const handleAddDeviceClick = () => {
+    const realRooms = rooms.filter((r) => r.name !== "All");
+
+    if (realRooms.length === 0) {
+      setDeviceError("Create a room first");
+      setFadeOutDevice(false);
+      setTimeout(() => setFadeOutDevice(true), 1500);
+      setTimeout(() => {
+        setDeviceError("");
+        setFadeOutDevice(false);
+      }, 2250);
+      return;
+    }
+
+    setShowAddDeviceForm(true);
+  };
+
+  const handleSaveDevice = () => {
+    const activeRoom = rooms.find((r) => r.active)?.name;
+
+    if (!deviceName.trim()) {
+      setDeviceError("Device name is required");
+      setFadeOutDevice(false);
+      setTimeout(() => setFadeOutDevice(true), 1500);
+      setTimeout(() => {
+        setDeviceError("");
+        setFadeOutDevice(false);
+      }, 2250);
+      return;
+    }
+
+    if (!deviceType) {
+      setDeviceTypeError("Device type is required");
+      setFadeOutDevice(false);
+      setTimeout(() => setFadeOutDevice(true), 1500);
+      setTimeout(() => {
+        setDeviceTypeError("");
+        setFadeOutDevice(false);
+      }, 2250);
+      return;
+    }
+
+    const realRooms = rooms.filter((r) => r.name !== "All");
+    const roomToAssign =
+      activeRoom === "All"
+        ? realRooms.length === 1
+          ? realRooms[0].name
+          : selectedRoom
+        : activeRoom;
+
+    if (!roomToAssign) return;
+
+    const offStatusByType = {
+      Light: "Off",
+      Thermostat: "Idle",
+      Camera: "Offline",
+    };
+
+    setDevices([
+      ...devices,
+      {
+        name: deviceName.trim(),
+        room: roomToAssign,
+        type: deviceType,
+        status: offStatusByType[deviceType],
+        isOn: false,
+      },
+    ]);
+
+    setDeviceName("");
+    setSelectedRoom("");
+    setShowAddDeviceForm(false);
+    setDeviceError("");
+    setDeviceType("");
+
+    setShowAddRoomForm(false);
+
+    setRooms((prev) =>
+      prev.map((r) => ({
         ...r,
-        active: r.name === "All",
-      }));
-    });
-
-    setRoomToDelete(null);
-  } catch (error) {
-    console.error('Error deleting room:', error);
-    // Optionally show an error message to the user
-  }
-};
-
-  const handleCancelDeleteRoom = () => {
-    setRoomToDelete(null);
+        active: r.name === roomToAssign,
+      })),
+    );
   };
 
-  /* ==================== Loading & Error States ==================== */
-  if (!backendUser) {
-    return (
-      <div className="home">
-        <div className="loading">Setting up your account...</div>
-      </div>
+  const handleToggle = (deviceNameToFlip) => {
+    const statusByType = {
+      Light: "On",
+      Thermostat: "Set to 72°F",
+      Camera: "Online",
+    };
+
+    const offStatusByType = {
+      Light: "Off",
+      Thermostat: "Idle",
+      Camera: "Offline",
+    };
+
+    setDevices((prev) =>
+      prev.map((d) => {
+        if (d.name !== deviceNameToFlip) return d;
+        const nextOn = !d.isOn;
+        return {
+          ...d,
+          isOn: nextOn,
+          status: nextOn ? statusByType[d.type] : offStatusByType[d.type],
+        };
+      }),
     );
-  }
+  };
 
-  if (homesLoading) {
-    return (
-      <div className="home">
-        <div className="loading">Loading your smart home...</div>
-      </div>
-    );
-  }
+  /* === Derived Values === */
+  const activeRoom = rooms.find((r) => r.active)?.name;
+  const filteredDevices =
+    activeRoom === "All"
+      ? devices
+      : devices.filter((d) => d.room === activeRoom);
 
-  if (homesError) {
-    return (
-      <div className="home">
-        <div className="error">Error setting up your home: {homesError}</div>
-        <button onClick={refreshHomes}>Retry</button>
-      </div>
-    );
-  }
+  const DeviceIcon = ({ type }) => {
+    switch (type) {
+      case "Light":
+        return (
+          <span role="img" aria-label="Light icon">
+            <Lightbulb size={18} />
+          </span>
+        );
+      case "Thermostat":
+        return (
+          <span role="img" aria-label="Thermostat icon">
+            <Thermometer size={18} />
+          </span>
+        );
+      case "Camera":
+        return (
+          <span role="img" aria-label="Camera icon">
+            <CameraIcon size={18} />
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
 
-  // Show CreateHome form if user has no homes
-  if (homes.length === 0) {
-    return <CreateHome onHomeCreated={handleHomeCreated} />;
-  }
-
-  if (!currentHome) {
-    return (
-      <div className="home">
-        <div className="loading">Setting up your home...</div>
-      </div>
-    );
-  }
-
-  if (loading || roomsLoading) {
-    return (
-      <div className="home">
-        <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-        <div className="loading">Loading your home data...</div>
-      </div>
-    );
-  }
-
-  if (error || roomsError) {
-    return (
-      <div className="home">
-        <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-        <div className="error">Error loading data: {error || roomsError}</div>
-        <button onClick={() => window.location.reload()}>Retry</button>
-      </div>
-    );
-  }
-
-  /* ==================== Render Main Home Interface ==================== */
+  /* ==================== Render ==================== */
   return (
     <div className="home">
-      <Header searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      
-      {/* Room and Device Management */}
-      <RoomDeviceCoordinator
-        rooms={rooms}
-        devices={devices}
-        searchTerm={searchTerm}
-        showAddRoomForm={showAddRoomForm}
-        newRoomName={newRoomName}
-        roomError={roomError}
-        fadeOutRoom={fadeOutRoom}
-        onRoomClick={activateRoom}
-        onAddRoomClick={openAddRoomForm}
-        onNewRoomNameChange={setNewRoomName}
-        onSaveRoom={addRoom}
-        onCancelAddRoom={cancelAddRoomForm}
-        onAddDevice={addDevice}
-        onToggleDevice={handleToggle}
-        onCameraOpen={openDeviceModal}
-        onDeleteRoom={handleRequestDeleteRoom}
-      />
-
-      {/* Modal Management */}
-      <ModalManager
-        selectedDevice={selectedDevice}
-        modalType={modalType}
-        onClose={closeModal}
-        onToggleDevice={handleToggle}
-        onDeleteDevice={deleteDevice}
-        onRequestDelete={requestDeleteDevice}
-        onConfirmDelete={confirmDeleteDevice}
-        onReturnToDevice={returnToDeviceModal}
-        onDeviceUpdate={handleDeviceUpdate}
-      />
-
-      {roomToDelete && (
-        <div className="confirm-overlay">
-          <ConfirmDeleteModal
-            type="room"
-            targetName={roomToDelete}
-            onConfirm={handleConfirmDeleteRoom}
-            onCancel={handleCancelDeleteRoom}
-          />
+      {/* === Room Error Toast === */}
+      {roomError && (
+        <div className={`toast-room-error ${fadeOutRoom ? "fade-out" : ""}`}>
+          {roomError}
         </div>
       )}
+
+      {/* === Rooms Bar === */}
+      <div className="rooms-bar" role="navigation" aria-label="rooms">
+        {rooms.map((room, index) => (
+          <button
+            key={index}
+            className={room.active ? "active" : ""}
+            onClick={() => handleRoomClick(room.name)}
+          >
+            {room.name}
+          </button>
+        ))}
+
+        {!showAddRoomForm && (
+          <button onClick={handleAddRoomClick}>+ Add</button>
+        )}
+
+        {showAddRoomForm && (
+          <div className="add-room-form">
+            <input
+              placeholder="Room Name"
+              value={newRoomName}
+              onChange={(e) => {
+                setNewRoomName(e.target.value);
+                setRoomError("");
+              }}
+            />
+            <button onClick={handleSaveRoom}>Save Room</button>
+            <button onClick={() => setShowAddRoomForm(false)}>Cancel</button>
+          </div>
+        )}
+      </div>
+
+      {/* === Devices Section === */}
+      <section className="devices-section">
+        <div className="devices-header">
+        {/* --- Devices Header & Add Button --- */}
+          <h2>My Devices</h2>
+
+          {!showAddDeviceForm && (
+            <button
+              data-testid="add-device-btn"
+              className="add-device-btn"
+              onClick={handleAddDeviceClick}
+            >
+              + Add Device
+            </button>
+          )}
+
+          {showAddDeviceForm && (
+            <div className="add-device-form">
+            {/* --- Add Device Form --- */}
+              <input
+                placeholder="Device Name"
+                value={deviceName}
+                onChange={(e) => {
+                  setDeviceName(e.target.value);
+                  setDeviceError("");
+                }}
+              />
+              <select
+                aria-label="Select Type"
+                value={deviceType}
+                onChange={(e) => setDeviceType(e.target.value)}
+              >
+                <option value="">-- Select Type --</option>
+                <option value="Light">Light</option>
+                <option value="Thermostat">Thermostat</option>
+                <option value="Camera">Camera</option>
+              </select>
+
+              {deviceTypeError && (
+                <div
+                  className={`toast-device-error ${fadeOutDevice ? "fade-out" : ""}`}
+                >
+                  {deviceTypeError}
+                </div>
+              )}
+
+              {activeRoom === "All" &&
+                rooms.filter((r) => r.name !== "All").length > 1 && (
+                  <select
+                    aria-label="Select Room"
+                    value={selectedRoom}
+                    onChange={(e) => setSelectedRoom(e.target.value)}
+                  >
+                    <option value="">-- Select Room --</option>
+                    {rooms
+                      .filter((r) => r.name !== "All")
+                      .map((r, i) => (
+                        <option key={i} value={r.name}>
+                          {r.name}
+                        </option>
+                      ))}
+                  </select>
+                )}
+
+              <button
+                onClick={handleSaveDevice}
+                disabled={
+                  activeRoom === "All" &&
+                  rooms.filter((r) => r.name !== "All").length > 1 &&
+                  !selectedRoom
+                }
+              >
+                Save
+              </button>
+              <button onClick={() => setShowAddDeviceForm(false)}>
+                Cancel
+              </button>
+            </div>
+          )}
+
+          {/* --- Device Error Toast --- */}
+          {deviceError && (
+            <div
+              className={`toast-device-error ${fadeOutDevice ? "fade-out" : ""}`}
+            >
+              {deviceError}
+            </div>
+          )}
+        </div>
+
+        {/* === Devices List === */}
+        <div className="devices-list">
+          {activeRoom !== "All" && filteredDevices.length === 0 ? (
+            <p className="empty-devices-msg">No devices in this room yet</p>
+          ) : (
+            <div className="devices-grid">
+            {/* --- Device Cards Grid --- */}
+              {filteredDevices.map((device, index) => (
+                <div
+                  key={index}
+                  data-testid="device-card"
+                  className={`device-card ${device.isOn ? "is-on" : "is-off"}`}
+                >
+                  <div className="device-card-header">
+                    <div className="device-head-left">
+                      <span className="icon-box">
+                        <DeviceIcon type={device.type} />
+                      </span>
+                    </div>
+
+                    <label
+                      className="device-toggle"
+                      aria-label={`Toggle ${device.name}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!device.isOn}
+                        onChange={() => handleToggle(device.name)}
+                      />
+                      <span className="slider"></span>
+                    </label>
+                  </div>
+
+                  <span className={`device-title ${device.isOn ? "" : "dim"}`}>
+                    {device.name}
+                  </span>
+
+                  {device.status && (
+                    <span
+                      className={`device-status-text ${
+                        device.isOn ? "" : "status-dim"
+                      }`}
+                    >
+                      {device.status}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 };
-export default Home;

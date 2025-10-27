@@ -1,47 +1,38 @@
-import { Header } from './components/header/Header';
-import { Routes, Route, Outlet, Navigate } from "react-router-dom";
-import { SignedIn, SignedOut, AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
-import { UserProvider } from './context/UserContext';
-import Login from "./pages/Login/Login.jsx";
-import Register from "./pages/Register/Register.jsx";
-import CreateHome from "./pages/CreateHome/CreateHome.jsx";
-import NotFound from "./pages/NotFound";
-import "./Layout.css";
+import { Routes, Route, NavLink, Outlet, Navigate } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Devices from "./pages/Devices.jsx";
+import DeviceAdd from "./pages/DeviceAdd.jsx";
+import DeviceRemove from "./pages/DeviceRemove.jsx";
+import NotFound from "./pages/NotFound.jsx";
 import Home from "./pages/Home/Home.jsx";
+import "./Layout.css";
 
 function Layout(){
-  return(
+  return (
     <div className="container">
-      <Header />
+      <aside className="sidebar">
+        <h2 className="brand">SmartHome</h2>
+        <nav className="nav">
+          <NavLink to="/devices">Devices</NavLink>
+          <NavLink to="/devices/add">Add Device</NavLink>
+        </nav>
+      </aside>
       <main className="main"><Outlet /></main>
     </div>
   );
 }
 
-function ProtectedRoute({ children }) {
-  return (
-    <>
-      <SignedOut>
-        <Navigate to="/login" replace />
-      </SignedOut>
-      <SignedIn>
-        <UserProvider>
-          {children}
-        </UserProvider>
-      </SignedIn>
-    </>
-  );
-}
-
 export default function App(){
-  return(
+  return (
     <Routes>
       <Route path="/login" element={<Login/>}/>
       <Route path="/register" element={<Register/>}/>
-      <Route path="/sso-callback" element={<AuthenticateWithRedirectCallback />} />
-      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route path="/" element={<Home />}/>
-        <Route path="/createhome" element={<CreateHome />}/>
+      <Route element={<Layout />}>
+        <Route path="/home" element={<Home/>}/>
+        <Route path="/devices" element={<Devices/>}/>
+        <Route path="/devices/add" element={<DeviceAdd/>}/>
+        <Route path="/devices/:deviceId/remove" element={<DeviceRemove/>}/>
       </Route>
       <Route path="*" element={<NotFound/>}/>
     </Routes>

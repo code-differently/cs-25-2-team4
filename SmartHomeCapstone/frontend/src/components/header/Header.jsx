@@ -1,21 +1,19 @@
 import "./Header.css";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
-import { CustomUserDropdown } from "./CustomUserDropdown";
 
 /* ==================== Header Component ==================== */
-export const Header = ({ searchTerm, onSearchChange }) => {
+export const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   /* === Handlers === */
   const toggleDarkMode = () => {
-    setIsDarkMode((prev) => !prev);
+    setIsDarkMode(!isDarkMode);
   };
 
-  const handleSearchChange = (e) => {
-    onSearchChange(e.target.value);
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   /* === Side Effect: Apply Dark Mode to <body> === */
@@ -40,10 +38,8 @@ export const Header = ({ searchTerm, onSearchChange }) => {
           <div className="header-search">
             <input
               type="text"
-              placeholder="Search devices by name"
+              placeholder="Search type of keywords"
               className="search-input"
-              value={searchTerm}
-              onChange={handleSearchChange}
             />
           </div>
         </div>
@@ -66,12 +62,27 @@ export const Header = ({ searchTerm, onSearchChange }) => {
 
           {/* --- Profile Section --- */}
           <div className="profile-section">
-            <SignedIn>
-              <CustomUserDropdown />
-            </SignedIn>
-            <SignedOut>
-              <span>Please sign in</span>
-            </SignedOut>
+            <div className="profile-dropdown" onClick={toggleDropdown}>
+              <img
+                src="/api/placeholder/32/32"
+                alt="Profile"
+                className="profile-picture"
+              />
+              <span className="profile-name">John Doe</span>
+              <span
+                className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}
+              >
+                ▼
+              </span>
+            </div>
+
+            {isDropdownOpen && (
+              <div className="dropdown-menu">
+                <a href="/profile">Profile</a>
+                <a href="/settings">About</a>
+                <a href="/logout">Logout</a>
+              </div>
+            )}
           </div>
         </div>
       </nav>

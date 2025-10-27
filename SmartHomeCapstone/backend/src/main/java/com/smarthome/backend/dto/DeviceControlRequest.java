@@ -32,17 +32,4 @@ public class DeviceControlRequest {
         public void setValue(Object value) {
                 this.value = value;
         }
-
-        @Override
-        public String toString() {
-                return "DeviceControlRequest{"
-                                + "action='"
-                                + action
-                                + '\''
-                                + ", value="
-                                + value
-                                + ", valueType="
-                                + (value != null ? value.getClass().getName() : "null")
-                                + '}';
-        }
 }
