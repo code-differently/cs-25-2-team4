@@ -109,16 +109,32 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     }
   };
 
-  const handleToggle = (deviceIdToFlip, currentIsOn) => {
-    onToggleDevice(deviceIdToFlip, currentIsOn);
-    setSelectedDevice((prev) => {
-      if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
-      return {
-        ...prev,
-        isOn: !currentIsOn,
-        status: !currentIsOn ? "Online" : "Offline",
-      };
-    });
+  const handleToggle = async (deviceIdToFlip, currentIsOn) => {
+    try {
+      // First update the selected device state optimistically
+      setSelectedDevice((prev) => {
+        if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
+        return {
+          ...prev,
+          isOn: !currentIsOn,
+          status: !currentIsOn ? "Online" : "Offline",
+        };
+      });
+      
+      // Then toggle the device in the backend and parent state
+      await onToggleDevice(deviceIdToFlip, currentIsOn);
+    } catch (error) {
+      console.error('Failed to toggle device:', error);
+      // Revert the optimistic update on error
+      setSelectedDevice((prev) => {
+        if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
+        return {
+          ...prev,
+          isOn: currentIsOn,
+          status: currentIsOn ? "Online" : "Offline",
+        };
+      });
+    }
   };
 
   const handleRequestDelete = (device) => {
