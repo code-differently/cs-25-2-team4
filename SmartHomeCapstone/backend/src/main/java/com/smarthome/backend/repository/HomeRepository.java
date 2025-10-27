@@ -12,7 +12,6 @@ public interface HomeRepository extends JpaRepository<Home, Long> {
 
         List<Home> findByNameContainingIgnoreCase(String name);
 
-        boolean existsByName(String name);
 
         // Find homes that a user has access to through HomeMembership
         @Query("SELECT h FROM Home h JOIN h.homeMemberships hm WHERE hm.user.clerkId = :clerkId")
