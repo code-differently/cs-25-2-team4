@@ -13,6 +13,7 @@ export const ModalManager = ({
   onRequestDelete,
   onConfirmDelete,
   onReturnToDevice,
+  onDeviceUpdate,
 }) => {
   const handleToggle = (deviceIdToFlip, currentIsOn) => {
     onToggleDevice(deviceIdToFlip, currentIsOn);
@@ -37,6 +38,7 @@ export const ModalManager = ({
           onClose={onClose}
           onToggle={handleToggle}
           onRequestDelete={onRequestDelete}
+          onDeviceUpdate={onDeviceUpdate}
         />
       )}
 
@@ -47,6 +49,7 @@ export const ModalManager = ({
           onClose={onClose}
           onToggle={handleToggle}
           onRequestDelete={onRequestDelete}
+          onDeviceUpdate={onDeviceUpdate}
         />
       )}
 
@@ -66,7 +69,7 @@ export const ModalManager = ({
 };
 
 // Export the hook for external components to use
-export const useModalManager = (onToggleDevice, onDeleteDevice) => {
+export const useModalManager = (onToggleDevice, onDeleteDevice, onUpdateDeviceInList) => {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [modalType, setModalType] = useState(null);
 
@@ -121,6 +124,22 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     });
   };
 
+  const handleDeviceUpdate = (updatedDevice) => {
+    // Update the selected device with new data from backend
+    setSelectedDevice((prev) => {
+      if (!prev || prev.deviceId !== updatedDevice.deviceId) return prev;
+      return {
+        ...prev,
+        ...updatedDevice,
+      };
+    });
+
+    // Also update the device in the main devices list
+    if (onUpdateDeviceInList) {
+      onUpdateDeviceInList(updatedDevice);
+    }
+  };
+
   const handleRequestDelete = (device) => {
     setSelectedDevice(device);
     setModalType("confirm-delete");
@@ -148,5 +167,6 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     returnToDeviceModal,
     returnToCameraModal: returnToDeviceModal,
     handleToggle,
+    handleDeviceUpdate,
   };
 };
