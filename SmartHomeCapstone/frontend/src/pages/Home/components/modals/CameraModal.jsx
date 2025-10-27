@@ -21,7 +21,7 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
   return (
     <div className="modal-backdrop" data-testid="modal-backdrop" onClick={onClose}>
       <div
-        className="modal-card camera-modal"
+        className={`modal-card camera-modal${!isOn ? " is-off" : ""}`}
         data-testid="modal-card"
         onClick={(e) => e.stopPropagation()}
       >
@@ -59,7 +59,7 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
 
         {/* === Camera Feed === */}
         {device.deviceId && (
-          <div className="camera-feed">
+          <div className={`camera-feed${!isOn ? " off" : ""}`}>
             <img
               src={cameraGif}
               alt="Camera feed"
