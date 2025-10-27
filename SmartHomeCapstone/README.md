@@ -16,7 +16,7 @@ Welcome to the **Smart Home Automation** project! This application provides an i
 
 ## Screenshot
 
-![Smart Home Dashboard Screenshot](Screenshot 2025-10-23 at 2.18.10 PM.png)
+<img src="assets/screenshot.png" alt="Smart Home Dashboard Screenshot" width="700"/>
 
 ## Description of the App
 
