@@ -34,10 +34,6 @@ public class HomeService {
 
         // Create a new home
         public Home createHome(HomeCreateRequest request) {
-                // Check if home with same name already exists
-                if (homeRepository.existsByName(request.getName())) {
-                        throw new RuntimeException("Home with name '" + request.getName() + "' already exists");
-                }
 
                 // Verify user exists
                 Optional<User> userOpt = userRepository.findById(request.getClerkId());
@@ -90,11 +86,6 @@ public class HomeService {
 
                 Home home = existingHome.get();
 
-                // Check if new name conflicts with existing home
-                if (!home.getName().equals(request.getName())
-                                && homeRepository.existsByName(request.getName())) {
-                        throw new RuntimeException("Home with name '" + request.getName() + "' already exists");
-                }
 
                 home.setName(request.getName());
                 home.setAddress(request.getAddress());
