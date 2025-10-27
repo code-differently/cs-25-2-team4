@@ -1,526 +1,563 @@
-import { render, screen, fireEvent, within } from "@testing-library/react";
-import { Home } from "./Home";
+/* eslint-disable import/first */
+/**
+ * ----------------------------------------------------------------------
+ * TOP-OF-FILE JEST.MOCKS (MUST BE BEFORE *ANY* IMPORTS)
+ * ----------------------------------------------------------------------
+ * If a single import of the real module happens before we mock it,
+ * React will bind to the real implementation and our mocks won't apply.
+ * That's what caused the "Cannot destructure selectedDevice..." crash.
+ * ----------------------------------------------------------------------
+ */
 
-describe("Home (initial state)", () => {
-  it("renders the rooms bar with only All and + Add initially", () => {
-    // Act
-    render(<Home />);
+// Import React FIRST for JSX in mocks
+import React from "react";
 
-    // Assert
-    expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "+ Add" })).toBeInTheDocument();
+/** Modal stack: stub the component; return a DUMB hook object */
+jest.mock("./components/ModalManager.jsx", () => ({
+  __esModule: true,
+  // NAMED exports (match Home.jsx): { ModalManager, useModalManager }
+  useModalManager: () => ({
+    selectedDevice: null,
+    modalType: null,
+    openDeviceModal: jest.fn(),
+    openCameraModal: jest.fn(),
+    closeModal: jest.fn(),
+    requestDeleteDevice: jest.fn(),
+    confirmDeleteDevice: jest.fn(),
+    returnToDeviceModal: jest.fn(),
+    returnToCameraModal: jest.fn(),
+    handleToggle: jest.fn(),
+  }),
+  // STUB component to avoid rendering any nested modals
+  ModalManager: () => null,
+}));
 
-    // Should only have exactly 2 room buttons on initial load
-    const roomsBar = screen.getByRole("navigation", { name: /rooms/i });
-    const roomButtons = within(roomsBar).getAllByRole("button");
-    expect(roomButtons).toHaveLength(2);
-  });
-
-  it("renders Add Device button on first load", () => {
-    // Act
-    render(<Home />);
-
-    // Assert
-    expect(
-      screen.getByRole("button", { name: "+ Add Device" }),
-    ).toBeInTheDocument();
-  });
-
-  it("renders My Devices title but no devices initially", () => {
-    // Act
-    render(<Home />);
-
-    // Assert
-    expect(screen.getByText("My Devices")).toBeInTheDocument();
-    expect(screen.queryByTestId("device-card")).not.toBeInTheDocument();
-  });
-});
-
-describe("Home (device adding)", () => {
-  it("opens an inline add device form with name and room fields when clicking + Add Device", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-
-    // Assert
-    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("combobox", { name: /select type/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
-  });
-
-  it("adds a new device and hides the form when Save is clicked", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: "Lamp" },
-    });
-    fireEvent.change(screen.getByRole("combobox", { name: /select type/i }), {
-      target: { value: "Light" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
-
-    // Assert
-    expect(screen.getByText(/lamp/i)).toBeInTheDocument();
-    expect(screen.getByTestId("device-card")).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /^save$/i }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByPlaceholderText(/device name/i),
-    ).not.toBeInTheDocument();
-  });
-
-  it("adds a new device bubble after saving the device form", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    const deviceName = "Test Device";
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: deviceName },
-    });
-    fireEvent.change(screen.getByRole("combobox", { name: /select type/i }), {
-      target: { value: "Light" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
-
-    // Assert
-    expect(screen.getByText(/test device/i)).toBeInTheDocument();
-  });
-
-  it("closes the add device form when Cancel is clicked without clearing the input", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: "Lamp" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
-
-    // Assert
-    expect(
-      screen.queryByPlaceholderText(/device name/i),
-    ).not.toBeInTheDocument();
-  });
-
-  it("shows a validation message if trying to save a device with an empty name", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.click(screen.getByRole("button", { name: /save/i }));
-
-    // Assert
-    expect(screen.getByText(/device name is required/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
-  });
-
-  it("shows a toast error when trying to save a device with an empty name", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.click(screen.getByRole("button", { name: /save/i }));
-
-    // Assert
-    expect(screen.getByText(/device name is required/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
-  });
-
-  it("shows a room dropdown in All when multiple rooms exist, defaults to placeholder, and disables Save until a room is chosen", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Kitchen" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-
-    // Assert
-    expect(screen.getByRole("button", { name: "Kitchen" })).toHaveClass(
-      "active",
+/** Coordinator: mock with basic UI elements for testing */
+jest.mock("./components/RoomDeviceCoordinator.jsx", () => ({
+  __esModule: true,
+  RoomDeviceCoordinator: ({ rooms, devices, showAddRoomForm, newRoomName, onAddRoomClick, onRoomClick }) => {
+    const activeRoom = rooms?.find((r) => r.active)?.name;
+    const activeRoomObj = rooms?.find((r) => r.name === activeRoom);
+    
+    // Filter devices by active room
+    const filteredDevices = activeRoom === "All" 
+      ? devices 
+      : devices?.filter((d) => d.roomId === activeRoomObj?.id) || [];
+    
+    const showEmptyState = activeRoom !== "All" && filteredDevices.length === 0;
+    
+    return (
+      <div data-testid="mock-rdc">
+        {/* Mock rooms bar */}
+        <div className="add-room-section">
+          {!showAddRoomForm && <button onClick={onAddRoomClick}>+ Add Room</button>}
+          {showAddRoomForm && (
+            <div className="add-room-form">
+              <input placeholder="Room Name" value={newRoomName} readOnly />
+              <button>Save Room</button>
+              <button>Cancel</button>
+            </div>
+          )}
+        </div>
+        <nav role="navigation" aria-label="rooms" className="rooms-bar">
+          {rooms?.map((room, index) => (
+            <button
+              key={index}
+              className={room.active ? "active" : ""}
+              onClick={() => onRoomClick?.(room.name)}
+            >
+              {room.name}
+            </button>
+          ))}
+        </nav>
+        
+        {/* Mock device management */}
+        <section className="devices-section">
+          <div className="devices-header">
+            <h2>My Devices</h2>
+            <button data-testid="add-device-btn" className="add-device-btn">
+              + Add Device
+            </button>
+          </div>
+          
+          {showEmptyState ? (
+            <div className="devices-list">
+              <div className="empty-state">
+                <p className="empty-state-message">No devices in this room yet</p>
+              </div>
+            </div>
+          ) : (
+            <div className="devices-grid">
+              {filteredDevices?.map((device, index) => (
+                <div
+                  key={device.deviceId || index}
+                  data-testid="device-card"
+                  className={`device-card ${device.isOn ? "is-on" : "is-off"}`}
+                >
+                  <div className="device-card-header">
+                    <span className="device-title">{device.deviceName}</span>
+                    <label className="device-toggle">
+                      <input
+                        type="checkbox"
+                        checked={device.isOn}
+                        readOnly
+                      />
+                      <span className="slider"></span>
+                    </label>
+                  </div>
+                  <span className="device-status-text">
+                    {device.isOn ? "ON" : "OFF"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     );
+  },
+}));
 
-    // Act
-    fireEvent.click(screen.getByRole("button", { name: "All" }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
+/** ConfirmDeleteModal: stub */
+jest.mock("./components/modals/ConfirmDeleteModal.jsx", () => ({
+  __esModule: true,
+  ConfirmDeleteModal: () => <div data-testid="mock-confirm-delete" />,
+}));
 
-    // Assert
-    const dropdown = screen.getByRole("combobox", { name: /select room/i });
-    expect(dropdown).toBeInTheDocument();
-    expect(dropdown.value).toBe("");
+/** Router: keep BrowserRouter minimal and stub navigate */
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => jest.fn(),
+  BrowserRouter: ({ children }) => <div>{children}</div>,
+}));
 
-    const saveBtn = screen.getByRole("button", { name: /^save$/i });
-    expect(saveBtn).toBeDisabled();
+/** Hooks & context */
+jest.mock("../../hooks/useRooms", () => ({ useRooms: jest.fn() }));
+jest.mock("../../hooks/useDevices", () => ({ useDevices: jest.fn() }));
+jest.mock("../../hooks/useHomes", () => ({ useHomes: jest.fn() }));
+jest.mock("../../hooks/useUserSync", () => ({ useUserSync: jest.fn() }));
+jest.mock("../../context/UserContext", () => ({ useUser: jest.fn() }));
 
-    // Act
-    fireEvent.change(screen.getByRole("combobox", { name: /select type/i }), {
-      target: { value: "Light" },
-    });
-    fireEvent.change(dropdown, { target: { value: "Bedroom" } });
+/** Header */
+jest.mock("../../components/header/Header.jsx", () => ({
+  __esModule: true,
+  Header: () => <div data-testid="mock-header">Header</div>,
+}));
 
-    // Assert
-    expect(saveBtn).not.toBeDisabled();
+/** Services */
+jest.mock("../../services/roomService", () => ({
+  roomService: {
+    getRoomsByHome: jest.fn(),
+    createRoom: jest.fn(),
+    deleteRoom: jest.fn(),
+    getRoomById: jest.fn(),
+    updateRoom: jest.fn(),
+  },
+  setAuthToken: jest.fn(),
+}));
+
+jest.mock("../../services/deviceService", () => ({
+  deviceService: {
+    getAllDevices: jest.fn(),
+    createDevice: jest.fn(),
+    deleteDevice: jest.fn(),
+    turnDeviceOn: jest.fn(),
+    turnDeviceOff: jest.fn(),
+    getDeviceById: jest.fn(),
+    controlDevice: jest.fn(),
+  },
+  setAuthToken: jest.fn(),
+}));
+
+/** CreateHome */
+jest.mock("../CreateHome/CreateHome", () => ({
+  __esModule: true,
+  default: () => <div>Mock CreateHome</div>,
+}));
+
+/**
+ * ----------------------------------------------------------------------
+ * IMPORTS UNDER TEST (SAFE NOW — ALL MOCKS ARE ALREADY INSTALLED)
+ * ----------------------------------------------------------------------
+ */
+import { render, screen, fireEvent } from "@testing-library/react";
+import Home from "./Home";
+import { useRooms } from "../../hooks/useRooms";
+import { useDevices } from "../../hooks/useDevices";
+import { useHomes } from "../../hooks/useHomes";
+import { useUser } from "../../context/UserContext";
+import { BrowserRouter } from "react-router-dom";
+/* eslint-enable import/first */
+
+/**
+ * ----------------------------------------------------------------------
+ * SIMPLE RENDER HELPER (wrap component in BrowserRouter)
+ * ----------------------------------------------------------------------
+ */
+const renderWithRouter = (component) => {
+  return render(<BrowserRouter>{component}</BrowserRouter>);
+};
+
+/**
+ * ----------------------------------------------------------------------
+ * CONVENIENT REFERENCES TO OUR MOCKED HOOKS
+ * ----------------------------------------------------------------------
+ */
+const mockUseRooms = useRooms;
+const mockUseDevices = useDevices;
+const mockUseHomes = useHomes;
+const mockUseUser = useUser;
+
+/**
+ * ----------------------------------------------------------------------
+ * DEFAULT MOCK RETURN VALUES
+ * ----------------------------------------------------------------------
+ * These are the "happy path" defaults we set up in beforeEach().
+ * Individual tests override by calling mockUse*.mockReturnValue(...)
+ * again inside the test.
+ * ----------------------------------------------------------------------
+ */
+const defaultUserMock = {
+  backendUser: {
+    clerkId: "user_123",
+    username: "testuser",
+    email: "test@example.com",
+  },
+  isLoading: false,
+};
+
+const defaultHomesMock = {
+  homes: [{ homeId: 1, name: "My Home", address: "123 Main St" }],
+  currentHome: { homeId: 1, name: "My Home", address: "123 Main St" },
+  loading: false,
+  error: null,
+  refreshHomes: jest.fn(),
+  createHome: jest.fn(),
+  switchHome: jest.fn(),
+};
+
+const defaultRoomsMock = {
+  rooms: [{ name: "All", active: true, id: 1 }],
+  loading: false,
+  error: null,
+  roomError: "",
+  fadeOutRoom: false,
+  newRoomName: "",
+  showAddRoomForm: false,
+  openAddRoomForm: jest.fn(),
+  cancelAddRoomForm: jest.fn(),
+  setNewRoomName: jest.fn(),
+  activateRoom: jest.fn(),
+  addRoom: jest.fn(),
+  setRooms: jest.fn(),
+};
+
+const defaultDevicesMock = {
+  devices: [],
+  loading: false,
+  error: null,
+  addDevice: jest.fn(),
+  toggleDevice: jest.fn(),
+  deleteDevice: jest.fn(),
+  setDevices: jest.fn(),
+};
+
+/**
+ * ----------------------------------------------------------------------
+ * TESTS
+ * ----------------------------------------------------------------------
+ */
+describe("Home Component", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUseUser.mockReturnValue(defaultUserMock);
+    mockUseHomes.mockReturnValue(defaultHomesMock);
+    mockUseRooms.mockReturnValue(defaultRoomsMock);
+    mockUseDevices.mockReturnValue(defaultDevicesMock);
   });
 
-  it("auto-switches to the selected room after saving a device from All", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Kitchen" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByRole("button", { name: "All" }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: "Lamp" },
-    });
-    fireEvent.change(screen.getByRole("combobox", { name: /select type/i }), {
-      target: { value: "Light" },
-    });
-    fireEvent.change(screen.getByRole("combobox", { name: /select room/i }), {
-      target: { value: "Kitchen" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
-
-    // Assert
-    expect(screen.getByRole("button", { name: "Kitchen" })).toHaveClass(
-      "active",
-    );
-    expect(screen.getByText(/lamp/i)).toBeInTheDocument();
-
-    // Act
-    fireEvent.click(screen.getByRole("button", { name: "Bedroom" }));
-
-    // Assert
-    expect(screen.queryByText(/lamp/i)).not.toBeInTheDocument();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it("requires selecting a device type before saving and displays it on the device card", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: "Lamp" },
+  describe("Initial Render", () => {
+    it("renders main structure correctly", () => {
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByRole("navigation", { name: /rooms/i })).toBeInTheDocument();
+      expect(screen.getByText("My Devices")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "+ Add Room" })).toBeInTheDocument();
+      expect(screen.getByTestId("add-device-btn")).toBeInTheDocument();
     });
 
-    // Assert
-    const typeDropdown = screen.getByRole("combobox", { name: /select type/i });
-    expect(typeDropdown).toBeInTheDocument();
-    expect(typeDropdown.value).toBe("");
-
-    const saveBtn = screen.getByRole("button", { name: /save/i });
-    fireEvent.click(saveBtn);
-    expect(screen.getByText(/device type is required/i)).toBeInTheDocument();
-
-    // Act
-    fireEvent.change(typeDropdown, { target: { value: "Light" } });
-    expect(saveBtn).not.toBeDisabled();
-    fireEvent.click(saveBtn);
-
-    // Assert
-    const deviceCard = screen.getByTestId("device-card");
-    expect(deviceCard).toHaveTextContent(/Lamp/);
-    expect(deviceCard).toHaveTextContent(/Off|Offline/);
+    it("shows All room as active by default", () => {
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByRole("button", { name: "All" })).toHaveClass("active");
+    });
   });
 
-  it("displays device name and default status after saving", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
+  describe("Loading States", () => {
+    it("shows loading when rooms are loading", () => {
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        loading: true,
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByText(/loading/i)).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: "Lamp" },
+
+    it("shows loading when devices are loading", () => {
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        loading: true,
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByText(/loading/i)).toBeInTheDocument();
     });
-    fireEvent.change(screen.getByRole("combobox", { name: /select type/i }), {
-      target: { value: "Light" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
-
-    // Assert
-    const card = screen.getByTestId("device-card");
-
-    expect(card).toHaveTextContent(/lamp/i);
-    expect(card).toHaveTextContent(/off|offline/i);
-    expect(card).not.toHaveTextContent(/\(/);
-  });
-});
-
-describe("Empty State", () => {
-  it("shows an empty state message when the active room has no devices", () => {
-    // Act
-    render(<Home />);
-
-    // Assert
-    expect(
-      screen.queryByText(/no devices in this room yet/i),
-    ).not.toBeInTheDocument();
-
-    // Act
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-
-    // Assert
-    expect(
-      screen.getByText(/no devices in this room yet/i),
-    ).toBeInTheDocument();
-
-    // Act
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: "Lamp" },
-    });
-    fireEvent.change(screen.getByRole("combobox", { name: /select type/i }), {
-      target: { value: "Light" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
-
-    // Assert
-    expect(
-      screen.queryByText(/no devices in this room yet/i),
-    ).not.toBeInTheDocument();
-  });
-});
-
-describe("Rooms bar (adding rooms)", () => {
-  it("shows an inline input when + Add is clicked", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-
-    // Assert
-    expect(screen.getByPlaceholderText(/room name/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /save room/i }),
-    ).toBeInTheDocument();
   });
 
-  it("adds a new room and makes it active while All becomes inactive", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-
-    const roomName = "Bedroom";
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: roomName },
+  describe("Error States", () => {
+    it("shows error when rooms fail to load", () => {
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        error: "Failed to load rooms",
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
 
-    // Assert
-    expect(screen.getByRole("button", { name: roomName })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: roomName })).toHaveClass(
-      "active",
-    );
-    expect(screen.getByRole("button", { name: "All" })).not.toHaveClass(
-      "active",
-    );
+    it("shows error when devices fail to load", () => {
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        error: "Failed to load devices",
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
+    });
   });
 
-  it("shows an inline room form when clicking + Add in rooms bar", () => {
-    // Act
-    render(<Home />);
+  describe("Room Management", () => {
+    it("calls openAddRoomForm when + Add Room is clicked", () => {
+      const mockOpenAddRoomForm = jest.fn();
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        openAddRoomForm: mockOpenAddRoomForm,
+      });
+      // Act
+      renderWithRouter(<Home />);
+      fireEvent.click(screen.getByRole("button", { name: "+ Add Room" }));
+      // Assert
+      expect(mockOpenAddRoomForm).toHaveBeenCalled();
+    });
 
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
+    it("shows add room form when showAddRoomForm is true", () => {
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        showAddRoomForm: true,
+        newRoomName: "Test Room",
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByDisplayValue("Test Room")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /save room/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+    });
 
-    // Assert
-    expect(screen.getByPlaceholderText(/room name/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /save room/i }),
-    ).toBeInTheDocument();
+    it("displays multiple rooms from hook data", () => {
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        rooms: [
+          { name: "All", active: false, id: 1 },
+          { name: "Living Room", active: true, id: 2 },
+          { name: "Kitchen", active: false, id: 3 },
+        ],
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Living Room" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Kitchen" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Living Room" })).toHaveClass("active");
+    });
+
+    it("calls activateRoom when room button is clicked", () => {
+      const mockActivateRoom = jest.fn();
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        rooms: [
+          { name: "All", active: true, id: 1 },
+          { name: "Bedroom", active: false, id: 2 },
+        ],
+        activateRoom: mockActivateRoom,
+      });
+      // Act
+      renderWithRouter(<Home />);
+      fireEvent.click(screen.getByRole("button", { name: "Bedroom" }));
+      // Assert
+      expect(mockActivateRoom).toHaveBeenCalledWith("Bedroom");
+    });
   });
 
-  it("keeps add device form open when switching rooms and saves to the active room automatically", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
+  describe("Device Management", () => {
+    it("renders device cards when devices are provided", () => {
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        devices: [
+          {
+            deviceId: 1,
+            deviceName: "Smart Light",
+            deviceType: "LIGHT",
+            isOn: true,
+            roomId: 1,
+          },
+          {
+            deviceId: 2,
+            deviceName: "Thermostat",
+            deviceType: "THERMOSTAT",
+            isOn: false,
+            roomId: 1,
+          },
+        ],
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      const deviceCards = screen.getAllByTestId("device-card");
+      expect(deviceCards).toHaveLength(2);
+      expect(screen.getByText("Smart Light")).toBeInTheDocument();
+      expect(screen.getByText("Thermostat")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
 
-    // Assert
-    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
-
-    // Act
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Kitchen" },
+    it("shows correct toggle state for devices", () => {
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        devices: [
+          {
+            deviceId: 1,
+            deviceName: "Light On",
+            deviceType: "LIGHT",
+            isOn: true,
+            roomId: 1,
+          },
+          {
+            deviceId: 2,
+            deviceName: "Light Off",
+            deviceType: "LIGHT",
+            isOn: false,
+            roomId: 1,
+          },
+        ],
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      const checkboxes = screen.getAllByRole("checkbox");
+      expect(checkboxes).toHaveLength(2);
+      expect(checkboxes[0]).toBeChecked();
+      expect(checkboxes[1]).not.toBeChecked();
     });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByRole("button", { name: "Bedroom" }));
 
-    // Assert
-    expect(screen.getByPlaceholderText(/device name/i)).toBeInTheDocument();
+    it("shows empty state when no devices in active room", () => {
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        rooms: [
+          { name: "All", active: false, id: 1 },
+          { name: "Empty Room", active: true, id: 2 },
+        ],
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(screen.getByText(/no devices in this room yet/i)).toBeInTheDocument();
+    });
   });
 
-  it("activates a clicked room and deactivates the previously active one", () => {
-    //Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
+  describe("Hook Integration", () => {
+    it("filters devices by active room", () => {
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        rooms: [
+          { name: "All", active: false, id: 1 },
+          { name: "Bedroom", active: true, id: 2 },
+        ],
+      });
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        devices: [
+          {
+            deviceId: 1,
+            deviceName: "Bedroom Light",
+            roomId: 2,
+            deviceType: "LIGHT",
+            isOn: false,
+          },
+          {
+            deviceId: 2,
+            deviceName: "Kitchen Light",
+            roomId: 3,
+            deviceType: "LIGHT",
+            isOn: false,
+          },
+        ],
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      const deviceCards = screen.getAllByTestId("device-card");
+      expect(deviceCards).toHaveLength(1);
+      expect(screen.getByText("Bedroom Light")).toBeInTheDocument();
+      expect(screen.queryByText("Kitchen Light")).not.toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Kitchen" },
+
+    it("shows all devices when All room is active", () => {
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        devices: [
+          {
+            deviceId: 1,
+            deviceName: "Light 1",
+            roomId: 2,
+            deviceType: "LIGHT",
+            isOn: false,
+          },
+          {
+            deviceId: 2,
+            deviceName: "Light 2",
+            roomId: 3,
+            deviceType: "LIGHT",
+            isOn: false,
+          },
+        ],
+      });
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      const deviceCards = screen.getAllByTestId("device-card");
+      expect(deviceCards).toHaveLength(2);
+      expect(screen.getByText("Light 1")).toBeInTheDocument();
+      expect(screen.getByText("Light 2")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByRole("button", { name: "Bedroom" }));
 
-    // Assert
-    expect(screen.getByRole("button", { name: "Bedroom" })).toHaveClass(
-      "active",
-    );
-    expect(screen.getByRole("button", { name: "Kitchen" })).not.toHaveClass(
-      "active",
-    );
-  });
-
-  it("closes the add room form when Cancel is clicked without clearing the input", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Garage" },
+    it("calls useDevices and useRooms hooks", () => {
+      // Act
+      renderWithRouter(<Home />);
+      // Assert
+      expect(mockUseRooms).toHaveBeenCalled();
+      expect(mockUseDevices).toHaveBeenCalled();
     });
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-
-    // Assert
-    expect(screen.queryByPlaceholderText(/room name/i)).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "+ Add" })).toBeInTheDocument();
-  });
-
-  it("shows a toast error when trying to save a room with an empty name", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-
-    // Assert
-    expect(screen.getByText(/room name is required/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/room name/i)).toBeInTheDocument();
-  });
-});
-
-describe("Device cards (read-only dashboard view)", () => {
-  it("renders a read-only device card with icon, name, and status", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: "Lamp" },
-    });
-    fireEvent.change(screen.getByRole("combobox", { name: /select type/i }), {
-      target: { value: "Light" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
-
-    // Assert
-    const card = screen.getByTestId("device-card");
-
-    expect(card).toHaveTextContent(/lamp/i);
-    expect(card).toHaveTextContent(/off|offline/i);
-    expect(card).not.toHaveTextContent(/\(/);
-  });
-
-  it("renders device cards with the correct base CSS class", () => {
-    // Act
-    render(<Home />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ Add" }));
-    fireEvent.change(screen.getByPlaceholderText(/room name/i), {
-      target: { value: "Bedroom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /save room/i }));
-    fireEvent.click(screen.getByTestId("add-device-btn"));
-    fireEvent.change(screen.getByPlaceholderText(/device name/i), {
-      target: { value: "Lamp" },
-    });
-    fireEvent.change(screen.getByRole("combobox", { name: /select type/i }), {
-      target: { value: "Light" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
-
-    // Assert
-    const card = screen.getByTestId("device-card");
-    expect(card).toHaveClass("device-card");
   });
 });

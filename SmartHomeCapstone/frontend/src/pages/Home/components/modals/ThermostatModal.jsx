@@ -5,12 +5,15 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
   const [setpoint, setSetpoint] = useState(72);
   const [isEditing, setIsEditing] = useState(false);
   const [tempInput, setTempInput] = useState("72");
+  const [isOn, setIsOn] = useState(!!device?.isOn);
 
+  // Sync with device prop
   useEffect(() => {
     if (!device) return;
     const temp = Number.isFinite(device?.setpoint) ? device.setpoint : 72;
     setSetpoint(temp);
     setTempInput(String(temp));
+    setIsOn(!!device.isOn);
   }, [device]);
 
   if (!device) return null;
@@ -58,10 +61,28 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
     }
   };
 
+  const handleToggle = () => {
+    const currentState = isOn; // Capture CURRENT state
+    const newState = !currentState;
+    
+    // Update local state optimistically
+    setIsOn(newState);
+    
+    // Pass CURRENT state to onToggle (before the change)
+    if (typeof onToggle === "function") {
+      onToggle(device.deviceId, currentState);
+    }
+  };
+
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div
+      className="modal-backdrop"
+      data-testid="modal-backdrop"
+      onClick={onClose}
+    >
       <div
-        className={`modal-card thermostat-modal ${!device.isOn ? "is-off" : ""}`}
+        className={`modal-card thermostat-modal ${!isOn ? "is-off" : ""}`}
+        data-testid="modal-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* === Top Controls === */}
@@ -73,8 +94,8 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
           >
             <input
               type="checkbox"
-              checked={!!device.isOn}
-              onChange={() => onToggle(device.deviceId, device.isOn)}
+              checked={isOn}
+              onChange={handleToggle}
             />
             <span className="slider"></span>
           </label>

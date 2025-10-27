@@ -80,7 +80,7 @@ export const DevicesList = ({
           {/* === HEADER (icon + toggle) === */}
           <div className="device-card-header">
             <div className="device-head-left">
-              <span className="icon-box">
+              <span className="icon-box" data-testid="icon-box">
                 <DeviceIcon type={device.deviceType} />
               </span>
             </div>
@@ -100,8 +100,8 @@ export const DevicesList = ({
           </div>
 
           {/* === NAME === */}
-          <span className={`device-title ${device.isOn ? "" : "dim"}`}>
-            {device.deviceName}
+          <span className="device-title ">
+            {device.deviceName || device.name}
           </span>
 
           {/* === STATUS TEXT === */}

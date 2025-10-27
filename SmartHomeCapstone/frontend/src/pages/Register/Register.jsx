@@ -38,12 +38,41 @@ export default function Register() {
 
   async function submit(e){
     e.preventDefault();
-    
+
     if(!user.firstName || !user.lastName || !user.username || !user.email || !user.password){ 
       setMsg("Please fill all required fields."); 
       return; 
     }
-    
+
+    // Username cannot contain spaces
+    if (/\s/.test(user.username)) {
+      setMsg("Username cannot contain spaces.");
+      return;
+    }
+
+    if (user.password.length < 6) {
+      setMsg("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) {
+      setMsg("Invalid email format");
+      return;
+    }
+
+    // Add future date validation
+    const today = new Date();
+    const dob = new Date(user.dob);
+    if (dob > today) {
+      setMsg("Date of birth cannot be in the future.");
+      return;
+    }
+    // Add this block for 1900 check
+    if (dob.getFullYear() < 1900) {
+      setMsg("Date of birth must be after 1900.");
+      return;
+    }
+
     if(!isLoaded) return;
     
     setMsg("Creating account...");
@@ -153,22 +182,24 @@ export default function Register() {
           required
         />
         
-        <label>Password</label>
-        <input 
-          className="input" 
-          name="password" 
-          type="password" 
-          value={user.password} 
-          onChange={onChangeUser}
+        <label htmlFor="password">Password</label>
+        <input
+          className="input"
+          id="password"
+          name="password"
           required
+          type="password"
+          value={user.password}
+          onChange={onChangeUser}
         />
         
-        <label>Date of Birth <span style={{opacity: 0.6, fontSize: 12}}>(Optional)</span></label>
-        <input 
-          className="input mb16" 
-          name="dob" 
-          type="date" 
-          value={user.dob} 
+        <label htmlFor="dob">Date of Birth (Optional)</label>
+        <input
+          className="input mb16"
+          id="dob"
+          name="dob"
+          type="date"
+          value={user.dob}
           onChange={onChangeUser}
         />
         
