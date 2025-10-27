@@ -1,10 +1,9 @@
-# CS-25-2 Team 4 — Monorepo
+# CS-25-2 Team 4
 
-This repo contains two projects:
+Quick links:
+- ▶️ **Capstone (Smart Home app)**: [SmartHomeCapstone/](SmartHomeCapstone/)
+- 📚 **Midterm**: [midterm/](midterm/)
 
-- **Midterm** → ./midterm
-- **Capstone** → ./SmartHomeCapstone
-
-## Quick Links
-- Midterm README: [midterm/README.md](./midterm/README.md)
-- Capstone README: [SmartHomeCapstone/README.md](./SmartHomeCapstone/README.md)
+This repo contains our midterm deliverable and the capstone Smart Home project
+(React frontend + Spring Boot backend). See the linked READMEs above for setup,
+scripts, and docs.
