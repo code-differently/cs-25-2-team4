@@ -98,7 +98,7 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
     };
 
     return (
-        <div className="address-form">
+       <div className="address-form">
             {/* Country */}
             <label>Country</label>
             <select
@@ -118,45 +118,6 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                 ))}
             </select>
 
-            {/* Street Address */}
-            <label>Street Address</label>
-            <input
-                className="input"
-                name="streetAddress"
-                value={address.streetAddress}
-                onChange={handleChange}
-                placeholder="Enter street address"
-            />
-
-            {/* City */}
-            <label>City</label>
-            {cities.length > 1 ? (
-                <select
-                    className="select"
-                    name="city"
-                    value={address.city}
-                    onChange={handleChange}
-                    disabled={loading.cities}
-                >
-                    <option value="">
-                        {loading.cities ? 'Loading cities...' : 'Select City'}
-                    </option>
-                    {cities.map((city, index) => (
-                        <option key={index} value={city.city}>
-                            {city.city}
-                        </option>
-                    ))}
-                </select>
-            ) : (
-                <input
-                    className="input"
-                    name="city"
-                    value={address.city}
-                    onChange={handleChange}
-                    placeholder="Enter city"
-                    disabled={loading.cities}
-                />
-            )}
 
             {/* State - Only show for United States */}
             {address.country === 'US' && (
@@ -192,10 +153,50 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                 </>
             )}
 
+            {/* City */}
+            <label>City</label>
+            {cities.length > 1 ? (
+                <select
+                    className="select"
+                    name="city"
+                    value={address.city}
+                    onChange={handleChange}
+                    disabled={loading.cities}
+                >
+                    <option value="">
+                        {loading.cities ? 'Loading cities...' : 'Select City'}
+                    </option>
+                    {cities.map((city, index) => (
+                        <option key={index} value={city.city}>
+                            {city.city}
+                        </option>
+                    ))}
+                </select>
+            ) : (
+                <input
+                    className="input"
+                    name="city"
+                    value={address.city}
+                    onChange={handleChange}
+                    placeholder="Enter city"
+                    disabled={loading.cities}
+                />
+            )}
+
+            {/* Street Address */}
+            <label>Street Address</label>
+            <input
+                className="input mb16"
+                name="streetAddress"
+                value={address.streetAddress}
+                onChange={handleChange}
+                placeholder="Enter street address"
+            />
+
             {/* Zip Code */}
             <label>Zip Code</label>
             <input
-                className="input mb16"
+                className="input"
                 name="zipCode"
                 value={address.zipCode}
                 onChange={handleChange}
