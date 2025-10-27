@@ -67,7 +67,6 @@ describe('Register Component', () => {
         });
 
         it('validates username cannot contain spaces', () => {
-            // Arrange
             renderWithRouter(<Register />);
             fillAllFields({
                 firstName: 'John',
