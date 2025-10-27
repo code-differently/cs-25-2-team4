@@ -1,4 +1,5 @@
 import "./Header.css";
+import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
