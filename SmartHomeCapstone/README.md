@@ -50,11 +50,26 @@ To get a local copy of this project up and running on your machine, follow these
 
 ### Setup
 
-1. **Clone the repository:**
-2. **Install dependencies:**
-3. **Configure Environment Variables:**
+1. **Clone the repository:** 
+```bash 
+git clone https://github.com/code-differently/cs-25-2-team4.git
+```
+2. **Run backend application**
+```bash
+cd SmartHomeCapstone/backend && ./gradlew bootRun
+```
+3. **Install dependencies:** 
+```bash
+cd SmartHomeCapstone/frontend && npm install
+```
 4. **Run the application locally:**
+```bash
+npm start
+```
 5. **Run Tests:**
+```bash
+npm test
+```
 
 ## Known Issues
 
@@ -82,4 +97,4 @@ We have exciting plans for future enhancements to elevate the smart home experie
 
 * Deployment & CI/CD powered by Vercel
 
-* Iconography sourced from **Font Awesome / Material Icons / etc.
+* Iconography sourced from Font Awesome / Material Icons / etc.
