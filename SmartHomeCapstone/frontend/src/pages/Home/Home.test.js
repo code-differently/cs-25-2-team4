@@ -11,12 +11,12 @@
 
 // Import React FIRST for JSX in mocks
 import React from "react";
+import "@testing-library/jest-dom";
 
 /** Modal stack: stub the component; return a DUMB hook object */
 jest.mock("./components/ModalManager.jsx", () => ({
   __esModule: true,
-  // NAMED exports (match Home.jsx): { ModalManager, useModalManager }
-  useModalManager: () => ({
+  useModalManager: jest.fn(() => ({
     selectedDevice: null,
     modalType: null,
     openDeviceModal: jest.fn(),
@@ -27,30 +27,40 @@ jest.mock("./components/ModalManager.jsx", () => ({
     returnToDeviceModal: jest.fn(),
     returnToCameraModal: jest.fn(),
     handleToggle: jest.fn(),
-  }),
-  // STUB component to avoid rendering any nested modals
+  })),
   ModalManager: () => null,
 }));
 
 /** Coordinator: mock with basic UI elements for testing */
 jest.mock("./components/RoomDeviceCoordinator.jsx", () => ({
   __esModule: true,
-  RoomDeviceCoordinator: ({ rooms, devices, showAddRoomForm, newRoomName, onAddRoomClick, onRoomClick }) => {
+  RoomDeviceCoordinator: ({
+    rooms,
+    devices,
+    showAddRoomForm,
+    newRoomName,
+    onAddRoomClick,
+    onRoomClick,
+    onDeleteRoom,
+  }) => {
     const activeRoom = rooms?.find((r) => r.active)?.name;
     const activeRoomObj = rooms?.find((r) => r.name === activeRoom);
-    
+
     // Filter devices by active room
-    const filteredDevices = activeRoom === "All" 
-      ? devices 
-      : devices?.filter((d) => d.roomId === activeRoomObj?.id) || [];
-    
+    const filteredDevices =
+      activeRoom === "All"
+        ? devices
+        : devices?.filter((d) => d.roomId === activeRoomObj?.id) || [];
+
     const showEmptyState = activeRoom !== "All" && filteredDevices.length === 0;
-    
+
     return (
       <div data-testid="mock-rdc">
         {/* Mock rooms bar */}
         <div className="add-room-section">
-          {!showAddRoomForm && <button onClick={onAddRoomClick}>+ Add Room</button>}
+          {!showAddRoomForm && (
+            <button onClick={onAddRoomClick}>+ Add Room</button>
+          )}
           {showAddRoomForm && (
             <div className="add-room-form">
               <input placeholder="Room Name" value={newRoomName} readOnly />
@@ -61,16 +71,23 @@ jest.mock("./components/RoomDeviceCoordinator.jsx", () => ({
         </div>
         <nav role="navigation" aria-label="rooms" className="rooms-bar">
           {rooms?.map((room, index) => (
-            <button
-              key={index}
-              className={room.active ? "active" : ""}
-              onClick={() => onRoomClick?.(room.name)}
-            >
-              {room.name}
-            </button>
+            <span key={index}>
+              <button
+                className={room.active ? "active" : ""}
+                onClick={() => onRoomClick?.(room.name)}
+              >
+                {room.name}
+              </button>
+              <button
+                onClick={() => onDeleteRoom?.(room.name)}
+                aria-label={`delete-${room.name}`}
+              >
+                Delete
+              </button>
+            </span>
           ))}
         </nav>
-        
+
         {/* Mock device management */}
         <section className="devices-section">
           <div className="devices-header">
@@ -79,11 +96,13 @@ jest.mock("./components/RoomDeviceCoordinator.jsx", () => ({
               + Add Device
             </button>
           </div>
-          
+
           {showEmptyState ? (
             <div className="devices-list">
               <div className="empty-state">
-                <p className="empty-state-message">No devices in this room yet</p>
+                <p className="empty-state-message">
+                  No devices in this room yet
+                </p>
               </div>
             </div>
           ) : (
@@ -97,11 +116,7 @@ jest.mock("./components/RoomDeviceCoordinator.jsx", () => ({
                   <div className="device-card-header">
                     <span className="device-title">{device.deviceName}</span>
                     <label className="device-toggle">
-                      <input
-                        type="checkbox"
-                        checked={device.isOn}
-                        readOnly
-                      />
+                      <input type="checkbox" checked={device.isOn} readOnly />
                       <span className="slider"></span>
                     </label>
                   </div>
@@ -121,7 +136,13 @@ jest.mock("./components/RoomDeviceCoordinator.jsx", () => ({
 /** ConfirmDeleteModal: stub */
 jest.mock("./components/modals/ConfirmDeleteModal.jsx", () => ({
   __esModule: true,
-  ConfirmDeleteModal: () => <div data-testid="mock-confirm-delete" />,
+  ConfirmDeleteModal: ({ onConfirm }) => (
+    <div data-testid="mock-confirm-delete">
+      <button aria-label="confirm-room-delete" onClick={onConfirm}>
+        Confirm
+      </button>
+    </div>
+  ),
 }));
 
 /** Router: keep BrowserRouter minimal and stub navigate */
@@ -141,7 +162,11 @@ jest.mock("../../context/UserContext", () => ({ useUser: jest.fn() }));
 /** Header */
 jest.mock("../../components/header/Header.jsx", () => ({
   __esModule: true,
-  Header: () => <div data-testid="mock-header">Header</div>,
+  Header: () => (
+    <header role="banner" data-testid="mock-header">
+      Header
+    </header>
+  ),
 }));
 
 /** Services */
@@ -170,9 +195,13 @@ jest.mock("../../services/deviceService", () => ({
 }));
 
 /** CreateHome */
+const mockCreateHome = jest.fn();
 jest.mock("../CreateHome/CreateHome", () => ({
   __esModule: true,
-  default: () => <div>Mock CreateHome</div>,
+  default: (props) => {
+    mockCreateHome(props);
+    return <div data-testid="mock-create-home">Mock CreateHome</div>;
+  },
 }));
 
 /**
@@ -187,6 +216,8 @@ import { useDevices } from "../../hooks/useDevices";
 import { useHomes } from "../../hooks/useHomes";
 import { useUser } from "../../context/UserContext";
 import { BrowserRouter } from "react-router-dom";
+import { useModalManager } from "./components/ModalManager.jsx";
+import { deviceService } from "../../services/deviceService";
 /* eslint-enable import/first */
 
 /**
@@ -194,9 +225,7 @@ import { BrowserRouter } from "react-router-dom";
  * SIMPLE RENDER HELPER (wrap component in BrowserRouter)
  * ----------------------------------------------------------------------
  */
-const renderWithRouter = (component) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
-};
+const renderWithRouter = (component) => render(<BrowserRouter>{component}</BrowserRouter>);
 
 /**
  * ----------------------------------------------------------------------
@@ -207,22 +236,15 @@ const mockUseRooms = useRooms;
 const mockUseDevices = useDevices;
 const mockUseHomes = useHomes;
 const mockUseUser = useUser;
+const mockUseModalManager = useModalManager;
 
 /**
  * ----------------------------------------------------------------------
  * DEFAULT MOCK RETURN VALUES
  * ----------------------------------------------------------------------
- * These are the "happy path" defaults we set up in beforeEach().
- * Individual tests override by calling mockUse*.mockReturnValue(...)
- * again inside the test.
- * ----------------------------------------------------------------------
  */
 const defaultUserMock = {
-  backendUser: {
-    clerkId: "user_123",
-    username: "testuser",
-    email: "test@example.com",
-  },
+  backendUser: { clerkId: "user_123", username: "testuser", email: "test@example.com" },
   isLoading: false,
 };
 
@@ -262,6 +284,13 @@ const defaultDevicesMock = {
   setDevices: jest.fn(),
 };
 
+beforeAll(() => {
+  Object.defineProperty(window, "location", {
+    configurable: true,
+    value: { reload: jest.fn() },
+  });
+});
+
 /**
  * ----------------------------------------------------------------------
  * TESTS
@@ -274,103 +303,82 @@ describe("Home Component", () => {
     mockUseHomes.mockReturnValue(defaultHomesMock);
     mockUseRooms.mockReturnValue(defaultRoomsMock);
     mockUseDevices.mockReturnValue(defaultDevicesMock);
+    mockUseModalManager.mockReturnValue({
+      selectedDevice: null,
+      modalType: null,
+      openDeviceModal: jest.fn(),
+      closeModal: jest.fn(),
+      requestDeleteDevice: jest.fn(),
+      confirmDeleteDevice: jest.fn(),
+      returnToDeviceModal: jest.fn(),
+      handleToggle: jest.fn(),
+    });
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
+  /**
+   * ------------------------------------------------------
+   * Initial Render (happy path + a few interactions)
+   * ------------------------------------------------------
+   */
   describe("Initial Render", () => {
-    it("renders main structure correctly", () => {
-      // Act
+    beforeEach(() => {
+      mockUseUser.mockReturnValue({ backendUser: { clerkId: "user123" } });
+      mockUseHomes.mockReturnValue({
+        homes: [{ homeId: 1, name: "My Home" }],
+        currentHome: { homeId: 1, name: "My Home" },
+        loading: false,
+        error: null,
+        refreshHomes: jest.fn(),
+      });
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        rooms: [{ name: "All", active: true, id: 1 }],
+        loading: false,
+        error: null,
+      });
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        devices: [],
+        loading: false,
+        error: null,
+      });
+    });
+
+    it("renders the main home UI structure when user and home exist", () => {
       renderWithRouter(<Home />);
-      // Assert
       expect(screen.getByRole("navigation", { name: /rooms/i })).toBeInTheDocument();
       expect(screen.getByText("My Devices")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "+ Add Room" })).toBeInTheDocument();
       expect(screen.getByTestId("add-device-btn")).toBeInTheDocument();
     });
 
-    it("shows All room as active by default", () => {
-      // Act
+    it("marks the All room button as active on initial render", () => {
       renderWithRouter(<Home />);
-      // Assert
       expect(screen.getByRole("button", { name: "All" })).toHaveClass("active");
     });
   });
 
-  describe("Loading States", () => {
-    it("shows loading when rooms are loading", () => {
-      mockUseRooms.mockReturnValue({
-        ...defaultRoomsMock,
-        loading: true,
-      });
-      // Act
-      renderWithRouter(<Home />);
-      // Assert
-      expect(screen.getByText(/loading/i)).toBeInTheDocument();
-    });
-
-    it("shows loading when devices are loading", () => {
-      mockUseDevices.mockReturnValue({
-        ...defaultDevicesMock,
-        loading: true,
-      });
-      // Act
-      renderWithRouter(<Home />);
-      // Assert
-      expect(screen.getByText(/loading/i)).toBeInTheDocument();
-    });
-  });
-
-  describe("Error States", () => {
-    it("shows error when rooms fail to load", () => {
-      mockUseRooms.mockReturnValue({
-        ...defaultRoomsMock,
-        error: "Failed to load rooms",
-      });
-      // Act
-      renderWithRouter(<Home />);
-      // Assert
-      expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
-    });
-
-    it("shows error when devices fail to load", () => {
-      mockUseDevices.mockReturnValue({
-        ...defaultDevicesMock,
-        error: "Failed to load devices",
-      });
-      // Act
-      renderWithRouter(<Home />);
-      // Assert
-      expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
-    });
-  });
-
+  /**
+   * ------------------------------------------------------
+   * Room Management
+   * ------------------------------------------------------
+   */
   describe("Room Management", () => {
     it("calls openAddRoomForm when + Add Room is clicked", () => {
       const mockOpenAddRoomForm = jest.fn();
-      mockUseRooms.mockReturnValue({
-        ...defaultRoomsMock,
-        openAddRoomForm: mockOpenAddRoomForm,
-      });
-      // Act
+      mockUseRooms.mockReturnValue({ ...defaultRoomsMock, openAddRoomForm: mockOpenAddRoomForm });
       renderWithRouter(<Home />);
       fireEvent.click(screen.getByRole("button", { name: "+ Add Room" }));
-      // Assert
       expect(mockOpenAddRoomForm).toHaveBeenCalled();
     });
 
     it("shows add room form when showAddRoomForm is true", () => {
-      mockUseRooms.mockReturnValue({
-        ...defaultRoomsMock,
-        showAddRoomForm: true,
-        newRoomName: "Test Room",
-      });
-      // Act
+      mockUseRooms.mockReturnValue({ ...defaultRoomsMock, showAddRoomForm: true, newRoomName: "Test Room" });
       renderWithRouter(<Home />);
-      // Assert
       expect(screen.getByDisplayValue("Test Room")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /save room/i })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
@@ -385,9 +393,7 @@ describe("Home Component", () => {
           { name: "Kitchen", active: false, id: 3 },
         ],
       });
-      // Act
       renderWithRouter(<Home />);
-      // Assert
       expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Living Room" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Kitchen" })).toBeInTheDocument();
@@ -404,38 +410,33 @@ describe("Home Component", () => {
         ],
         activateRoom: mockActivateRoom,
       });
-      // Act
       renderWithRouter(<Home />);
       fireEvent.click(screen.getByRole("button", { name: "Bedroom" }));
-      // Assert
       expect(mockActivateRoom).toHaveBeenCalledWith("Bedroom");
+    });
+
+    it("renders empty state when no rooms exist", () => {
+      mockUseRooms.mockReturnValue({ ...defaultRoomsMock, rooms: [] });
+      renderWithRouter(<Home />);
+      expect(screen.getByText(/no devices in this room yet/i)).toBeInTheDocument();
     });
   });
 
+  /**
+   * ------------------------------------------------------
+   * Device Management
+   * ------------------------------------------------------
+   */
   describe("Device Management", () => {
     it("renders device cards when devices are provided", () => {
       mockUseDevices.mockReturnValue({
         ...defaultDevicesMock,
         devices: [
-          {
-            deviceId: 1,
-            deviceName: "Smart Light",
-            deviceType: "LIGHT",
-            isOn: true,
-            roomId: 1,
-          },
-          {
-            deviceId: 2,
-            deviceName: "Thermostat",
-            deviceType: "THERMOSTAT",
-            isOn: false,
-            roomId: 1,
-          },
+          { deviceId: 1, deviceName: "Smart Light", deviceType: "LIGHT", isOn: true, roomId: 1 },
+          { deviceId: 2, deviceName: "Thermostat", deviceType: "THERMOSTAT", isOn: false, roomId: 1 },
         ],
       });
-      // Act
       renderWithRouter(<Home />);
-      // Assert
       const deviceCards = screen.getAllByTestId("device-card");
       expect(deviceCards).toHaveLength(2);
       expect(screen.getByText("Smart Light")).toBeInTheDocument();
@@ -446,25 +447,11 @@ describe("Home Component", () => {
       mockUseDevices.mockReturnValue({
         ...defaultDevicesMock,
         devices: [
-          {
-            deviceId: 1,
-            deviceName: "Light On",
-            deviceType: "LIGHT",
-            isOn: true,
-            roomId: 1,
-          },
-          {
-            deviceId: 2,
-            deviceName: "Light Off",
-            deviceType: "LIGHT",
-            isOn: false,
-            roomId: 1,
-          },
+          { deviceId: 1, deviceName: "Light On", deviceType: "LIGHT", isOn: true, roomId: 1 },
+          { deviceId: 2, deviceName: "Light Off", deviceType: "LIGHT", isOn: false, roomId: 1 },
         ],
       });
-      // Act
       renderWithRouter(<Home />);
-      // Assert
       const checkboxes = screen.getAllByRole("checkbox");
       expect(checkboxes).toHaveLength(2);
       expect(checkboxes[0]).toBeChecked();
@@ -479,13 +466,16 @@ describe("Home Component", () => {
           { name: "Empty Room", active: true, id: 2 },
         ],
       });
-      // Act
       renderWithRouter(<Home />);
-      // Assert
       expect(screen.getByText(/no devices in this room yet/i)).toBeInTheDocument();
     });
   });
 
+  /**
+   * ------------------------------------------------------
+   * Hook Integration
+   * ------------------------------------------------------
+   */
   describe("Hook Integration", () => {
     it("filters devices by active room", () => {
       mockUseRooms.mockReturnValue({
@@ -498,25 +488,11 @@ describe("Home Component", () => {
       mockUseDevices.mockReturnValue({
         ...defaultDevicesMock,
         devices: [
-          {
-            deviceId: 1,
-            deviceName: "Bedroom Light",
-            roomId: 2,
-            deviceType: "LIGHT",
-            isOn: false,
-          },
-          {
-            deviceId: 2,
-            deviceName: "Kitchen Light",
-            roomId: 3,
-            deviceType: "LIGHT",
-            isOn: false,
-          },
+          { deviceId: 1, deviceName: "Bedroom Light", roomId: 2, deviceType: "LIGHT", isOn: false },
+          { deviceId: 2, deviceName: "Kitchen Light", roomId: 3, deviceType: "LIGHT", isOn: false },
         ],
       });
-      // Act
       renderWithRouter(<Home />);
-      // Assert
       const deviceCards = screen.getAllByTestId("device-card");
       expect(deviceCards).toHaveLength(1);
       expect(screen.getByText("Bedroom Light")).toBeInTheDocument();
@@ -527,25 +503,11 @@ describe("Home Component", () => {
       mockUseDevices.mockReturnValue({
         ...defaultDevicesMock,
         devices: [
-          {
-            deviceId: 1,
-            deviceName: "Light 1",
-            roomId: 2,
-            deviceType: "LIGHT",
-            isOn: false,
-          },
-          {
-            deviceId: 2,
-            deviceName: "Light 2",
-            roomId: 3,
-            deviceType: "LIGHT",
-            isOn: false,
-          },
+          { deviceId: 1, deviceName: "Light 1", roomId: 2, deviceType: "LIGHT", isOn: false },
+          { deviceId: 2, deviceName: "Light 2", roomId: 3, deviceType: "LIGHT", isOn: false },
         ],
       });
-      // Act
       renderWithRouter(<Home />);
-      // Assert
       const deviceCards = screen.getAllByTestId("device-card");
       expect(deviceCards).toHaveLength(2);
       expect(screen.getByText("Light 1")).toBeInTheDocument();
@@ -553,11 +515,252 @@ describe("Home Component", () => {
     });
 
     it("calls useDevices and useRooms hooks", () => {
-      // Act
       renderWithRouter(<Home />);
-      // Assert
       expect(mockUseRooms).toHaveBeenCalled();
       expect(mockUseDevices).toHaveBeenCalled();
+    });
+  });
+
+  /**
+   * ------------------------------------------------------
+   * Room Deletion
+   * ------------------------------------------------------
+   */
+  describe("Room Deletion", () => {
+    it("opens confirmation modal with correct data when delete button is clicked", () => {
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        rooms: [
+          { name: "Living Room", active: true, id: 1 },
+          { name: "Bedroom", active: false, id: 2 },
+        ],
+      });
+      renderWithRouter(<Home />);
+      fireEvent.click(screen.getByRole("button", { name: "Living Room" }));
+      fireEvent.click(screen.getByLabelText("delete-Living Room"));
+      expect(screen.getByTestId("mock-confirm-delete")).toBeInTheDocument();
+    });
+
+    it("updates devices and rooms state after room deletion", async () => {
+      const setDevices = jest.fn();
+      const setRooms = jest.fn();
+      const mockDeleteRoom = jest.fn(() => {
+        setRooms([]);
+        setDevices([]);
+      });
+      mockUseDevices.mockReturnValue({ ...defaultDevicesMock, setDevices });
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        setRooms,
+        deleteRoom: mockDeleteRoom,
+        rooms: [
+          { name: "Living Room", active: true, id: 1 },
+          { name: "Bedroom", active: false, id: 2 },
+        ],
+      });
+      renderWithRouter(<Home />);
+      fireEvent.click(screen.getByRole("button", { name: "Living Room" }));
+      fireEvent.click(screen.getByLabelText("delete-Living Room"));
+      fireEvent.click(screen.getByLabelText("confirm-room-delete"));
+      await new Promise((r) => setTimeout(r, 0));
+      expect(setDevices).toHaveBeenCalled();
+      expect(setRooms).toHaveBeenCalled();
+    });
+
+    it("does not update devices and rooms state if deleteRoom is not called", () => {
+      const setDevices = jest.fn();
+      const setRooms = jest.fn();
+      mockUseDevices.mockReturnValue({ ...defaultDevicesMock, setDevices });
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        setRooms,
+        deleteRoom: jest.fn(),
+        rooms: [
+          { name: "Living Room", active: true, id: 1 },
+          { name: "Bedroom", active: false, id: 2 },
+        ],
+      });
+      renderWithRouter(<Home />);
+      expect(setDevices).not.toHaveBeenCalled();
+      expect(setRooms).not.toHaveBeenCalled();
+    });
+
+    it("calls setDevices and setRooms only after confirming deletion", async () => {
+      const setDevices = jest.fn();
+      const setRooms = jest.fn();
+      const mockDeleteRoom = jest.fn(() => {
+        setRooms([]);
+        setDevices([]);
+      });
+      mockUseDevices.mockReturnValue({ ...defaultDevicesMock, setDevices });
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        setRooms,
+        deleteRoom: mockDeleteRoom,
+        rooms: [
+          { name: "Living Room", active: true, id: 1 },
+          { name: "Bedroom", active: false, id: 2 },
+        ],
+      });
+      renderWithRouter(<Home />);
+      fireEvent.click(screen.getByRole("button", { name: "Living Room" }));
+      fireEvent.click(screen.getByLabelText("delete-Living Room"));
+      expect(setDevices).not.toHaveBeenCalled();
+      expect(setRooms).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByLabelText("confirm-room-delete"));
+      await new Promise((r) => setTimeout(r, 0));
+      expect(setDevices).toHaveBeenCalled();
+      expect(setRooms).toHaveBeenCalled();
+    });
+
+    it("renders error and reload button when devices or rooms error", () => {
+      window.location.reload = jest.fn();
+      mockUseHomes.mockReturnValue({
+        homes: [{ homeId: "home1" }],
+        currentHome: { homeId: "home1" },
+        loading: false,
+        error: null,
+        refreshHomes: jest.fn(),
+      });
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        rooms: [{ name: "Living Room", active: true, id: 1 }],
+        loading: false,
+        error: "Rooms error",
+      });
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        devices: [],
+        loading: false,
+        error: null,
+      });
+      renderWithRouter(<Home />);
+      expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByText(/retry/i));
+      expect(window.location.reload).toHaveBeenCalled();
+    });
+
+    it("calls deviceService.deleteDevice for each device in the deleted room", async () => {
+      const setDevices = jest.fn();
+      const setRooms = jest.fn();
+
+      mockUseDevices.mockReturnValue({
+        ...defaultDevicesMock,
+        devices: [
+          { deviceId: 10, roomId: 1 },
+          { deviceId: 11, roomId: 1 },
+        ],
+        setDevices,
+      });
+
+      mockUseRooms.mockReturnValue({
+        ...defaultRoomsMock,
+        rooms: [
+          { name: "Living Room", active: true, id: 1 },
+          { name: "Bedroom", active: false, id: 2 },
+        ],
+        setRooms,
+      });
+
+      const deleteDeviceSpy = deviceService.deleteDevice;
+      deleteDeviceSpy.mockResolvedValueOnce({});
+      deleteDeviceSpy.mockResolvedValueOnce({});
+
+      renderWithRouter(<Home />);
+      fireEvent.click(screen.getByRole("button", { name: "Living Room" }));
+      fireEvent.click(screen.getByLabelText("delete-Living Room"));
+      fireEvent.click(screen.getByLabelText("confirm-room-delete"));
+      await new Promise((r) => setTimeout(r, 0));
+
+      expect(deleteDeviceSpy).toHaveBeenCalledTimes(2);
+      expect(deleteDeviceSpy).toHaveBeenCalledWith(10);
+      expect(deleteDeviceSpy).toHaveBeenCalledWith(11);
+    });
+  });
+
+  /**
+   * ------------------------------------------------------
+   * Branch Guards (all guard/early-return states live here)
+   * ------------------------------------------------------
+   */
+  describe("Home Component - Branch Guards", () => {
+    beforeEach(() => {
+      mockUseUser.mockReturnValue({ backendUser: { clerkId: "user123" } });
+      mockUseHomes.mockReturnValue({
+        homes: [{ homeId: "home1" }],
+        currentHome: { homeId: "home1" },
+        loading: false,
+        error: null,
+        refreshHomes: jest.fn(),
+      });
+      mockUseRooms.mockReturnValue({ ...defaultRoomsMock, loading: false, error: null });
+      mockUseDevices.mockReturnValue({ ...defaultDevicesMock, loading: false, error: null });
+    });
+
+    it("shows account setup screen when backendUser is missing", () => {
+      mockUseUser.mockReturnValue({ backendUser: null });
+      renderWithRouter(<Home />);
+      expect(screen.getByText(/setting up/i)).toBeInTheDocument();
+    });
+
+    it("shows loading screen when homes are still loading", () => {
+      mockUseHomes.mockReturnValue({
+        homes: [],
+        currentHome: null,
+        loading: true,
+        error: null,
+        refreshHomes: jest.fn(),
+      });
+      renderWithRouter(<Home />);
+      expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    });
+
+    it("shows error screen when homesError is present", () => {
+      mockUseHomes.mockReturnValue({
+        homes: [],
+        currentHome: null,
+        loading: false,
+        error: "Homes failed",
+        refreshHomes: jest.fn(),
+      });
+      renderWithRouter(<Home />);
+      expect(screen.getByText(/error/i)).toBeInTheDocument();
+    });
+
+    it("renders CreateHome when user has no homes", () => {
+      mockUseHomes.mockReturnValue({
+        homes: [],
+        currentHome: null,
+        loading: false,
+        error: null,
+        refreshHomes: jest.fn(),
+      });
+      renderWithRouter(<Home />);
+      expect(screen.getByTestId("mock-create-home")).toBeInTheDocument();
+    });
+
+    it("shows setup screen when currentHome is not set yet", () => {
+      mockUseHomes.mockReturnValue({
+        homes: [{ homeId: "home1" }],
+        currentHome: null,
+        loading: false,
+        error: null,
+        refreshHomes: jest.fn(),
+      });
+      renderWithRouter(<Home />);
+      expect(screen.getByText(/setting up/i)).toBeInTheDocument();
+    });
+
+    it("shows loading home data screen when rooms or devices are loading", () => {
+      mockUseRooms.mockReturnValue({ ...defaultRoomsMock, loading: true, error: null });
+      renderWithRouter(<Home />);
+      expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    });
+
+    it("shows error loading data screen when rooms or devices error", () => {
+      mockUseDevices.mockReturnValue({ ...defaultDevicesMock, error: "Device error", loading: false });
+      renderWithRouter(<Home />);
+      expect(screen.getByText(/error/i)).toBeInTheDocument();
     });
   });
 });

@@ -8,6 +8,7 @@
 
 // Import React first for JSX in mocks
 import React from "react";
+import '@testing-library/jest-dom'
 
 /** Mock axios to prevent ES module import errors */
 jest.mock("axios");
