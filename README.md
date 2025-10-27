@@ -2,7 +2,7 @@
 
 Quick links:
 - ▶️ **Capstone (Smart Home app)**: [SmartHomeCapstone/](SmartHomeCapstone/)
-- 📚 **Midterm**: [midterm/](midterm/)
+- 📚 **Midterm**: [SmartHome/](SmartHome/)
 
 This repo contains our midterm deliverable and the capstone Smart Home project
 (React frontend + Spring Boot backend). See the linked READMEs above for setup,
