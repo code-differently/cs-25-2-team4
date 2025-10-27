@@ -11,7 +11,7 @@
 
 // Import React FIRST for JSX in mocks
 import React from "react";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 
 /** Modal stack: stub the component; return a DUMB hook object */
 jest.mock("./components/ModalManager.jsx", () => ({
