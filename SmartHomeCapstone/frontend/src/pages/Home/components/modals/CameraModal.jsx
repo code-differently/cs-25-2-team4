@@ -52,14 +52,6 @@ export const CameraModal = ({ device, onClose, onToggle, onRequestDelete }) => {
             <Trash size={16} />
             <span>Delete</span>
           </button>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={onClose}
-            style={{ marginLeft: 8 }}
-          >
-            Close
-          </button>
         </div>
 
         {/* === Title === */}

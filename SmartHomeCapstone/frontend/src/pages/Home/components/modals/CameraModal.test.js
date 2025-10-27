@@ -177,18 +177,6 @@ describe('CameraModal Component', () => {
     });
   });
 
-  describe('Modal Close Button', () => {
-    it('renders close button and calls onClose when clicked', () => {
-      // Act
-      renderModal({ onClose: mockOnClose });
-      const closeButton = screen.getByRole('button', { name: /close/i });
-      fireEvent.click(closeButton);
-      // Assert
-      expect(closeButton).toBeInTheDocument();
-      expect(mockOnClose).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('Modal Structure and Content', () => {
     it('should have a heading with device name and type', () => {
       // Act
@@ -208,7 +196,6 @@ describe('CameraModal Component', () => {
   describe('Button Accessibility', () => {
     it.each([
       ['delete'],
-      ['close'],
     ])('%s button should have type="button"', (name) => {
       // Act
       renderModal();
