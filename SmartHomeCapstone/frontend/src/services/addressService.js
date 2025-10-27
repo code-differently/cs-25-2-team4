@@ -18,10 +18,13 @@ export const addressService = {
         }
     },
 
-    // Get states/provinces for a country (using US states as example)
+    // Get states/provinces for a country
     getStates: async (countryCode) => {
+        // Replace with your GeoNames username
+        const GEONAMES_USERNAME = 'demo'; // IMPORTANT: Replace 'demo' with your username from geonames.org
+        
         if (countryCode === 'US') {
-            // US states list
+            // US states list (hardcoded for reliability)
             return [
                 { code: 'AL', name: 'Alabama' },
                 { code: 'AK', name: 'Alaska' },
@@ -75,13 +78,44 @@ export const addressService = {
                 { code: 'WY', name: 'Wyoming' }
             ];
         }
-        // For other countries, return empty array or implement other country states
-        return [];
+        
+        // For other countries, use GeoNames API to get administrative divisions
+        try {
+            const response = await axios.get(
+                `http://api.geonames.org/searchJSON`, {
+                    params: {
+                        country: countryCode,
+                        featureCode: 'ADM1', // First-level administrative division (states/provinces)
+                        maxRows: 1000,
+                        username: GEONAMES_USERNAME,
+                        orderby: 'name'
+                    }
+                }
+            );
+
+            if (response.data.geonames) {
+                return response.data.geonames
+                    .map(place => ({
+                        code: place.adminCode1 || place.adminCodes1?.ISO3166_2 || place.name,
+                        name: place.name
+                    }))
+                    .filter((state, index, self) => 
+                        index === self.findIndex(s => s.code === state.code)
+                    )
+                    .sort((a, b) => a.name.localeCompare(b.name));
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching states:', error);
+            return [];
+        }
     },
 
     // Get cities by state (using GeoNames API)
+    // Note: You need to register for a free username at https://www.geonames.org/login
     getCitiesByState: async (countryCode, stateCode) => {
-        const GEONAMES_USERNAME = 'demo'; //TBR
+        // Replace with your GeoNames username
+        const GEONAMES_USERNAME = 'demo'; // IMPORTANT: Replace 'demo' with your username from geonames.org
         
         if (!countryCode || !stateCode) return [];
 
@@ -91,7 +125,7 @@ export const addressService = {
                     params: {
                         country: countryCode,
                         adminCode1: stateCode,
-                        featureCode: 'PPL,PPLA,PPLA2,PPLA3,PPLA4',
+                        featureCode: 'PPL,PPLA,PPLA2,PPLA3,PPLA4', // Various city types
                         maxRows: 1000,
                         username: GEONAMES_USERNAME,
                         orderby: 'name'

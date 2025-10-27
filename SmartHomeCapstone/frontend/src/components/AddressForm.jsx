@@ -22,13 +22,12 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
 
     // Load states when country changes
     useEffect(() => {
-        if (address.country === 'US') {
+        if (address.country) {
             loadStates(address.country);
             // Clear dependent fields
             setAddress(prev => ({ ...prev, state: '', city: '' }));
             setCities([]);
         } else {
-            // Clear states for non-US countries
             setStates([]);
             setAddress(prev => ({ ...prev, state: '', city: '' }));
             setCities([]);
@@ -44,12 +43,10 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
         }
     }, [address.country, address.state]);
 
-    // Load cities when zip code changes
+    // Load cities when zip code changes (as an alternative method)
     useEffect(() => {
         if (address.country && address.zipCode && address.zipCode.length >= 5) {
-            loadCities(address.country, address.zipCode);
-        } else {
-            setCities([]);
+            loadCitiesByZip(address.country, address.zipCode);
         }
     }, [address.country, address.zipCode]);
 
@@ -93,22 +90,26 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
         }
     };
 
-    const loadCities = async (countryCode, zipCode) => {
+    const loadCitiesByZip = async (countryCode, zipCode) => {
         setLoading(prev => ({ ...prev, cities: true }));
         try {
             const cityList = await addressService.getCitiesByZip(countryCode, zipCode);
-            setCities(cityList);
-
-            // Auto-fill city and state if only one result
-            if (cityList.length === 1) {
-                setAddress(prev => ({
-                    ...prev,
-                    city: cityList[0].city,
-                    state: cityList[0].state
-                }));
+            
+            // If we got results from zip code lookup
+            if (cityList.length > 0) {
+                setCities(cityList);
+                
+                // Auto-fill city and state if only one result
+                if (cityList.length === 1) {
+                    setAddress(prev => ({
+                        ...prev,
+                        city: cityList[0].city,
+                        state: cityList[0].state
+                    }));
+                }
             }
         } catch (error) {
-            console.error('Failed to load cities:', error);
+            console.error('Failed to load cities by zip:', error);
         } finally {
             setLoading(prev => ({ ...prev, cities: false }));
         }
@@ -147,37 +148,33 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
             </select>
 
 
-            {/* State - Only show for United States */}
-            {address.country === 'US' && (
-                <>
-                    <label>State</label>
-                    <select
-                        className="select"
-                        name="state"
-                        value={address.state}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select State</option>
-                        {states.map(state => (
-                            <option key={state.code} value={state.code}>
-                                {state.name}
-                            </option>
-                        ))}
-                    </select>
-                </>
-            )}
-
-            {/* State/Province for other countries */}
-            {address.country && address.country !== 'US' && (
+            {/* State/Province */}
+            {address.country && (
                 <>
                     <label>State/Province</label>
-                    <input
-                        className="input"
-                        name="state"
-                        value={address.state}
-                        onChange={handleChange}
-                        placeholder="Enter state/province"
-                    />
+                    {states.length > 0 ? (
+                        <select
+                            className="select"
+                            name="state"
+                            value={address.state}
+                            onChange={handleChange}
+                        >
+                            <option value="">Select State/Province</option>
+                            {states.map(state => (
+                                <option key={state.code} value={state.code}>
+                                    {state.name}
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        <input
+                            className="input"
+                            name="state"
+                            value={address.state}
+                            onChange={handleChange}
+                            placeholder="Enter state/province"
+                        />
+                    )}
                 </>
             )}
 
