@@ -118,15 +118,6 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                 ))}
             </select>
 
-            {/* Zip Code */}
-            <label>Zip Code</label>
-            <input
-                className="input"
-                name="zipCode"
-                value={address.zipCode}
-                onChange={handleChange}
-                placeholder="Enter zip code"
-            />
 
             {/* State - Only show for United States */}
             {address.country === 'US' && (
@@ -200,6 +191,16 @@ export default function AddressForm({ onAddressChange, initialAddress = {} }) {
                 value={address.streetAddress}
                 onChange={handleChange}
                 placeholder="Enter street address"
+            />
+
+            {/* Zip Code */}
+            <label>Zip Code</label>
+            <input
+                className="input"
+                name="zipCode"
+                value={address.zipCode}
+                onChange={handleChange}
+                placeholder="Enter zip code"
             />
         </div>
     );
