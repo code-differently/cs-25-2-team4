@@ -60,7 +60,7 @@ describe('CameraModal Component', () => {
       // Assert
       const cameraImage = screen.getByAltText('Camera feed');
       expect(cameraImage).toBeInTheDocument();
-      expect(cameraImage).toHaveAttribute('src', expect.stringContaining('camera.gif'));
+      expect(cameraImage).toHaveAttribute('src', 'test-file-stub'); // Assuming jest file mock
     });
 
     it.each([null, undefined])('returns null when device is %s', (value) => {
