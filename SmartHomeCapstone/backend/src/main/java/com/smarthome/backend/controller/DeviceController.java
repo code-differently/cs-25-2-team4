@@ -6,7 +6,9 @@ import com.smarthome.backend.dto.DeviceResponse;
 import com.smarthome.backend.entity.Device;
 import com.smarthome.backend.service.DeviceService;
 import jakarta.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,15 +81,19 @@ public class DeviceController {
 
         /** Control a device (turn on/off, set properties) PUT /api/devices/{id}/control */
         @PutMapping("/{deviceId}/control")
-        public ResponseEntity<DeviceResponse> controlDevice(
-                        @PathVariable Long deviceId, @Valid @RequestBody DeviceControlRequest request) {
+        public ResponseEntity<?> controlDevice(
+                        @PathVariable Long deviceId, @RequestBody DeviceControlRequest request) {
                 try {
                         Device device =
                                         deviceService.controlDevice(deviceId, request.getAction(), request.getValue());
                         DeviceResponse response = new DeviceResponse(device);
                         return ResponseEntity.ok(response);
-                } catch (RuntimeException e) {
-                        return ResponseEntity.badRequest().build();
+                } catch (Exception e) {
+                        System.err.println("Error controlling device: " + e.getMessage());
+
+                        Map<String, String> errorResponse = new HashMap<>();
+                        errorResponse.put("error", e.getMessage());
+                        return ResponseEntity.badRequest().body(errorResponse);
                 }
         }
 

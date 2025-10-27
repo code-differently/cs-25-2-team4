@@ -1,27 +1,70 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Trash } from "lucide-react";
+import { deviceService } from "../../../../services/deviceService";
 
-export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) => {
+export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete, onDeviceUpdate }) => {
   const [setpoint, setSetpoint] = useState(72);
   const [isEditing, setIsEditing] = useState(false);
   const [tempInput, setTempInput] = useState("72");
+  const setpointTimeoutRef = useRef(null);
   const [isOn, setIsOn] = useState(!!device?.isOn);
 
   // Sync with device prop
   useEffect(() => {
     if (!device) return;
-    const temp = Number.isFinite(device?.setpoint) ? device.setpoint : 72;
+    const temp = Number.isFinite(device?.targetTemp) ? device.targetTemp : 72;
     setSetpoint(temp);
     setTempInput(String(temp));
     setIsOn(!!device.isOn);
   }, [device]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (setpointTimeoutRef.current) {
+        clearTimeout(setpointTimeoutRef.current);
+      }
+    };
+  }, []);
+
   if (!device) return null;
 
+  const updateSetpointOnBackend = async (newSetpoint) => {
+    try {
+      // Ensure we're sending a proper number (Double)
+      const setpointValue = parseFloat(newSetpoint);
+      
+      if (isNaN(setpointValue)) {
+        console.error('Invalid setpoint value:', newSetpoint);
+        return;
+      }
+      
+      const updatedDevice = await deviceService.updateSetpoint(device.deviceId, setpointValue);
+      
+      // Update the device in parent state if callback provided
+      if (onDeviceUpdate && updatedDevice) {
+        onDeviceUpdate(updatedDevice);
+      }
+    } catch (error) {
+      console.error('Failed to update setpoint:', error);
+      // Optionally show an error toast to the user
+    }
+  };
+
   const handleSetpointChange = (e) => {
-    setSetpoint(Number(e.target.value));
+    const newSetpoint = Number(e.target.value);
+    setSetpoint(newSetpoint);
     setTempInput(e.target.value);
-    // TODO: Add API call to update setpoint on backend if needed
+
+    // Clear any existing timeout
+    if (setpointTimeoutRef.current) {
+      clearTimeout(setpointTimeoutRef.current);
+    }
+
+    // Debounce the API call - wait 500ms after user stops dragging
+    setpointTimeoutRef.current = setTimeout(() => {
+      updateSetpointOnBackend(newSetpoint);
+    }, 500);
   };
 
   const handleTempClick = () => {
@@ -49,7 +92,9 @@ export const ThermostatModal = ({ device, onClose, onToggle, onRequestDelete }) 
     
     setSetpoint(temp);
     setTempInput(String(temp));
-    // TODO: Add API call to update setpoint on backend if needed
+    
+    // Update backend immediately when user finishes typing
+    updateSetpointOnBackend(temp);
   };
 
   const handleTempInputKeyDown = (e) => {

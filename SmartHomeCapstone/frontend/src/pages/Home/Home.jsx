@@ -53,6 +53,17 @@ const Home = () => {
   const { devices, loading, error, addDevice, toggleDevice, deleteDevice, setDevices } =
     useDevices(currentHome?.homeId);
 
+  // Function to update a single device in the list
+  const updateDeviceInList = (updatedDevice) => {
+    setDevices((prevDevices) =>
+      prevDevices.map((device) =>
+        device.deviceId === updatedDevice.deviceId
+          ? { ...device, ...updatedDevice }
+          : device
+      )
+    );
+  };
+
   const {
     selectedDevice,
     modalType,
@@ -62,7 +73,8 @@ const Home = () => {
     confirmDeleteDevice,
     returnToDeviceModal,
     handleToggle,
-  } = useModalManager(toggleDevice, deleteDevice);
+    handleDeviceUpdate,
+  } = useModalManager(toggleDevice, deleteDevice, updateDeviceInList);
 
   /* ==================== Check for Fresh Registration ==================== */
   useEffect(() => {
@@ -232,6 +244,7 @@ const Home = () => {
         onRequestDelete={requestDeleteDevice}
         onConfirmDelete={confirmDeleteDevice}
         onReturnToDevice={returnToDeviceModal}
+        onDeviceUpdate={handleDeviceUpdate}
       />
 
       {roomToDelete && (

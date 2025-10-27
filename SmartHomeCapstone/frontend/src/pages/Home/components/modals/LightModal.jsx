@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Trash } from "lucide-react";
+import { deviceService } from "../../../../services/deviceService";
 
-export const LightModal = ({ device, onClose, onToggle, onRequestDelete }) => {
+export const LightModal = ({ device, onClose, onToggle, onRequestDelete, onDeviceUpdate }) => {
   const [brightness, setBrightness] = useState(60);
   const [useFallback, setUseFallback] = useState(false);
+  const brightnessTimeoutRef = useRef(null);
   const [isOn, setIsOn] = useState(!!device?.isOn);
 
   // Sync with device prop
@@ -14,11 +16,48 @@ export const LightModal = ({ device, onClose, onToggle, onRequestDelete }) => {
     setUseFallback(false);
   }, [device]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (brightnessTimeoutRef.current) {
+        clearTimeout(brightnessTimeoutRef.current);
+      }
+    };
+  }, []);
+
   if (!device) return null;
 
-  const handleBrightnessChange = (e) => {
-    setBrightness(Number(e.target.value));
-    // TODO: Add API call to update brightness on backend if needed
+  const handleBrightnessChange = async (e) => {
+    const newBrightness = Number(e.target.value);
+    setBrightness(newBrightness);
+
+    // Clear any existing timeout
+    if (brightnessTimeoutRef.current) {
+      clearTimeout(brightnessTimeoutRef.current);
+    }
+
+    // Debounce the API call - wait 500ms after user stops dragging
+    brightnessTimeoutRef.current = setTimeout(async () => {
+      try {
+        // Ensure we're sending an integer
+        const brightnessValue = parseInt(newBrightness, 10);
+        
+        if (isNaN(brightnessValue)) {
+          console.error('Invalid brightness value:', newBrightness);
+          return;
+        }
+        
+        const updatedDevice = await deviceService.updateBrightness(device.deviceId, brightnessValue);
+        
+        // Update the device in parent state if callback provided
+        if (onDeviceUpdate && updatedDevice) {
+          onDeviceUpdate(updatedDevice);
+        }
+      } catch (error) {
+        console.error('Failed to update brightness:', error);
+        // Optionally show an error toast to the user
+      }
+    }, 500);
   };
 
   const handleToggle = () => {
