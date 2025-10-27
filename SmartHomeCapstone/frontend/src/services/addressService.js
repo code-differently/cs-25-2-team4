@@ -75,7 +75,6 @@ export const addressService = {
                 { code: 'WY', name: 'Wyoming' }
             ];
         }
-        // For other countries, return empty array or implement other country states
         return [];
     },
 
@@ -92,7 +91,6 @@ export const addressService = {
                 longitude: place.longitude
             }));
         } catch (error) {
-            // If zip code not found, return empty array
             return [];
         }
     },
