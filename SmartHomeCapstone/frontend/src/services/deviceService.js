@@ -28,20 +28,41 @@ apiClient.interceptors.response.use(
     if (error.response) {
       // Server responded with error status
       const status = error.response.status;
+      const data = error.response.data;
+      
+      console.error('API Error Response:', {
+        status,
+        data,
+        url: error.config?.url
+      });
+      
       let message = 'An error occurred';
 
-      switch (status) {
-        case 400:
-          message = 'Invalid request. Please check your input.';
-          break;
-        case 404:
-          message = 'Device not found.';
-          break;
-        case 500:
-          message = 'Server error. Please try again later.';
-          break;
-        default:
-          message = `Server error (${status}). Please try again.`;
+      // If backend returns structured error, use that message
+      if (data && typeof data === 'object') {
+        if (data.message) {
+          message = data.message;
+        } else if (data.error) {
+          message = data.error;
+        } else if (data.details) {
+          // Validation errors
+          message = 'Validation failed: ' + JSON.stringify(data.details);
+        }
+      } else {
+        // Fallback to status-based messages
+        switch (status) {
+          case 400:
+            message = 'Invalid request. Please check your input.';
+            break;
+          case 404:
+            message = 'Device not found.';
+            break;
+          case 500:
+            message = 'Server error. Please try again later.';
+            break;
+          default:
+            message = `Server error (${status}). Please try again.`;
+        }
       }
 
       throw new Error(message);
@@ -165,6 +186,36 @@ export const deviceService = {
       return response.data;
     } catch (error) {
       console.error('Error controlling device:', error);
+      throw error;
+    }
+  },
+
+  // Update device brightness (for lights)
+  updateBrightness: async (deviceId, brightness) => {
+    try {
+      const payload = {
+        action: 'brightness',
+        value: brightness
+      };
+      const response = await apiClient.put(`/${deviceId}/control`, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating brightness:', error);
+      throw error;
+    }
+  },
+
+  // Update thermostat setpoint (for thermostats)
+  updateSetpoint: async (deviceId, setpoint) => {
+    try {
+      const payload = {
+        action: 'temperature',
+        value: setpoint
+      };
+      const response = await apiClient.put(`/${deviceId}/control`, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating setpoint:', error);
       throw error;
     }
   },

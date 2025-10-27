@@ -1,5 +1,8 @@
 package com.smarthome.backend;
 
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +15,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class BackendApplication {
 
+        @Value("${cors.allowed.origins:http://localhost:3000,http://127.0.0.1:3000}")
+        private String allowedOrigins;
+
         public static void main(String[] args) {
                 SpringApplication.run(BackendApplication.class, args);
         }
@@ -21,11 +27,12 @@ public class BackendApplication {
                 return new WebMvcConfigurer() {
                         @Override
                         public void addCorsMappings(CorsRegistry registry) {
+                                List<String> origins = Arrays.asList(allowedOrigins.split(","));
                                 registry.addMapping("/api/**")
-                                        .allowedOrigins("http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001")
-                                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                                        .allowedHeaders("*")
-                                        .allowCredentials(true);
+                                                .allowedOrigins(origins.toArray(new String[0]))
+                                                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                                                .allowedHeaders("*")
+                                                .allowCredentials(true);
                         }
                 };
         }
@@ -33,8 +40,8 @@ public class BackendApplication {
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.addAllowedOrigin("http://localhost:3000");
-                configuration.addAllowedOrigin("http://127.0.0.1:3000");
+                List<String> origins = Arrays.asList(allowedOrigins.split(","));
+                origins.forEach(configuration::addAllowedOrigin);
                 configuration.addAllowedMethod("*");
                 configuration.addAllowedHeader("*");
                 configuration.setAllowCredentials(true);

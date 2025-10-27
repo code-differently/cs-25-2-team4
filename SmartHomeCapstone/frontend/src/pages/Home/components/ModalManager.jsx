@@ -13,6 +13,7 @@ export const ModalManager = ({
   onRequestDelete,
   onConfirmDelete,
   onReturnToDevice,
+  onDeviceUpdate,
 }) => {
   const handleToggle = (deviceIdToFlip, currentIsOn) => {
     onToggleDevice(deviceIdToFlip, currentIsOn);
@@ -37,6 +38,7 @@ export const ModalManager = ({
           onClose={onClose}
           onToggle={handleToggle}
           onRequestDelete={onRequestDelete}
+          onDeviceUpdate={onDeviceUpdate}
         />
       )}
 
@@ -47,6 +49,7 @@ export const ModalManager = ({
           onClose={onClose}
           onToggle={handleToggle}
           onRequestDelete={onRequestDelete}
+          onDeviceUpdate={onDeviceUpdate}
         />
       )}
 
@@ -66,7 +69,7 @@ export const ModalManager = ({
 };
 
 // Export the hook for external components to use
-export const useModalManager = (onToggleDevice, onDeleteDevice) => {
+export const useModalManager = (onToggleDevice, onDeleteDevice, onUpdateDeviceInList) => {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [modalType, setModalType] = useState(null);
 
@@ -109,16 +112,48 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     }
   };
 
-  const handleToggle = (deviceIdToFlip, currentIsOn) => {
-    onToggleDevice(deviceIdToFlip, currentIsOn);
+  const handleToggle = async (deviceIdToFlip, currentIsOn) => {
+    try {
+      // First update the selected device state optimistically
+      setSelectedDevice((prev) => {
+        if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
+        return {
+          ...prev,
+          isOn: !currentIsOn,
+          status: !currentIsOn ? "Online" : "Offline",
+        };
+      });
+      
+      // Then toggle the device in the backend and parent state
+      await onToggleDevice(deviceIdToFlip, currentIsOn);
+    } catch (error) {
+      console.error('Failed to toggle device:', error);
+      // Revert the optimistic update on error
+      setSelectedDevice((prev) => {
+        if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
+        return {
+          ...prev,
+          isOn: currentIsOn,
+          status: currentIsOn ? "Online" : "Offline",
+        };
+      });
+    }
+  };
+
+  const handleDeviceUpdate = (updatedDevice) => {
+    // Update the selected device with new data from backend
     setSelectedDevice((prev) => {
-      if (!prev || prev.deviceId !== deviceIdToFlip) return prev;
+      if (!prev || prev.deviceId !== updatedDevice.deviceId) return prev;
       return {
         ...prev,
-        isOn: !currentIsOn,
-        status: !currentIsOn ? "Online" : "Offline",
+        ...updatedDevice,
       };
     });
+
+    // Also update the device in the main devices list
+    if (onUpdateDeviceInList) {
+      onUpdateDeviceInList(updatedDevice);
+    }
   };
 
   const handleRequestDelete = (device) => {
@@ -148,5 +183,6 @@ export const useModalManager = (onToggleDevice, onDeleteDevice) => {
     returnToDeviceModal,
     returnToCameraModal: returnToDeviceModal,
     handleToggle,
+    handleDeviceUpdate,
   };
 };

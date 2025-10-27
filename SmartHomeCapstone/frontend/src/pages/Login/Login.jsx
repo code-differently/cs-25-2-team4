@@ -56,7 +56,7 @@ export default function Login() {
   return (
     <div className="auth-wrap">
       <form onSubmit={onSubmit} className="login-card">
-        <h2 className="title">Sign in to My Application</h2>
+        <h2 className="title">Sign in to My Smart Home</h2>
         <p style={{margin: '0 0 16px', opacity: 0.9, fontSize: 14}}>
           Welcome back! Please sign in to continue
         </p>
@@ -88,8 +88,9 @@ export default function Login() {
           or
         </div>
 
-        <label>Email address or username</label>
-        <input 
+        <label htmlFor="login-identifier">Email address or username</label>
+        <input
+          id="login-identifier"
           className="input" 
           name="email" 
           type="text" 
@@ -97,8 +98,9 @@ export default function Login() {
           onChange={onChange} 
           placeholder="Enter email or username"
         />
-        <label>Password</label>
+        <label htmlFor="login-password">Password</label>
         <input 
+          id="login-password"
           className="input mb16" 
           name="password" 
           type="password" 
