@@ -49,12 +49,79 @@
     z-index: 20;
 }
 
+/* Base style: remove right property and use left/transform for centering */
 .toast-device-error {
-    right: 200px;
-    top: -20px;  
+    top: -20px;
+    left: 65%;
+    transform: translateX(-50%);
+    position: absolute;
+    z-index: 20;
+    background: #ff4d4f;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    animation: fadeIn 0.2s ease-out forwards;
+    opacity: 1;
+    max-width: 300px;
+    width: max-content;
+    word-break: break-word;
 }
 
 .toast-block-error {
     bottom: -32px;
     left: 0;
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 600px) {
+  .all-room-errors {
+    top: 70px;
+    right: 8px;
+    max-width: 90vw;
+  }
+  .toast-room-error,
+  .toast-block-error,
+  .toast-device-error {
+    font-size: 0.8rem;
+    padding: 6px 8px;
+    max-width: 90vw;
+  }
+  .toast-room-error,
+  .toast-device-error {
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    z-index: 30;
+  }
+  .toast-block-error {
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 400px) {
+  .all-room-errors {
+    top: 48px;
+    right: 2px;
+    max-width: 98vw;
+  }
+  .toast-room-error,
+  .toast-block-error,
+  .toast-device-error {
+    font-size: 0.7rem;
+    padding: 4px 4px;
+    max-width: 98vw;
+  }
+  .toast-room-error,
+  .toast-device-error {
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    z-index: 30;
+  }
 }
